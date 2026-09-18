@@ -1,0 +1,1 @@
+(function(){var s=document.createElement('script');s.src='https://luckygeniusss.github.io/lampa-sergey-hub/u.js?v=0.2.0';s.async=true;(document.head||document.documentElement).appendChild(s);}());
