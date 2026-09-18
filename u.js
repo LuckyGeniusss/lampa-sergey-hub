@@ -5,7 +5,9 @@
     window.sergey_online_ready = true;
 
     var NAME = 'Sergey Online';
-    var VERSION = '0.3.0';
+    var VERSION = '0.4.0';
+    var COMPONENT = 'sergey_online_component';
+    var SETTINGS = 'sergey_online_settings';
     var BUTTON_CLASS = 'view--sergey-online';
     var providers = [];
 
@@ -139,18 +141,24 @@
 
     function registerProvider(provider) {
         if (!provider || !provider.id || !provider.name || typeof provider.search !== 'function') return false;
+
         for (var i = 0; i < providers.length; i++) {
             if (providers[i].id === provider.id) {
                 providers[i] = provider;
                 return true;
             }
         }
+
         providers.push(provider);
         return true;
     }
 
     function providerEnabled(provider) {
         return boolSetting(provider.setting, provider.default_enabled !== false);
+    }
+
+    function enabledProviders() {
+        return providers.filter(providerEnabled);
     }
 
     function runProvider(provider, movie) {
@@ -205,9 +213,11 @@
             docs = docs.map(function (doc) {
                 var score = 0;
                 var current = normalize(doc.title || '');
+
                 if (current === wanted) score += 100;
                 else if (current.indexOf(wanted) >= 0 || wanted.indexOf(current) >= 0) score += 50;
                 if (year && String(doc.year || '').indexOf(year) >= 0) score += 40;
+
                 doc.__score = score;
                 return doc;
             }).sort(function (a, b) {
@@ -240,8 +250,11 @@
                         result.sort(function (a, b) {
                             return qualityScore(b.quality) - qualityScore(a.quality);
                         });
+
                         return result.slice(0, 5);
-                    }).catch(function () { return []; });
+                    }).catch(function () {
+                        return [];
+                    });
             })).then(function (groups) {
                 var all = [];
                 groups.forEach(function (group) { all = all.concat(group); });
@@ -316,13 +329,13 @@
 
     function play(item, movie) {
         if (!item || !item.url) return;
-        try { Lampa.Select.close(); } catch (e) {}
 
         var data = {
             url: item.url,
             title: movieTitle(movie),
             quality: 'auto'
         };
+
         if (item.headers) data.headers = item.headers;
         if (item.subtitles) data.subtitles = item.subtitles;
 
@@ -335,50 +348,61 @@
         }
     }
 
-    function showResults(movie, results) {
-        var all = [];
-        var failed = [];
+    function openFallback(movie) {
+        var active = enabledProviders();
 
-        results.forEach(function (result) {
-            if (!result.ok) failed.push(result.provider.name);
-            all = all.concat(result.items || []);
-        });
-
-        all = dedupe(all);
-        all.sort(function (a, b) {
-            var qa = qualityScore(a.quality);
-            var qb = qualityScore(b.quality);
-            if (qa !== qb) return qb - qa;
-            return String(a.provider).localeCompare(String(b.provider));
-        });
-
-        if (!all.length) {
-            var msg = 'Sergey Online: ничего не найдено';
-            if (failed.length) msg += ' • не ответили: ' + failed.join(', ');
-            notify(msg);
+        if (!active.length) {
+            notify('Sergey Online: включите хотя бы один источник в настройках');
             return;
         }
 
-        var items = all.map(function (item) {
-            var info = [item.provider];
-            if (item.quality) info.push(item.quality);
-            if (item.voice) info.push(item.voice);
-            if (item.season) info.push('S' + item.season);
-            if (item.episode) info.push('E' + item.episode);
-            if (item.subtitle) info.push(item.subtitle);
-
-            return {
-                title: item.title || movieTitle(movie),
-                subtitle: info.join(' • '),
-                sergey_item: item
-            };
-        });
-
         Lampa.Select.show({
-            title: NAME + ' — ' + movieTitle(movie),
-            items: items,
-            onSelect: function (selected) {
-                play(selected.sergey_item, movie);
+            title: 'Источник',
+            items: [{ title: 'Все источники', source: 'all', selected: true }].concat(active.map(function (provider) {
+                return {
+                    title: provider.name,
+                    source: provider.id
+                };
+            })),
+            onSelect: function (source) {
+                var selected = source.source === 'all'
+                    ? active
+                    : active.filter(function (provider) { return provider.id === source.source; });
+
+                notify('Sergey Online: поиск…');
+
+                Promise.all(selected.map(function (provider) {
+                    return runProvider(provider, movie);
+                })).then(function (results) {
+                    var all = [];
+                    results.forEach(function (result) {
+                        all = all.concat(result.items || []);
+                    });
+
+                    all = dedupe(all);
+
+                    if (!all.length) {
+                        notify('Sergey Online: ничего не найдено');
+                        return;
+                    }
+
+                    Lampa.Select.show({
+                        title: NAME + ' — ' + movieTitle(movie),
+                        items: all.map(function (item) {
+                            return {
+                                title: item.title || movieTitle(movie),
+                                subtitle: [item.provider, item.quality, item.voice].filter(Boolean).join(' • '),
+                                sergey_item: item
+                            };
+                        }),
+                        onSelect: function (item) {
+                            play(item.sergey_item, movie);
+                        },
+                        onBack: function () {
+                            try { Lampa.Controller.toggle('content'); } catch (e) {}
+                        }
+                    });
+                });
             },
             onBack: function () {
                 try { Lampa.Controller.toggle('content'); } catch (e) {}
@@ -386,29 +410,403 @@
         });
     }
 
-    function open(movie) {
-        movie = movie || {};
-        var active = providers.filter(providerEnabled);
+    function SergeyOnlineComponent(object) {
+        var scroll = new Lampa.Scroll({ mask: true, over: true });
+        var files = new Lampa.Explorer(object);
+        var filter = new Lampa.Filter(object);
+        var self = this;
+        var last = false;
+        var destroyed = false;
+        var allResults = [];
+        var filterState = { season: '', voice: '' };
+        var activeSource = String(storage('sergey_online_last_source', 'all') || 'all');
 
-        if (!active.length) {
-            notify('Sergey Online: включите источник в настройках');
+        function sourceProviders() {
+            var active = enabledProviders();
+
+            if (activeSource !== 'all' && !active.some(function (provider) { return provider.id === activeSource; })) {
+                activeSource = 'all';
+            }
+
+            return active;
+        }
+
+        function sourceTitle() {
+            if (activeSource === 'all') return 'Все источники';
+            var provider = providers.filter(function (item) { return item.id === activeSource; })[0];
+            return provider ? provider.name : 'Все источники';
+        }
+
+        function setupSourceFilter() {
+            var active = sourceProviders();
+            var items = [];
+
+            if (active.length > 1) {
+                items.push({
+                    title: 'Все источники',
+                    source: 'all',
+                    selected: activeSource === 'all'
+                });
+            }
+
+            active.forEach(function (provider) {
+                items.push({
+                    title: provider.name,
+                    source: provider.id,
+                    selected: activeSource === provider.id
+                });
+            });
+
+            filter.set('sort', items);
+            filter.chosen('sort', [sourceTitle()]);
+
+            try {
+                filter.render().find('.filter--sort span').text('Источник');
+            } catch (e) {}
+        }
+
+        function currentResults() {
+            return allResults.filter(function (item) {
+                if (filterState.season && String(item.season || '') !== String(filterState.season)) return false;
+                if (filterState.voice && String(item.voice || '') !== String(filterState.voice)) return false;
+                return true;
+            });
+        }
+
+        function setupContentFilter() {
+            var seasons = {};
+            var voices = {};
+
+            allResults.forEach(function (item) {
+                if (item.season !== undefined && item.season !== null && String(item.season) !== '') {
+                    seasons[String(item.season)] = true;
+                }
+                if (item.voice) voices[String(item.voice)] = true;
+            });
+
+            var groups = [{
+                title: 'Сбросить фильтр',
+                reset: true
+            }];
+
+            var seasonKeys = Object.keys(seasons).sort(function (a, b) {
+                return parseInt(a, 10) - parseInt(b, 10);
+            });
+
+            if (seasonKeys.length) {
+                groups.push({
+                    title: 'Сезон',
+                    stype: 'season',
+                    items: [{ title: 'Все сезоны', value: '', selected: !filterState.season }].concat(
+                        seasonKeys.map(function (season) {
+                            return {
+                                title: 'Сезон ' + season,
+                                value: season,
+                                selected: String(filterState.season) === season
+                            };
+                        })
+                    )
+                });
+            }
+
+            var voiceKeys = Object.keys(voices).sort();
+
+            if (voiceKeys.length) {
+                groups.push({
+                    title: 'Озвучка',
+                    stype: 'voice',
+                    items: [{ title: 'Все озвучки', value: '', selected: !filterState.voice }].concat(
+                        voiceKeys.map(function (voice) {
+                            return {
+                                title: voice,
+                                value: voice,
+                                selected: String(filterState.voice) === voice
+                            };
+                        })
+                    )
+                });
+            }
+
+            if (groups.length > 1) {
+                filter.set('filter', groups);
+
+                var chosen = [];
+                if (filterState.season) chosen.push('Сезон ' + filterState.season);
+                if (filterState.voice) chosen.push(filterState.voice);
+                filter.chosen('filter', chosen);
+
+                try {
+                    filter.render().find('.filter--filter span').text('Фильтр');
+                } catch (e) {}
+            } else {
+                filter.set('filter', []);
+            }
+        }
+
+        function itemHtml(item) {
+            var meta = [item.provider];
+            if (item.quality) meta.push(item.quality);
+            if (item.voice) meta.push(item.voice);
+            if (item.season) meta.push('Сезон ' + item.season);
+            if (item.episode) meta.push('Серия ' + item.episode);
+
+            return '<div class="sergey-online-item selector">' +
+                '<div class="sergey-online-item__icon">' +
+                    '<svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+                        '<circle cx="19" cy="19" r="16" stroke="currentColor" stroke-width="2"/>' +
+                        '<path d="M16 12.5L27 19L16 25.5V12.5Z" fill="currentColor"/>' +
+                    '</svg>' +
+                '</div>' +
+                '<div class="sergey-online-item__body">' +
+                    '<div class="sergey-online-item__title"></div>' +
+                    '<div class="sergey-online-item__meta"></div>' +
+                    '<div class="sergey-online-item__subtitle"></div>' +
+                '</div>' +
+            '</div>';
+        }
+
+        function appendMessage(title, text) {
+            var box = $('<div class="sergey-online-empty">' +
+                '<div class="sergey-online-empty__title"></div>' +
+                '<div class="sergey-online-empty__text"></div>' +
+            '</div>');
+
+            box.find('.sergey-online-empty__title').text(title);
+            box.find('.sergey-online-empty__text').text(text);
+            scroll.append(box);
+        }
+
+        function renderResults() {
+            if (destroyed) return;
+
+            scroll.clear();
+
+            var list = currentResults();
+
+            if (!list.length) {
+                appendMessage(
+                    'Здесь пусто',
+                    'По выбранному источнику ничего не найдено. Выберите другой «Источник» сверху или уточните название через поиск.'
+                );
+            } else {
+                list.forEach(function (item) {
+                    var row = $(itemHtml(item));
+
+                    row.find('.sergey-online-item__title').text(item.title || movieTitle(object.movie));
+                    row.find('.sergey-online-item__meta').text(
+                        [item.provider, item.quality, item.voice].filter(Boolean).join(' • ')
+                    );
+                    row.find('.sergey-online-item__subtitle').text(item.subtitle || '');
+
+                    row.on('hover:focus', function () {
+                        last = row[0];
+                    });
+
+                    row.on('hover:enter', function () {
+                        play(item, object.movie);
+                    });
+
+                    scroll.append(row);
+                });
+            }
+
+            try {
+                if (Lampa.Activity.active().activity === self.activity) self.start();
+            } catch (e) {}
+        }
+
+        function renderLoading() {
+            scroll.clear();
+            appendMessage('Ищем…', 'Проверяем выбранные источники для «' + movieTitle(object.movie) + '».');
+        }
+
+        function search() {
+            var active = sourceProviders();
+
+            if (!active.length) {
+                allResults = [];
+                renderResults();
+                notify('Sergey Online: включите хотя бы один источник в настройках');
+                return;
+            }
+
+            var selected = activeSource === 'all'
+                ? active
+                : active.filter(function (provider) { return provider.id === activeSource; });
+
+            if (!selected.length) selected = active;
+
+            renderLoading();
+
+            Promise.all(selected.map(function (provider) {
+                return runProvider(provider, object.movie);
+            })).then(function (results) {
+                if (destroyed) return;
+
+                var merged = [];
+                results.forEach(function (result) {
+                    merged = merged.concat(result.items || []);
+                });
+
+                allResults = dedupe(merged);
+                allResults.sort(function (a, b) {
+                    var qa = qualityScore(a.quality);
+                    var qb = qualityScore(b.quality);
+                    if (qa !== qb) return qb - qa;
+                    return String(a.provider).localeCompare(String(b.provider));
+                });
+
+                setupContentFilter();
+                renderResults();
+            }).catch(function (error) {
+                if (destroyed) return;
+                log('component search error', error);
+                allResults = [];
+                renderResults();
+            });
+        }
+
+        filter.onBack = function () {
+            self.start();
+        };
+
+        filter.onSearch = function (value) {
+            object.search = value;
+
+            if (object.movie) {
+                if (object.movie.title) object.movie.title = value;
+                else if (object.movie.name) object.movie.name = value;
+            }
+
+            search();
+        };
+
+        filter.onSelect = function (type, a, b) {
+            if (type === 'sort') {
+                activeSource = a && a.source ? a.source : 'all';
+                Lampa.Storage.set('sergey_online_last_source', activeSource);
+                filter.chosen('sort', [sourceTitle()]);
+                setTimeout(Lampa.Select.close, 10);
+                filterState = { season: '', voice: '' };
+                search();
+                return;
+            }
+
+            if (type === 'filter') {
+                if (a && a.reset) {
+                    filterState = { season: '', voice: '' };
+                    setupContentFilter();
+                    setTimeout(Lampa.Select.close, 10);
+                    renderResults();
+                    return;
+                }
+
+                if (a && a.stype && b) {
+                    filterState[a.stype] = b.value || '';
+                    setupContentFilter();
+                    renderResults();
+                }
+            }
+        };
+
+        this.create = function () {
+            setupSourceFilter();
+
+            try {
+                if (filter.addButtonBack) filter.addButtonBack();
+            } catch (e) {}
+
+            try {
+                scroll.body().addClass('sergey-online-list');
+            } catch (e) {}
+
+            files.appendFiles(scroll.render());
+            files.appendHead(filter.render());
+
+            try {
+                scroll.minus(files.render().find('.explorer__files-head'));
+            } catch (e) {}
+
+            search();
+
+            return this.render();
+        };
+
+        this.start = function () {
+            if (destroyed) return;
+
+            try {
+                if (Lampa.Background && Lampa.Background.immediately && Lampa.Utils.cardImgBackgroundBlur) {
+                    Lampa.Background.immediately(Lampa.Utils.cardImgBackgroundBlur(object.movie));
+                }
+            } catch (e) {}
+
+            Lampa.Controller.add('content', {
+                toggle: function () {
+                    Lampa.Controller.collectionSet(files.render());
+                    Lampa.Controller.collectionFocus(last || false, files.render());
+                },
+                up: function () {
+                    if (typeof Navigator !== 'undefined' && Navigator.canmove('up')) Navigator.move('up');
+                    else Lampa.Controller.toggle('head');
+                },
+                down: function () {
+                    if (typeof Navigator !== 'undefined' && Navigator.canmove('down')) Navigator.move('down');
+                },
+                left: function () {
+                    if (typeof Navigator !== 'undefined' && Navigator.canmove('left')) Navigator.move('left');
+                    else Lampa.Controller.toggle('menu');
+                },
+                right: function () {
+                    if (typeof Navigator !== 'undefined' && Navigator.canmove('right')) Navigator.move('right');
+                },
+                back: self.back.bind(self)
+            });
+
+            Lampa.Controller.toggle('content');
+        };
+
+        this.back = function () {
+            Lampa.Activity.backward();
+        };
+
+        this.pause = function () {};
+        this.stop = function () {};
+
+        this.destroy = function () {
+            destroyed = true;
+            try { filter.destroy(); } catch (e) {}
+            try { scroll.destroy(); } catch (e) {}
+            try { files.destroy(); } catch (e) {}
+        };
+
+        this.render = function () {
+            return files.render();
+        };
+    }
+
+    function openScreen(movie) {
+        movie = movie || {};
+
+        if (!window.Lampa || !Lampa.Component || !Lampa.Activity || !Lampa.Explorer || !Lampa.Filter) {
+            openFallback(movie);
             return;
         }
 
-        notify('Sergey Online: поиск в ' + active.length + ' источниках…');
-
-        Promise.all(active.map(function (provider) {
-            return runProvider(provider, movie);
-        })).then(function (results) {
-            showResults(movie, results);
-        }).catch(function (e) {
-            notify('Sergey Online: ошибка поиска');
-            log('searchAll error', e);
+        Lampa.Activity.push({
+            url: '',
+            title: NAME,
+            component: COMPONENT,
+            search: movieTitle(movie),
+            search_one: movieTitle(movie),
+            search_two: originalTitle(movie),
+            movie: movie,
+            page: 1
         });
     }
 
     function buttonHtml() {
-        return '<div class="full-start__button selector ' + BUTTON_CLASS + '" data-subtitle="' + NAME + ' ' + VERSION + '">' +
+        return '<div class="full-start__button selector ' + BUTTON_CLASS + '" data-subtitle="Единый выбор источника • ' + VERSION + '">' +
             '<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">' +
             '<circle cx="16" cy="16" r="13" stroke="currentColor" stroke-width="2.5"/>' +
             '<path d="M13 10.5L23 16L13 21.5V10.5Z" fill="currentColor"/>' +
@@ -427,10 +825,11 @@
 
             var button = $(buttonHtml());
             button.on('hover:enter', function () {
-                open(e.data.movie);
+                openScreen(e.data.movie);
             });
 
             var torrent = container.find('.view--torrent');
+
             if (torrent.length) torrent.after(button);
             else container.prepend(button);
         } catch (error) {
@@ -443,7 +842,7 @@
 
         try {
             Lampa.SettingsApi.addComponent({
-                component: 'sergey_online',
+                component: SETTINGS,
                 name: NAME,
                 icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M10 8L17 12L10 16V8Z" fill="currentColor"/></svg>'
             });
@@ -451,29 +850,29 @@
 
         try {
             Lampa.SettingsApi.addParam({
-                component: 'sergey_online',
+                component: SETTINGS,
                 param: { name: 'sergey_online_archive', type: 'trigger', default: true },
                 field: {
                     name: 'Internet Archive',
-                    description: 'Открытый источник. Нужен также для проверки работы единого поиска.'
+                    description: 'Открытый источник. Используется также для проверки работы интерфейса и единого поиска.'
                 }
             });
         } catch (e) {}
 
         try {
             Lampa.SettingsApi.addParam({
-                component: 'sergey_online',
+                component: SETTINGS,
                 param: { name: 'sergey_online_json', type: 'trigger', default: false },
                 field: {
                     name: 'Open JSON API',
-                    description: 'Подключить разрешённый API с прямыми ссылками на видео.'
+                    description: 'Разрешённый внешний API с прямыми ссылками на видео.'
                 }
             });
         } catch (e) {}
 
         try {
             Lampa.SettingsApi.addParam({
-                component: 'sergey_online',
+                component: SETTINGS,
                 param: {
                     name: 'sergey_online_json_url',
                     type: 'input',
@@ -490,26 +889,55 @@
 
         try {
             Lampa.SettingsApi.addParam({
-                component: 'sergey_online',
+                component: SETTINGS,
                 param: { name: 'sergey_online_version', type: 'static', default: VERSION },
                 field: { name: 'Версия', description: VERSION }
             });
         } catch (e) {}
     }
 
+    function installStyles() {
+        if (document.getElementById('sergey-online-v4-style')) return;
+
+        var style = document.createElement('style');
+        style.id = 'sergey-online-v4-style';
+        style.innerHTML =
+            '.sergey-online-list{padding-top:.5em}' +
+            '.sergey-online-item{display:flex;align-items:center;padding:1em 1.15em;margin-bottom:.7em;border-radius:.55em;background:rgba(255,255,255,.08);min-height:4.5em}' +
+            '.sergey-online-item.focus{background:#fff;color:#111}' +
+            '.sergey-online-item__icon{width:3.2em;min-width:3.2em;display:flex;align-items:center;justify-content:center;margin-right:1em}' +
+            '.sergey-online-item__body{min-width:0;flex:1}' +
+            '.sergey-online-item__title{font-size:1.18em;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+            '.sergey-online-item__meta{font-size:.9em;opacity:.8;margin-top:.28em}' +
+            '.sergey-online-item__subtitle{font-size:.8em;opacity:.55;margin-top:.22em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+            '.sergey-online-empty{padding:2.6em 1em}' +
+            '.sergey-online-empty__title{font-size:1.8em;font-weight:600;margin-bottom:.45em}' +
+            '.sergey-online-empty__text{font-size:1.05em;opacity:.75;max-width:42em}';
+
+        document.head.appendChild(style);
+    }
+
     function init() {
+        installStyles();
         addSettings();
+
+        Lampa.Component.add(COMPONENT, SergeyOnlineComponent);
 
         Lampa.Manifest.plugins = {
             type: 'video',
             version: VERSION,
             name: NAME,
-            description: 'Единый поиск по разрешённым онлайн-источникам',
+            description: 'Единый экран выбора онлайн-источника',
+            component: COMPONENT,
             onContextMenu: function () {
-                return { name: NAME, title: NAME, description: 'Искать онлайн' };
+                return {
+                    name: NAME,
+                    title: NAME,
+                    description: 'Выбрать источник и смотреть'
+                };
             },
             onContextLauch: function (movie) {
-                open(movie);
+                openScreen(movie);
             }
         };
 
@@ -517,7 +945,7 @@
 
         window.SergeyOnline = {
             version: VERSION,
-            open: open,
+            open: openScreen,
             registerProvider: registerProvider,
             providers: function () { return providers.slice(); }
         };
