@@ -1,38 +1,21 @@
-# Sergey Online — source inventory
+# Sergey Online — providers (v0.6.0)
 
-Updated for Sergey Online 0.5.0.
+This build uses the full dynamic VOD/Lampac source engine. The Source menu is populated from the live `lite/events?life=true` / `lifeevents` response, not from a hard-coded four-provider list.
 
-## Direct/native provider engine currently used by /js
+Provider identifiers preserved from the supplied plugins:
 
-The current plugin is based on the provider engine from the supplied Online MOD 14.08.2026 source. It keeps the real Lampa source picker and removes the Internet Archive/Open JSON placeholder implementation.
+filmix, filmixtv, fxapi, filmixrezka, rezka, rhsprem, pizdatoehd, getstv,
+lumex, videodb, collaps, collaps-dash, hdvb, zetflix, zetflixdb, kodik,
+ashdi, kinoukr, uafilm, uakino, kinotochka, remux, iframevideo, cdnmovies,
+anilibria, animedia, animego, animevost, animebesst, redheadsound, alloha,
+animelib, moonanime, kinopub, vibix, vdbmovies, fancdn, cdnvideohub, vokino,
+vcdn, videocdn, mirage, hydraflix, videasy, vidsrc, movpi, vidlink, twoembed,
+autoembed, smashystream, rgshows, pidtor, videoseed, iptvonline, veoveo,
+bamboo, eneyida, phantom, kinoflix, leproduction, vkmovie, kinogo, kinobase,
+asiage, geosaitebi, mikai, dreamerscast.
 
-Provider adapters present in the native engine:
-- HDrezka
-- Filmix
-- Collaps
-- FanSerials / FanCDN
-- CDNVideoHub
-- AniLibria / AniLibria.top
-- Kodik
-- Lumex
-- Kinobase
-- CDNMovies
-- Zetflix
-- VideoSeed
-- Vibix
-- RedHeadSound
-- AnimeLib
-- Alloha
-- KinoPub
+The original `lampac_unic_id`, `online_choice_*`, RCH/native-request and other
+source/session state are deliberately preserved. Unavailable providers are not
+faked as working: runtime availability comes from the backend's live source list.
 
-Some adapters are disabled by the upstream engine when they are known to be unavailable, restricted, duplicate, or environment-dependent. Sergey Online does not force-enable those dead/blocked providers.
-
-## Additional provider identifiers found in the supplied competitor plugins
-
-FilmixTV, FXAPI, Rezka, RHS Premium, Lumex, VideoDB, Collaps, HDVB, Zetflix, Kodik, Ashdi, KinoUKR, Kinotochka, Remux, IframeVideo, CDNMovies, AniLibria, AniMedia, AnimeGo, AnimeVost, AnimeBesst, RedHeadSound, Alloha, AnimeLib, MoonAnime, KinoPub, Vibix, VDBMovies, FanCDN, CDNVideoHub, VoKino, VCDN, VideoCDN, Mirage, Hydraflix, Videasy, VidSrc, Movpi, VidLink, TwoEmbed, AutoEmbed, SmashyStream, RGShows, Pidtor, VideoSeed, IPTVOnline, VeoVeo, FilmixRezka, GetsTV, Bamboo, Eneyida, UAFilm, UAKino, Phantom, KinoFlix, LeProduction, VKMovie, KinoGo, Kinobase, AsiaGe, GeoSaitebi, Mikai, DreamersCast.
-
-Aliases/protocol variants are intentionally not shown as separate user-facing sources when they represent the same provider (for example Collaps-DASH, rc/filmix, rc/fxapi, rc/rhs).
-
-## Authentication policy
-
-Sergey Online does not include Showy/Telegram marketing or payment-gateway flows. It does not attempt to bypass provider authentication or paid access. Provider-native public/free access is used where available.
+Showy/Telegram marketing, Yandex analytics and DonationAlerts UI are not included.
