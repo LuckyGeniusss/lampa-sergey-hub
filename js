@@ -1,4 +1,4 @@
-/* Sergey Online 0.6.0
+/* Sergey Online 0.7.0
  * Base engine: VOD/Lampac client matching the user's supplied source.
  * All original source IDs, per-source storage, device/session state, RCH/native
  * request logic, headers and backend URLs are preserved.
@@ -9,13 +9,13 @@
 
 function getBalancerUrl() {
   var servers = [
-    'http://hdpoisk.ru:2053'
+    'https://ab2024.ru'
   ];
   return servers[Math.floor(Math.random() * servers.length)];
 }
   // ---------------------------------------------------
 
-  var default_host = 'http://hdpoisk.ru:2053';
+  var default_host = 'https://ab2024.ru';
 
   var Defined = {
     api: 'lampac',
@@ -44,7 +44,7 @@ function getBalancerUrl() {
   }
 }
 
-var hostkey = 'hdpoisk.ru:2053'; // Используем постоянный ключ для хранилища, чтобы не терять сессию
+var hostkey = 'ab2024.ru';
 
 if (!window.rch_nws || !window.rch_nws[hostkey]) {
   if (!window.rch_nws) window.rch_nws = {};
@@ -87,11 +87,15 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
   window.rch_nws[hostkey].typeInvoke(getBalancerUrl(), function() {
 
     client.invoke("RchRegistry", JSON.stringify({
-      version: 149,
+      version: 151,
       host: location.host,
-      rchtype: Lampa.Platform.is('android') ? 'apk' : Lampa.Platform.is('tizen') ? 'cors' : window.rch_nws[hostkey].type,
+      rchtype: Lampa.Platform.is('android') ? 'apk' : Lampa.Platform.is('tizen') ? 'cors' : (window.rch_nws[hostkey].type || 'web'),
       apkVersion: window.rch_nws[hostkey].apkVersion,
-      player: Lampa.Storage.field('player')
+      player: Lampa.Storage.field('player'),
+      account_email: Lampa.Storage.get('account_email', ''),
+      unic_id: Lampa.Storage.get('lampac_unic_id', ''),
+      profile_id: Lampa.Storage.get('lampac_profile_id', ''),
+      token: 'bylampa'
     }));
 
     if (client._shouldReconnect && window.rch_nws[hostkey].rchRegistry) {
@@ -107,6 +111,22 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
 
     client.on("RchClient", function(rchId, url, data, headers, returnHeaders) {
       var network = new Lampa.Reguest();
+
+      function sendResult(uri, html) {
+        $.ajax({
+          url: default_host + '/rch/' + uri + '?id=' + rchId,
+          type: 'POST',
+          data: html,
+          async: true,
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function() {},
+          error: function() {
+            client.invoke("RchResult", rchId, '');
+          }
+        });
+      }
 
       function result(html) {
         if (Lampa.Arrays.isObject(html) || Lampa.Arrays.isArray(html)) {
@@ -127,42 +147,31 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
             .then(function(compressedBuffer) {
               var compressedArray = new Uint8Array(compressedBuffer);
               if (compressedArray.length > html.length) {
-                client.invoke("RchResult", rchId, html);
+                sendResult('result', html);
               } else {
-                $.ajax({
-                  // Используем динамический хост для POST результата
-                  url: getBalancerUrl() + '/rch/gzresult?id=' + rchId,
-                  type: 'POST',
-                  data: compressedArray,
-                  async: true,
-                  cache: false,
-                  contentType: false,
-                  processData: false,
-                  success: function(j) {},
-                  error: function() {
-                    client.invoke("RchResult", rchId, html);
-                  }
-                });
+                sendResult('gzresult', compressedArray);
               }
             })
             .catch(function() {
-              client.invoke("RchResult", rchId, html);
+              sendResult('result', html);
             });
-
         } else {
-          client.invoke("RchResult", rchId, html);
+          sendResult('result', html);
         }
       }
 
       if (url == 'eval') {
         console.log('RCH', url, data);
         result(eval(data));
+      } else if (url == 'evalrun') {
+        console.log('RCH', url, data);
+        eval(data);
       } else if (url == 'ping') {
         result('pong');
       } else {
         console.log('RCH', url);
-        network["native"](url, result, function() {
-          console.log('RCH', 'result empty');
+        network["native"](url, result, function(e) {
+          console.log('RCH', 'result empty, ' + (e && e.status));
           result('');
         }, data, {
           dataType: 'text',
@@ -209,7 +218,7 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
   function rchRun(json, call) {
     if (typeof NativeWsClient == 'undefined') {
       // Используем динамический хост для загрузки скрипта клиента
-      Lampa.Utils.putScript([getBalancerUrl() + "/js/nws-client-es5.js?v18112025"], function() {}, false, function() {
+      Lampa.Utils.putScript([default_host + "/js/nws-client-es5.js?v18112025"], function() {}, false, function() {
         rchInvoke(json, call);
       }, true);
     } else {
@@ -227,7 +236,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
     
     // Список доменов, которые мы хотим подменять на лету
     var replaceable = [
-        'http://hdpoisk.ru:2053'
+        'http://hdpoisk.ru:2053',
+        'https://ab2024.ru'
     ];
     
     for (var i = 0; i < replaceable.length; i++) {
@@ -247,16 +257,22 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       if (uid) url = Lampa.Utils.addUrlComponent(url, 'uid=' + encodeURIComponent(uid));
     }
     if (url.indexOf('token=') == -1) {
-      var token = '';
-      if (token != '') url = Lampa.Utils.addUrlComponent(url, 'token=');
+      var token = 'bylampa';
+      if (token != '') url = Lampa.Utils.addUrlComponent(url, 'token=' + encodeURIComponent(token));
     }
     if (url.indexOf('nws_id=') == -1 && window.rch_nws && window.rch_nws[hostkey]) {
-      var nws_id = window.rch_nws[hostkey].connectionId || '';
+      var nws_id = window.rch_nws[hostkey].connectionId || Lampa.Storage.get('lampac_nws_id', '');
       if (nws_id) url = Lampa.Utils.addUrlComponent(url, 'nws_id=' + encodeURIComponent(nws_id));
     }
     return url;
   }
   
+  function addHeaders() {
+    var kit_aesgcmkey = Lampa.Storage.get('kit_aesgcmkey', '');
+    if (kit_aesgcmkey) return { 'X-Kit-AesGcm': kit_aesgcmkey };
+    return {};
+  }
+
   var Network = Lampa.Reguest;
 
   function component(object) {
@@ -1763,7 +1779,7 @@ else if (element.url) {
     window.sergey_online_v6 = true;
     var manifst = {
       type: 'video',
-      version: '0.6.0',
+      version: '0.7.0',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -1958,7 +1974,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild = {version:'0.6.0', engine:'vod-exact', dynamicSources:true, storageKeysPreserved:true, rch:true};
+  window.SergeyOnlineBuild = {version:'0.7.0', engine:'vod-https', backend:'ab2024.ru', dynamicSources:true, storageKeysPreserved:true, rch:true};
   if (!window.sergey_online_v6) startPlugin();
 
 })();
