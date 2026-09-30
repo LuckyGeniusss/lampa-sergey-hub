@@ -10,7 +10,7 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.1.0', src.includes('Sergey Online 1.1.0'));
+check('version 1.1.1', src.includes('Sergey Online 1.1.1'));
 check('LAN backend fixed for Fire Stick', src.includes('http://10.129.1.174:18118'));
 check('no hostname/127 auto backend substitution', !src.includes('location.hostname') && !src.includes("SERGEY_DEFAULT_BACKEND = 'http://127.0.0.1'"));
 check('separate Sergey Online button', src.includes('sergey-online--button') && src.includes("component: 'sergey_online'"));
@@ -25,6 +25,7 @@ if (m) {
   const a = [...m[1].matchAll(/["']([^"']+)["']/g)].map(x=>x[1]);
   check('provider seed inventory >= 70', a.length >= 70, 'count='+a.length);
   check('no exact duplicates in seed inventory', new Set(a).size === a.length, 'unique='+new Set(a).size);
+  check('visible alias canonicalization', src.includes("'collaps-dash': 'collaps'") && src.includes("'rc/filmix': 'filmix'"));
 } else check('balansers_sync found', false);
 for (const f of files) {
   const other = fs.readFileSync(path.join(root, f), 'utf8');

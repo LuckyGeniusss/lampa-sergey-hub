@@ -1,4 +1,4 @@
-/* Sergey Online 1.1.0
+/* Sergey Online 1.1.1
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: http://10.129.1.174:18118
@@ -293,7 +293,40 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
     function balanserName(j) {
       var bals = j.balanser;
       var name = j.name.split(' ')[0];
-      return (bals || name).toLowerCase();
+      var raw = (bals || name).toLowerCase();
+      var aliases = {
+        'collaps-dash': 'collaps',
+        'rc/filmix': 'filmix',
+        'filmixpro': 'filmix',
+        'rc/fxapi': 'fxapi',
+        'rc/rhs': 'rhsprem',
+        'rhs': 'rhsprem',
+        'lumex2': 'lumex',
+        'anilibria2': 'anilibria',
+        'redheadsound-dash': 'redheadsound',
+        'fancdn2': 'fancdn',
+        'fanserials': 'fancdn',
+        'xvideocdn': 'fancdn',
+        'vokinotk': 'vokino',
+        'iremux': 'remux'
+      };
+      return aliases[raw] || raw;
+    }
+
+    function sourcePut(j) {
+      var raw = ((j.balanser || (j.name || '').split(' ')[0]) || '').toLowerCase();
+      var name = balanserName(j);
+      var isAlias = raw !== name;
+
+      // Keep one visible row per real provider. Prefer the canonical source
+      // over protocol/legacy aliases when both are returned by the backend.
+      if (sources[name] && isAlias) return;
+
+      sources[name] = {
+        url: j.url,
+        name: isAlias && sources[name] ? sources[name].name : (j.name || name),
+        show: typeof j.show == 'undefined' ? true : j.show
+      };
     }
 
 	function clarificationSearchAdd(value){
@@ -486,12 +519,7 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
     this.startSource = function(json) {
       return new Promise(function(resolve, reject) {
         json.forEach(function(j) {
-          var name = balanserName(j);
-          sources[name] = {
-            url: j.url,
-            name: j.name,
-            show: typeof j.show == 'undefined' ? true : j.show
-          };
+          sourcePut(j);
         });
         filter_sources = Lampa.Arrays.getKeys(sources);
         if (filter_sources.length) {
@@ -540,12 +568,7 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
             filter_sources = [];
             sources = {};
             json.online.forEach(function(j) {
-              var name = balanserName(j);
-              sources[name] = {
-                url: j.url,
-                name: j.name,
-                show: typeof j.show == 'undefined' ? true : j.show
-              };
+              sourcePut(j);
             });
             filter_sources = Lampa.Arrays.getKeys(sources);
             filter.set('sort', filter_sources.map(function(e) {
@@ -1783,7 +1806,7 @@ else if (element.url) {
     window.sergey_online_plugin = true;
     var manifst = {
       type: 'video',
-      version: '1.1.0',
+      version: '1.1.1',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -1978,7 +2001,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.1.0',backend:SERGEY_BACKEND,selfHosted:true};
+  window.SergeyOnlineBuild={version:'1.1.1',backend:SERGEY_BACKEND,selfHosted:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

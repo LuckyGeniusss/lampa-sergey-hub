@@ -35,5 +35,6 @@ npm test
 ```
 
 `npm test` включает статическую проверку плагина, backend API, discovery фильма/сериала/«Любовной магии» и настоящий Playwright-тест на локальной сборке Lampa в обычном Chrome и с FireTV/Silk User-Agent.
+Дополнительно playback-smoke реально выбирает Collaps, получает playable proxy URL и проверяет Filmix на «Любовной магии».
 
 Важно: Fire Stick должен видеть Mac mini по адресу `10.129.1.174:18118`. Если IP Mac изменится, нужно обновить поле **Сервер** в настройках Sergey Online или закрепить IP в роутере.
