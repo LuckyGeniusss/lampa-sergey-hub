@@ -10,9 +10,10 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.2.0', src.includes('Sergey Online 1.2.0'));
+check('version 1.2.1', src.includes('Sergey Online 1.2.1'));
 check('stale backend migration', src.includes('SERGEY_OLD_BACKENDS') && src.includes('sergey_online_backend_custom') && src.includes('https://ab2024.ru'));
 check('backend preflight before open', src.includes('openSergeyActivity') && src.includes('/version?type=hash&_='));
+check('resetTemplates scope bridge', src.includes('var sergeyResetTemplates = null') && src.includes('sergeyResetTemplates = resetTemplates') && src.includes('if (sergeyResetTemplates) sergeyResetTemplates()'));
 check('LAN backend fixed for Fire Stick', src.includes('http://10.129.1.174:18118'));
 check('no hostname/127 auto backend substitution', !src.includes('location.hostname') && !src.includes("SERGEY_DEFAULT_BACKEND = 'http://127.0.0.1'"));
 check('separate Sergey Online button', src.includes('sergey-online--button') && src.includes("component: 'sergey_online'"));

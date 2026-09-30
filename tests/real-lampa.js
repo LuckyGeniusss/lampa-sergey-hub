@@ -65,6 +65,46 @@ async function checkCase(browser,label,ua,movie,minSources,staleBackend=false) {
   await ctx.close();
 }
 
+
+async function checkManifestLaunch(browser,label,ua,movie) {
+  const {ctx,page,backend} = await boot(browser,ua,true);
+  const errors = [];
+  page.on('pageerror', e => errors.push(String(e.message || e)));
+
+  await page.evaluate(m => {
+    var list = Lampa.Manifest.plugins || [];
+    var manifest = Array.isArray(list)
+      ? list.find(x => x && x.component === 'sergey_online')
+      : list;
+    if (!manifest || typeof manifest.onContextLauch !== 'function') {
+      throw new Error('Sergey manifest launch missing');
+    }
+    manifest.onContextLauch(m);
+  },movie);
+
+  await page.waitForTimeout(2600);
+  const sort = page.locator('.filter--sort').last();
+  if (!(await sort.count())) throw new Error(label+': Source filter missing after manifest launch');
+  await sort.click();
+  await page.waitForTimeout(400);
+  const items = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('.selectbox .selector'))
+      .map(e=>e.innerText.trim()).filter(Boolean)
+  );
+  if (items.length < 50) throw new Error(label+': only '+items.length+' source rows after manifest launch');
+  if (errors.some(e => /resetTemplates|ReferenceError/i.test(e))) {
+    throw new Error(label+': page error '+errors.join(' | '));
+  }
+  const migrated = await page.evaluate(() => Lampa.Storage.get('sergey_online_backend',''));
+  if (migrated !== 'http://10.129.1.174:18118') {
+    throw new Error(label+': backend not migrated: '+migrated);
+  }
+  const bad = backend.filter(x=>x[0] >= 400);
+  if (bad.length) throw new Error(label+': backend HTTP errors '+JSON.stringify(bad.slice(0,5)));
+  console.log('PASS',label,'sources='+items.length,'errors='+errors.length);
+  await ctx.close();
+}
+
 (async()=>{
   const browser = await chromium.launch({headless:true});
   try {
@@ -75,6 +115,7 @@ async function checkCase(browser,label,ua,movie,minSources,staleBackend=false) {
     await checkCase(browser,'Chrome movie',null,movie,50);
     await checkCase(browser,'FireTV/Silk movie',FIRE_UA,movie,50);
     await checkCase(browser,'FireTV/Silk stale-backend migration',FIRE_UA,movie,50,true);
+    await checkManifestLaunch(browser,'FireTV/Silk manifest launch',FIRE_UA,movie);
   } finally { await browser.close(); }
   console.log('\nREAL LAMPA PLAYWRIGHT PASS');
 })().catch(e=>{console.error('FAIL:',e.message);process.exit(1)});
