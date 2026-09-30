@@ -24,7 +24,7 @@
 Backend: `~/Projects/lampa-sergey-backend`, launchd:
 `~/Library/LaunchAgents/com.sergey.lampa-backend.plist`.
 
-Сейчас backend настроен на **78 уникальных локальных провайдеров**. Дополнительные динамические модули добавляются автоматически. На тесте The Matrix реальная Lampa показала **69 строк источников** и backend отметил **29 источников активными**; на Breaking Bad — 23 активных; на «Любовная магия» (2021) — 23 активных.
+Сейчас backend настроен на **78 уникальных локальных провайдеров**. Плагин 1.2.0 также автоматически сбрасывает старые сохранённые адреса серверов из ранних версий на текущий Mac mini backend и перед открытием проверяет его доступность. Дополнительные динамические модули добавляются автоматически. На тесте The Matrix реальная Lampa показала **69 строк источников** и backend отметил **29 источников активными**; на Breaking Bad — 23 активных; на «Любовная магия» (2021) — 23 активных.
 
 ## Проверка
 
@@ -32,6 +32,7 @@ Backend: `~/Projects/lampa-sergey-backend`, launchd:
 cd ~/Projects/lampa-sergey-hub
 npm test
 ./scripts/healthcheck.sh
+npm run test:public
 ```
 
 `npm test` включает статическую проверку плагина, backend API, discovery фильма/сериала/«Любовной магии» и настоящий Playwright-тест на локальной сборке Lampa в обычном Chrome и с FireTV/Silk User-Agent.

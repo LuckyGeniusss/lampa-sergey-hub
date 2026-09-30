@@ -54,3 +54,16 @@ Hydraflix, VidLink, Videasy, TwoEmbed и другие.
 внешнего сервиса. Sergey Online не обходит платную/Telegram-авторизацию:
 если провайдер требует закрытый доступ, backend не должен подменять или
 обходить его.
+
+## Аудит всех присланных файлов
+
+Повторно проверены все 7 исходников из переписки: два варианта Online MOD,
+VOD/Lampac, Showy/Smotret24, standalone Filmix, NUMParser/NMPRS и
+обфусцированный Cinema/Lampac. Общий seed-инвентарь клиента содержит 101
+уникальный идентификатор/алиас. Self-hosted backend реализует 81 локальный
+provider key и публикует 78 через /lite/withsearch; /lite/events дополняет
+список динамическими модулями.
+
+В клиент не переносятся чужие зашитые авторизационные cookies/tokens. Сохраняются
+только механизмы обычных cookies/session/headers, которые создаются самим
+провайдером или пользователем. Telegram/Showy/PRO/paywall обходов нет.

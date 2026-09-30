@@ -1,4 +1,4 @@
-/* Sergey Online 1.1.1
+/* Sergey Online 1.2.0
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: http://10.129.1.174:18118
@@ -12,14 +12,36 @@
   // point the plugin at the wrong host on the Fire Stick where the LAN
   // backend is not reachable from the same address space.
   var SERGEY_DEFAULT_BACKEND = 'http://10.129.1.174:18118';
+  var SERGEY_BACKEND_MIGRATION = '1.2.0';
+  var SERGEY_OLD_BACKENDS = [
+    'https://ab2024.ru',
+    'http://hdpoisk.ru:2053',
+    'https://hdpoisk.ru:2053',
+    'http://127.0.0.1:18118',
+    'http://localhost:18118'
+  ];
   var SERGEY_BACKEND = (function() {
     try {
-      var stored = Lampa.Storage.get('sergey_online_backend', '');
-      if (stored && typeof stored === 'string') {
-        return stored.replace(/\/$/, '');
+      var stored = String(Lampa.Storage.get('sergey_online_backend', '') || '').replace(/\/$/, '');
+      var custom = Lampa.Storage.get('sergey_online_backend_custom', false) === true;
+
+      if (SERGEY_OLD_BACKENDS.indexOf(stored) >= 0) {
+        stored = '';
+        custom = false;
+        Lampa.Storage.set('sergey_online_backend_custom', false);
       }
-    } catch (e) {}
-    return SERGEY_DEFAULT_BACKEND;
+
+      if (!custom || !stored) {
+        Lampa.Storage.set('sergey_online_backend', SERGEY_DEFAULT_BACKEND);
+        Lampa.Storage.set('sergey_online_backend_migration', SERGEY_BACKEND_MIGRATION);
+        return SERGEY_DEFAULT_BACKEND;
+      }
+
+      Lampa.Storage.set('sergey_online_backend_migration', SERGEY_BACKEND_MIGRATION);
+      return stored;
+    } catch (e) {
+      return SERGEY_DEFAULT_BACKEND;
+    }
   })();
 
   var Defined = {
@@ -1776,6 +1798,57 @@ else if (element.url) {
   }
 
 
+
+  var sergeyBackendHealth = {ok:false, at:0};
+
+  function openSergeyActivity(object) {
+    function openNow() {
+      resetTemplates();
+      Lampa.Component.add('sergey_online', component);
+
+      var id = Lampa.Utils.hash(object.number_of_seasons ? object.original_name : object.original_title);
+      var all = Lampa.Storage.get('clarification_search','{}');
+
+      Lampa.Activity.push({
+        url: '',
+        title: Lampa.Lang.translate('title_online'),
+        component: 'sergey_online',
+        search: all[id] ? all[id] : (object.title || object.name),
+        search_one: object.title || object.name,
+        search_two: object.original_title || object.original_name,
+        movie: object,
+        page: 1,
+        clarification: all[id] ? true : false
+      });
+    }
+
+    var now = Date.now();
+    if (sergeyBackendHealth.ok && now - sergeyBackendHealth.at < 30000) {
+      openNow();
+      return;
+    }
+
+    var probe = new Lampa.Reguest();
+    probe.timeout(4000);
+    probe.silent(
+      SERGEY_BACKEND + '/version?type=hash&_=' + now,
+      function() {
+        sergeyBackendHealth.ok = true;
+        sergeyBackendHealth.at = Date.now();
+        openNow();
+      },
+      function() {
+        sergeyBackendHealth.ok = false;
+        sergeyBackendHealth.at = Date.now();
+        try {
+          Lampa.Noty.show('Sergey Online: сервер недоступен ' + SERGEY_BACKEND);
+        } catch (e) {}
+      },
+      false,
+      {dataType:'text'}
+    );
+  }
+
   function addSergeySettings() {
     if (!Lampa.SettingsApi) return;
     try {
@@ -1789,14 +1862,21 @@ else if (element.url) {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
         param: {name:'sergey_online_backend', type:'input', default:SERGEY_DEFAULT_BACKEND, values:'', placeholder:SERGEY_DEFAULT_BACKEND},
-        field: {name:'Сервер', description:'Локальный backend Sergey Online. После изменения перезапустите Lampa.'}
+        field: {name:'Сервер', description:'Локальный backend Sergey Online. По умолчанию используется Mac mini. После ручного изменения перезапустите Lampa.'},
+        onChange: function(value) {
+          try {
+            var v = String(value || '').replace(/\/$/, '');
+            Lampa.Storage.set('sergey_online_backend_custom', !!v && v !== SERGEY_DEFAULT_BACKEND);
+            Lampa.Storage.set('sergey_online_backend_migration', SERGEY_BACKEND_MIGRATION);
+          } catch (e) {}
+        }
       });
     } catch(e) {}
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.1.0'},
-        field: {name:'Версия', description:'1.1.0 • self-hosted aggregator'}
+        param: {name:'sergey_online_version', type:'static', default:'1.2.0'},
+        field: {name:'Версия', description:'1.2.0 • 78+ источников • self-hosted'}
       });
     } catch(e) {}
   }
@@ -1806,7 +1886,7 @@ else if (element.url) {
     window.sergey_online_plugin = true;
     var manifst = {
       type: 'video',
-      version: '1.1.1',
+      version: '1.2.0',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -1817,23 +1897,7 @@ else if (element.url) {
         };
       },
       onContextLauch: function onContextLauch(object) {
-        resetTemplates();
-        Lampa.Component.add('sergey_online', component);
-
-		var id = Lampa.Utils.hash(object.number_of_seasons ? object.original_name : object.original_title);
-		var all = Lampa.Storage.get('clarification_search','{}');
-
-        Lampa.Activity.push({
-          url: '',
-          title: Lampa.Lang.translate('title_online'),
-          component: 'sergey_online',
-          search: all[id] ? all[id] : object.title,
-          search_one: object.title,
-          search_two: object.original_title,
-          movie: object,
-          page: 1,
-		  clarification: all[id] ? true : false
-        });
+        openSergeyActivity(object);
       }
     };
 	addSourceSearch('Sergey Online', 'spider');
@@ -1957,23 +2021,7 @@ else if (element.url) {
       var btn = $(Lampa.Lang.translate(button));
 	  // //console.log(btn.clone().removeClass('focus').prop('outerHTML'))
       btn.on('hover:enter', function() {
-        resetTemplates();
-        Lampa.Component.add('sergey_online', component);
-
-		var id = Lampa.Utils.hash(e.movie.number_of_seasons ? e.movie.original_name : e.movie.original_title);
-		var all = Lampa.Storage.get('clarification_search','{}');
-
-        Lampa.Activity.push({
-          url: '',
-          title: Lampa.Lang.translate('title_online'),
-          component: 'sergey_online',
-          search: all[id] ? all[id] : e.movie.title,
-          search_one: e.movie.title,
-          search_two: e.movie.original_title,
-          movie: e.movie,
-          page: 1,
-		  clarification: all[id] ? true : false
-        });
+        openSergeyActivity(e.movie);
       });
       e.render.after(btn);
     }
@@ -2001,7 +2049,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.1.1',backend:SERGEY_BACKEND,selfHosted:true};
+  window.SergeyOnlineBuild={version:'1.2.0',backend:SERGEY_BACKEND,selfHosted:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

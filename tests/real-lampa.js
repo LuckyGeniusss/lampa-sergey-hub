@@ -3,10 +3,11 @@ const fs = require('fs');
 const path = require('path');
 
 const LAMPA = process.env.SERGEY_LAMPA_URL || 'http://127.0.0.1:18118/lampa-main/';
-const PLUGIN = fs.readFileSync(path.resolve(__dirname, '..', 'js'), 'utf8');
+const PLUGIN_URL = process.env.SERGEY_PLUGIN_URL || '';
+const PLUGIN = PLUGIN_URL ? '' : fs.readFileSync(path.resolve(__dirname, '..', 'js'), 'utf8');
 const FIRE_UA = 'Mozilla/5.0 (Linux; Android 7.1.2; AFTMM) AppleWebKit/537.36 (KHTML, like Gecko) Silk/130.4.6 Safari/537.36';
 
-async function boot(browser, ua) {
+async function boot(browser, ua, staleBackend=false) {
   const ctx = await browser.newContext(ua ? {userAgent: ua} : {});
   const page = await ctx.newPage();
   const backend = [];
@@ -21,13 +22,15 @@ async function boot(browser, ua) {
     if (await ru.count()) await ru.click();
   }
   await page.waitForTimeout(2200);
-  await page.addScriptTag({content:PLUGIN});
+  if (staleBackend) await page.evaluate(() => { Lampa.Storage.set('sergey_online_backend','https://ab2024.ru'); Lampa.Storage.set('sergey_online_backend_custom',false); });
+  if (PLUGIN_URL) await page.addScriptTag({url:PLUGIN_URL});
+  else await page.addScriptTag({content:PLUGIN});
   await page.waitForTimeout(500);
   return {ctx,page,backend};
 }
 
-async function checkCase(browser,label,ua,movie,minSources) {
-  const {ctx,page,backend} = await boot(browser,ua);
+async function checkCase(browser,label,ua,movie,minSources,staleBackend=false) {
+  const {ctx,page,backend} = await boot(browser,ua,staleBackend);
   await page.evaluate(m => {
     Lampa.Activity.push({
       url:'', title:'Sergey Online', component:'sergey_online',
@@ -36,6 +39,10 @@ async function checkCase(browser,label,ua,movie,minSources) {
     });
   },movie);
   await page.waitForTimeout(2400);
+  if (staleBackend) {
+    const migrated = await page.evaluate(() => Lampa.Storage.get('sergey_online_backend',''));
+    if (migrated !== 'http://10.129.1.174:18118') throw new Error(label+': stale backend not migrated: '+migrated);
+  }
   const sort = page.locator('.filter--sort').last();
   if (!(await sort.count())) throw new Error(label+': Source filter missing');
   await sort.click();
@@ -67,6 +74,7 @@ async function checkCase(browser,label,ua,movie,minSources) {
     };
     await checkCase(browser,'Chrome movie',null,movie,50);
     await checkCase(browser,'FireTV/Silk movie',FIRE_UA,movie,50);
+    await checkCase(browser,'FireTV/Silk stale-backend migration',FIRE_UA,movie,50,true);
   } finally { await browser.close(); }
   console.log('\nREAL LAMPA PLAYWRIGHT PASS');
 })().catch(e=>{console.error('FAIL:',e.message);process.exit(1)});
