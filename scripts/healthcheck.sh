@@ -17,7 +17,7 @@ echo "== Public GitHub Pages plugin =="
 HTTP="$(curl -L -sS --max-time 15 -o "$TMP" -w '%{http_code}' "$PLUGIN")"
 echo "HTTP=$HTTP bytes=$(wc -c < "$TMP" | tr -d ' ')"
 [ "$HTTP" = "200" ]
-grep -q 'Sergey Online 1.1.0' "$TMP"
+grep -q 'Sergey Online 1.1.1' "$TMP"
 grep -q 'Lampa\.' "$TMP"
 echo "PUBLIC PLUGIN PASS"
 
