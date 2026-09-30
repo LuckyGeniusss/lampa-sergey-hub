@@ -5,8 +5,6 @@ playwright-report/
 backup/
 build/
 research/
-package.json
-package-lock.json
 playwright.config.js
 tests/debug-plugin.spec.js
 tests/sergey-online.spec.js
