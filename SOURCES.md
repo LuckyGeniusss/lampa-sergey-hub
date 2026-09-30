@@ -1,64 +1,56 @@
 # Источники Sergey Online
 
-Sergey Online использует self-hosted агрегатор. В исходном коде backend присутствуют реализации для большого набора источников; runtime-список зависит от доступности конкретного источника и фильма.
+Аудит выполнен по всем присланным исходникам и по self-hosted backend
+`~/Projects/lampa-sergey-backend`.
 
-## Поиск / runtime discovery
+## Что реально подключено
 
-На текущем локальном backend `/lite/withsearch` возвращает, среди прочего:
+Backend настроен на **78 уникальных локально реализованных провайдеров**:
 
-- kinotochka
-- kinopub
-- lumex
-- filmix / filmixtv / fxapi
-- rezka / rhsprem
-- kodik
-- remux
-- kinoukr
-- vcdn / videocdn
-- collaps / collaps-dash
-- hdvb
-- alloha
-- veoveo
-- rutubemovie
-- vkmovie
-- videoseed
-- mirage
-- aladdin
-- pidtor
-- bamboo
-- uaflix / uakino
-- animeon / anidub
-- mikai
-- leproduction
-- femd
-- kinobadi
-- cdnvideohub
-- kubikvkube
-- lift
-- zetflixdb
-- smotrim
+`kinotochka, kinobase, rezka, rhsprem, ahuerezka, filmix, collaps,
+collaps-dash, lift, redheadsound, vdbmovies, ashdi, eneyida, kinogo,
+kinovod, fancdn, kinoukr, zetflix, cdnmovies, vibix, turbo, zona,
+videoseed, mirage, rutubemovie, anwap, rudub, anidub, zagonka, smotrim,
+vkmovie, anilibria, aniliberty, animevost, animelib, kodik, animebesst,
+animedia, moonanime, vokino, videodb, zetflixdb, uakino, kinopub, veoveo,
+hdvb, animego, getstv, iframevideo, cdnvideohub, kubikvkube, remux,
+mirkino, aladdin, pidtor, bamboo, uafilm, vidlink, videasy, hydraflix,
+twoembed, unimay, starlight, klonfun, uaflix, animeon, mikai, lumex,
+gencit, femd, kinobadi, alloha, leproduction, flixcdn, sakhtv, scts,
+kbteam, krasview`.
 
-## Реализации, найденные в backend
+Дополнительные динамические модули backend автоматически добавляют, например,
+`uafilmme, awmzone, kinoteatrkg, tevas`, когда они доступны.
 
-Также есть отдельные модули/адаптеры для:
+## Что было найдено в присланных файлах
 
-ahuerezka, aladdin, alloha, anidub, aniliberty, anilibria, animebesst,
-animedia, animego, animelib, animeon, animevost, anivids, anwap, ashdi,
-bamboo, cdnmovies, cdnvideohub, collaps, eneyida, fancdn, femd, filmix,
-filmixtv, flixcdn, fxapi, gencit, getstv, hdvb, iframevideo, iptvonline,
-kbteam, kinobadi, kinobase, kinogo, kinopub, kinotochka, kinoukr, kinovod,
-klonfun, kodik, krasview, kubikvkube, leproduction, lift, lumex, mikai,
-mirage, mirkino, moonanime, plvideo, redheadsound, remux, rezka, rudub,
-rutubemovie, sakhtv, scts, smotrim, starlight, uafilm, uaflix, uakino,
-unimay, vdbmovies, veoveo, vibix, videocdn, videodb, videoseed, vkmovie,
-vokino, zagonka, zetflix, zona и другие вспомогательные/browser-модули.
+Общий набор имён/алиасов включал Filmix/FilmixTV/FXAPI/FilmixRezka,
+Rezka, Collaps, HDVB, VideoDB, Kodik, Lumex, Zetflix, Ashdi, KinoUKR,
+UAFilm/UAFliX/UAKino, CDNMovies/CDNVideoHub, FanCDN, Alloha, KinoPub,
+Vibix, VDBMovies, VoKino, VideoCDN/VCDN, Mirage, Hydraflix, VidSrc,
+VidLink, TwoEmbed, AutoEmbed, SmashyStream, RGShows, VideoSeed и другие.
 
-## Тест 30.09.2026
+Не каждое имя является отдельным видеохостингом. Часть — алиасы одного и того
+же backend-а или старые названия (`filmixrezka`, `rc/filmix`,
+`collaps-dash` и т.п.). Они не дублируются в интерфейсе как новые
+«источники», если это та же реализация.
 
-Автоматический smoke-test локального backend:
+## Runtime-проверка 2026-09-30
 
-- `The Matrix`: discovery 49, active 10; рабочие ответы получены как минимум от `vkmovie`, `collaps`, `collaps-dash`, `femd`, `kinobadi`, `krasview`, `lift`.
-- `Breaking Bad`: discovery 50, active 6; рабочие ответы получены от `collaps`, `collaps-dash`, `krasview`, `filmix`.
-- `Любовная магия` (2021): discovery 49, active 7; рабочие ответы получены от `collaps`, `collaps-dash`, `filmix`.
+- `/lite/withsearch`: 78 настроенных источников.
+- `/lite/events`: 81 запись с учётом динамических модулей.
+- **The Matrix**: 71 обнаружен, 29 активны.
+- **Breaking Bad**: 72 обнаружено, 23 активны.
+- **Любовная магия (2021)**: 72 обнаружено, 23 активны.
+- Реальная Lampa + Chrome: **69 строк** в меню «Источник».
+- Реальная Lampa + FireTV/Silk UA: **69 строк** в меню «Источник».
 
-Пустой ответ одного провайдера для конкретного фильма не считается ошибкой всего агрегатора.
+В FireTV-тесте присутствовали Filmix, PidoRezka, Collaps, Kodik, Lumex,
+HDVB, UAFliX, UaKino, VideoDB, Mirage, Aladdin, Vkmovie, Kinobase, Zona,
+Vibix, Kinovod, Turbo, Femd, Kinobadi, FlixCDN, Zetflix, CDNMovies,
+Hydraflix, VidLink, Videasy, TwoEmbed и другие.
+
+Доступность конкретного источника зависит от фильма, региона и состояния
+внешнего сервиса. Sergey Online не обходит платную/Telegram-авторизацию:
+если провайдер требует закрытый доступ, backend не должен подменять или
+обходить его.

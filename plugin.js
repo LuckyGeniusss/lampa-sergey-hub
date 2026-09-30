@@ -1,4 +1,4 @@
-/* Sergey Online 1.0.0
+/* Sergey Online 1.1.0
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: http://10.129.1.174:18118
@@ -6,8 +6,21 @@
 (function() {
   'use strict';
 
+  // Default backend: Mac mini on the LAN. The Fire Stick must keep this
+  // unless the user overrides it via Lampa Settings -> Sergey Online ->
+  // Сервер. Do NOT auto-substitute hostname/127.0.0.1 — that would silently
+  // point the plugin at the wrong host on the Fire Stick where the LAN
+  // backend is not reachable from the same address space.
   var SERGEY_DEFAULT_BACKEND = 'http://10.129.1.174:18118';
-  var SERGEY_BACKEND = String(Lampa.Storage.get('sergey_online_backend', SERGEY_DEFAULT_BACKEND) || SERGEY_DEFAULT_BACKEND).replace(/\/$/, '');
+  var SERGEY_BACKEND = (function() {
+    try {
+      var stored = Lampa.Storage.get('sergey_online_backend', '');
+      if (stored && typeof stored === 'string') {
+        return stored.replace(/\/$/, '');
+      }
+    } catch (e) {}
+    return SERGEY_DEFAULT_BACKEND;
+  })();
 
   var Defined = {
     api: 'lampac',
@@ -1759,8 +1772,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.0.0'},
-        field: {name:'Версия', description:'1.0.0 • self-hosted aggregator'}
+        param: {name:'sergey_online_version', type:'static', default:'1.1.0'},
+        field: {name:'Версия', description:'1.1.0 • self-hosted aggregator'}
       });
     } catch(e) {}
   }
@@ -1770,7 +1783,7 @@ else if (element.url) {
     window.sergey_online_plugin = true;
     var manifst = {
       type: 'video',
-      version: '1.0.0',
+      version: '1.1.0',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -1965,7 +1978,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.0.0',backend:SERGEY_BACKEND,selfHosted:true};
+  window.SergeyOnlineBuild={version:'1.1.0',backend:SERGEY_BACKEND,selfHosted:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

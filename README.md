@@ -1,46 +1,39 @@
 # Sergey Online for Lampa
 
-Один плагин Lampa + локальный self-hosted backend с большим набором онлайн-источников.
+Один плагин Lampa + self-hosted backend на Mac mini.
 
-## Lampa plugin
-
-Добавить в Lampa:
+## Подключение в Lampa
 
 `https://luckygeniusss.github.io/lampa-sergey-hub/js`
 
-Плагин добавляет отдельную кнопку **Sergey Online** и использует backend, указанный в:
-
-`Настройки -> Sergey Online -> Сервер`
-
-Текущий домашний backend по умолчанию:
+Плагин добавляет отдельную кнопку **Sergey Online**. Backend на домашней сети:
 
 `http://10.129.1.174:18118`
 
-## Backend
+Адрес можно изменить в `Настройки -> Sergey Online -> Сервер`.
 
-Backend работает на Mac mini и стартует автоматически через launchd:
+## Что внутри
 
-`~/Library/LaunchAgents/com.sergey.lampa-backend.plist`
+- отдельная кнопка Sergey Online;
+- родной экран Lampa: **Источник / Фильтр / сезоны / озвучки / серии**;
+- динамический список источников через `/lite/events` + `/lifeevents`;
+- cookies/session/header/RCH-логика backend сохраняется;
+- дубли/legacy-алиасы не выдаются как отдельные реализации;
+- Telegram/Showy/paywall обходы не используются.
 
-Исходники backend находятся отдельно:
+Backend: `~/Projects/lampa-sergey-backend`, launchd:
+`~/Library/LaunchAgents/com.sergey.lampa-backend.plist`.
 
-`~/Projects/lampa-sergey-backend`
-
-Это self-hosted Lampac/ALPAC-compatible backend. Telegram для локального использования не требуется.
+Сейчас backend настроен на **78 уникальных локальных провайдеров**. Дополнительные динамические модули добавляются автоматически. На тесте The Matrix реальная Lampa показала **69 строк источников** и backend отметил **29 источников активными**; на Breaking Bad — 23 активных; на «Любовная магия» (2021) — 23 активных.
 
 ## Проверка
 
 ```bash
+cd ~/Projects/lampa-sergey-hub
+npm test
 ./scripts/healthcheck.sh
 ```
 
-Проверка валидирует:
-- доступность backend по LAN;
-- список поддерживаемых поисковых источников;
-- динамический discovery источников для фильма;
-- реальные ответы нескольких активных `/lite/*` источников;
-- доступность опубликованного GitHub Pages plugin.js.
+`npm test` включает статическую проверку плагина, backend API, discovery фильма/сериала/«Любовной магии» и настоящий Playwright-тест на локальной сборке Lampa в обычном Chrome и с FireTV/Silk User-Agent.
 
-## Важно
-
-Часть внешних источников может временно переставать работать или требовать собственные токены/прокси. Плагин не должен показывать такой источник как рабочий только потому, что его имя есть в каталоге: фактическая доступность определяется backend во время запроса.
+Важно: Fire Stick должен видеть Mac mini по адресу `10.129.1.174:18118`. Если IP Mac изменится, нужно обновить поле **Сервер** в настройках Sergey Online или закрепить IP в роутере.
