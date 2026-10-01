@@ -1,31 +1,31 @@
-/* Sergey Online 1.2.1
+/* Sergey Online 1.3.0
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
- * Backend default: http://10.129.1.174:18118
+ * Backend default: https://sergey-online-backend.onrender.com
  */
 (function() {
   'use strict';
 
-  // Default backend: Mac mini on the LAN. The Fire Stick must keep this
-  // unless the user overrides it via Lampa Settings -> Sergey Online ->
-  // Сервер. Do NOT auto-substitute hostname/127.0.0.1 — that would silently
-  // point the plugin at the wrong host on the Fire Stick where the LAN
-  // backend is not reachable from the same address space.
-  var SERGEY_DEFAULT_BACKEND = 'http://10.129.1.174:18118';
-  var SERGEY_BACKEND_MIGRATION = '1.2.0';
+  // Default backend: public HTTPS Render service.
+  // Old LAN backends from previous builds are migrated automatically.
+  // A user-entered custom backend is still preserved.
+  var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
+  var SERGEY_BACKEND_MIGRATION = '1.3.0';
   var SERGEY_OLD_BACKENDS = [
     'https://ab2024.ru',
     'http://hdpoisk.ru:2053',
     'https://hdpoisk.ru:2053',
     'http://127.0.0.1:18118',
-    'http://localhost:18118'
+    'http://localhost:18118',
+    'http://10.129.1.174:18118',
+    'http://10.129.1.182:18118'
   ];
   var SERGEY_BACKEND = (function() {
     try {
       var stored = String(Lampa.Storage.get('sergey_online_backend', '') || '').replace(/\/$/, '');
       var custom = Lampa.Storage.get('sergey_online_backend_custom', false) === true;
 
-      if (SERGEY_OLD_BACKENDS.indexOf(stored) >= 0) {
+      if (SERGEY_OLD_BACKENDS.indexOf(stored) >= 0 || /^http:\/\/10\.129\.1\.\d+:18118$/.test(stored)) {
         stored = '';
         custom = false;
         Lampa.Storage.set('sergey_online_backend_custom', false);
@@ -1829,25 +1829,42 @@ else if (element.url) {
       return;
     }
 
-    var probe = new Lampa.Reguest();
-    probe.timeout(4000);
-    probe.silent(
-      SERGEY_BACKEND + '/version?type=hash&_=' + now,
-      function() {
-        sergeyBackendHealth.ok = true;
-        sergeyBackendHealth.at = Date.now();
-        openNow();
-      },
-      function() {
-        sergeyBackendHealth.ok = false;
-        sergeyBackendHealth.at = Date.now();
-        try {
-          Lampa.Noty.show('Sergey Online: сервер недоступен ' + SERGEY_BACKEND);
-        } catch (e) {}
-      },
-      false,
-      {dataType:'text'}
-    );
+    var attempts = 5;
+
+    try {
+      Lampa.Noty.show('Sergey Online: подключение к облачному серверу...');
+    } catch (e) {}
+
+    function probeAttempt(left) {
+      var probe = new Lampa.Reguest();
+      probe.timeout(15000);
+      probe.silent(
+        SERGEY_BACKEND + '/version?type=hash&_=' + Date.now(),
+        function() {
+          sergeyBackendHealth.ok = true;
+          sergeyBackendHealth.at = Date.now();
+          openNow();
+        },
+        function() {
+          if (left > 1) {
+            setTimeout(function() {
+              probeAttempt(left - 1);
+            }, 1500);
+            return;
+          }
+
+          sergeyBackendHealth.ok = false;
+          sergeyBackendHealth.at = Date.now();
+          try {
+            Lampa.Noty.show('Sergey Online: сервер недоступен ' + SERGEY_BACKEND);
+          } catch (e) {}
+        },
+        false,
+        {dataType:'text'}
+      );
+    }
+
+    probeAttempt(attempts);
   }
 
   function addSergeySettings() {
@@ -1863,7 +1880,7 @@ else if (element.url) {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
         param: {name:'sergey_online_backend', type:'input', default:SERGEY_DEFAULT_BACKEND, values:'', placeholder:SERGEY_DEFAULT_BACKEND},
-        field: {name:'Сервер', description:'Локальный backend Sergey Online. По умолчанию используется Mac mini. После ручного изменения перезапустите Lampa.'},
+        field: {name:'Сервер', description:'Облачный HTTPS backend Sergey Online. Старые локальные адреса мигрируются автоматически. После ручного изменения перезапустите Lampa.'},
         onChange: function(value) {
           try {
             var v = String(value || '').replace(/\/$/, '');
@@ -1876,8 +1893,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.2.1'},
-        field: {name:'Версия', description:'1.2.1 • 78+ источников • self-hosted'}
+        param: {name:'sergey_online_version', type:'static', default:'1.3.0'},
+        field: {name:'Версия', description:'1.3.0 • 78+ источников • cloud backend'}
       });
     } catch(e) {}
   }
@@ -1887,7 +1904,7 @@ else if (element.url) {
     window.sergey_online_plugin = true;
     var manifst = {
       type: 'video',
-      version: '1.2.1',
+      version: '1.3.0',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2051,7 +2068,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.2.1',backend:SERGEY_BACKEND,selfHosted:true};
+  window.SergeyOnlineBuild={version:'1.3.0',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();
