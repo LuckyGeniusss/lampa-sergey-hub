@@ -43,6 +43,13 @@ const { BACKEND, getJson, get, logSection } = require('./lib');
     }
   } catch (e) { console.log('FAIL /lite/events:', e.message); failures++; }
 
+  try {
+    const nws = await get('/js/nws-client-es5.js');
+    const body = await nws.text();
+    console.log('/js/nws-client-es5.js:', nws.status, 'bytes=' + body.length);
+    if (!nws.ok || body.length < 1000 || !body.includes('NativeWsClient')) failures++;
+  } catch (e) { console.log('FAIL nws client asset:', e.message); failures++; }
+
   // CORS preflight sanity: a normal GET should not require CORS, but the
   // response must carry at least one permissive header set.
   try {

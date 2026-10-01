@@ -1,6 +1,6 @@
 // Shared test helpers. No external deps; uses Node 18+ built-in fetch.
-const BACKEND = (process.env.SERGEY_BACKEND || 'http://127.0.0.1:18118').replace(/\/$/, '');
-const TIMEOUT_MS = parseInt(process.env.SERGEY_TIMEOUT_MS || '8000', 10);
+const BACKEND = (process.env.SERGEY_BACKEND || 'https://sergey-online-backend.onrender.com').replace(/\/$/, '');
+const TIMEOUT_MS = parseInt(process.env.SERGEY_TIMEOUT_MS || '30000', 10);
 
 async function get(path, opts = {}) {
   const u = BACKEND + path;
