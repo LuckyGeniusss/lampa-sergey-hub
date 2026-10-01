@@ -13,7 +13,7 @@ async function boot(browser, ua, staleBackend=false) {
   const backend = [];
   page.on('response', r => {
     const u = r.url();
-    if (/18118\/(lite|lifeevents|externalids)/.test(u)) backend.push([r.status(),u]);
+    if ((u.includes(':18118/') || u.includes('sergey-online-backend.onrender.com/')) && /\/(lite|lifeevents|externalids)/.test(u)) backend.push([r.status(),u]);
   });
   await page.goto(LAMPA,{waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForTimeout(700);
