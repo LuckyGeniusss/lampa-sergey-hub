@@ -1,4 +1,4 @@
-/* Sergey Online 1.4.0
+/* Sergey Online 1.5.0
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -344,9 +344,13 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       // over protocol/legacy aliases when both are returned by the backend.
       if (sources[name] && isAlias) return;
 
+      var displayName = isAlias && sources[name] ? sources[name].name : (j.name || name);
+      if (name === 'filmix' && !String(Lampa.Storage.get('filmix_token', '') || '').trim()) {
+        displayName = 'Filmix 「AUTH」';
+      }
       sources[name] = {
         url: j.url,
-        name: isAlias && sources[name] ? sources[name].name : (j.name || name),
+        name: displayName,
         show: typeof j.show == 'undefined' ? true : j.show
       };
     }
@@ -521,6 +525,13 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       Lampa.Storage.set('online_last_balanser', last_select_balanser);
     };
     this.changeBalanser = function(balanser_name) {
+      if (balanser_name === 'filmix' && !String(Lampa.Storage.get('filmix_token', '') || '').trim()) {
+        var self = this;
+        sergeyFilmixPair(function() {
+          self.changeBalanser('filmix');
+        });
+        return;
+      }
       this.updateBalanser(balanser_name);
       Lampa.Storage.set('online_balanser', balanser_name);
       var to = this.getChoice(balanser_name);
@@ -547,7 +558,11 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       query.push('rchtype=' + (((window.rch_nws && window.rch_nws[hostkey]) ? window.rch_nws[hostkey].type : (window.rch && window.rch[hostkey]) ? window.rch[hostkey].type : '') || ''));
       if (Lampa.Storage.get('account_email', '')) query.push('cub_id=' + Lampa.Utils.hash(Lampa.Storage.get('account_email', '')));
       var filmixToken = String(Lampa.Storage.get('filmix_token', '') || '').trim();
-      if (filmixToken) query.push('filmix_token=' + encodeURIComponent(filmixToken));
+      if (filmixToken) {
+        query.push('filmix_token=' + encodeURIComponent(filmixToken));
+        var filmixLevel = String(Lampa.Storage.get('filmix_level', '') || '').trim();
+        if (filmixLevel) query.push('filmix_level=' + encodeURIComponent(filmixLevel));
+      }
       return url + (url.indexOf('?') >= 0 ? '&' : '?') + query.join('&');
     };
     this.getLastChoiceBalanser = function() {
@@ -1628,7 +1643,14 @@ else if (element.url) {
       });
       if(er && er.accsdb) html.find('.online-empty__title').html(er.msg);
 
-      var tic = er && er.accsdb ? 10 : 5;
+      // This provider has now failed a real title request, so hide it for the
+      // current card instead of leaving a misleading source row in the picker.
+      if (sources[balanser]) sources[balanser].show = false;
+      filter.set('sort', sourcePickerKeys().map(function(e) {
+        return {title:sources[e].name, source:e, selected:e == balanser};
+      }));
+
+      var tic = er && er.accsdb ? 10 : 3;
       html.find('.cancel').on('hover:enter', function() {
         clearInterval(balanser_timer);
       });
@@ -1644,10 +1666,10 @@ else if (element.url) {
         html.find('.timeout').text(tic);
         if (tic == 0) {
           clearInterval(balanser_timer);
-          var keys = Lampa.Arrays.getKeys(sources);
+          var keys = sourcePickerKeys();
           var indx = keys.indexOf(balanser);
-          var next = keys[indx + 1];
-          if (!next) next = keys[0];
+          var next = keys[indx + 1] || keys[0];
+          if (!next) return;
           balanser = next;
           if (Lampa.Activity.active().activity == _this9.activity) _this9.changeBalanser(balanser);
         }
@@ -1902,7 +1924,7 @@ else if (element.url) {
       '&user_dev_token=' + encodeURIComponent(token || '');
   }
 
-  function sergeyFilmixPair() {
+  function sergeyFilmixPair(onDone) {
     var api = 'http://filmixapp.cyou/api/v2/';
     var network = new Lampa.Reguest();
     var userToken = '';
@@ -1919,14 +1941,19 @@ else if (element.url) {
     function checkProfile() {
       if (!userToken || closed) return;
       network.timeout(8000);
-      network.silent(
+      network["native"](
         api + 'user_profile?' + sergeyFilmixDeviceQuery(userToken),
         function(found) {
           if (closed || !found || !found.user_data) return;
+          var status = found.user_data || {};
+          var level = status.is_pro_plus ? 'pro_plus' : (status.is_pro ? 'pro' : 'free');
           Lampa.Storage.set('filmix_token', userToken);
+          Lampa.Storage.set('filmix_status', status);
+          Lampa.Storage.set('filmix_level', level);
           stop();
           try { Lampa.Modal.close(); } catch (e) {}
-          try { Lampa.Noty.show('Filmix: устройство авторизовано'); } catch (e) {}
+          try { Lampa.Noty.show('Filmix: авторизация готова • ' + (level === 'pro_plus' ? '4K' : level === 'pro' ? 'FHD' : 'HD')); } catch (e) {}
+          if (typeof onDone === 'function') setTimeout(function(){ onDone(status); }, 50);
         },
         function() {},
         false,
@@ -1942,7 +1969,9 @@ else if (element.url) {
       onBack: function() {
         stop();
         Lampa.Modal.close();
-        try { Lampa.Controller.toggle('settings_component'); } catch (e) {}
+        if (typeof onDone !== 'function') {
+          try { Lampa.Controller.toggle('settings_component'); } catch (e) {}
+        }
       },
       onSelect: function() {
         if (!userCode) return;
@@ -1953,7 +1982,7 @@ else if (element.url) {
     });
 
     network.timeout(10000);
-    network.silent(
+    network["native"](
       api + 'token_request?' + sergeyFilmixDeviceQuery(''),
       function(found) {
         if (closed) return;
@@ -2005,6 +2034,8 @@ else if (element.url) {
         field: {name:'Filmix token', description:'Ваш собственный токен Filmix. Можно вставить вручную или получить через кнопку ниже.'},
         onChange: function(value) {
           Lampa.Storage.set('filmix_token', String(value || '').trim());
+          Lampa.Storage.set('filmix_status', {});
+          Lampa.Storage.set('filmix_level', '');
         }
       });
     } catch(e) {}
@@ -2021,8 +2052,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.4.0'},
-        field: {name:'Версия', description:'1.4.0 • рабочие источники по алфавиту • cloud backend'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.0'},
+        field: {name:'Версия', description:'1.5.0 • Filmix auth • источники по алфавиту • cloud backend'}
       });
     } catch(e) {}
   }
@@ -2030,9 +2061,26 @@ else if (element.url) {
   function startPlugin() {
     addSergeySettings();
     window.sergey_online_plugin = true;
+
+    // Lampa themes/plugins can rebuild Select items after our Filter call.
+    // Enforce alphabetical ordering at the final Select preshow stage for
+    // source rows only; season/voice lists keep their natural order.
+    if (!window.__sergey_source_alpha_hook && Lampa.Select && Lampa.Select.listener) {
+      window.__sergey_source_alpha_hook = true;
+      Lampa.Select.listener.follow('preshow', function(e) {
+        var active = e && e.active;
+        if (!active || !Array.isArray(active.items)) return;
+        if (!active.items.some(function(item){ return item && item.source; })) return;
+        active.items.sort(function(a, b) {
+          var aa = String(a && a.title || '').toLowerCase();
+          var bb = String(b && b.title || '').toLowerCase();
+          return aa.localeCompare(bb);
+        });
+      });
+    }
     var manifst = {
       type: 'video',
-      version: '1.4.0',
+      version: '1.5.0',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2173,18 +2221,28 @@ else if (element.url) {
       if (!root || !root.length || root.find('.sergey-online--button').length) return;
 
       var btn = $(Lampa.Lang.translate(button));
+      btn.find('span').text('Sergey Online');
       btn.on('hover:enter', function() {
         openSergeyActivity(e.movie);
       });
 
-      var target = e.render && e.render.length ? e.render : root.find('.view--torrent').last();
+      // Put Sergey Online directly beside the main Watch button on the
+      // current Lampa card, like MODS. The old torrent button can live inside
+      // a hidden legacy container, so it must not be our primary anchor.
+      var newActions = root.find('.full-start-new__buttons').first();
+      if (newActions.length) {
+        var playButton = newActions.find('.button--play').first();
+        if (playButton.length) playButton.after(btn);
+        else newActions.prepend(btn);
+        return;
+      }
 
-      // MOD-style dedicated button: place it directly in the full-card action
-      // row even on builds/themes that do not render the torrent button.
-      if (target && target.length) {
+      var target = root.find('.view--torrent:visible').last();
+      if (!target.length && e.render && e.render.length && e.render.is(':visible')) target = e.render;
+      if (target.length) {
         target.after(btn);
       } else {
-        var actions = root.find('.full-start__buttons, .full-start__buttons-wrap, .full-start').first();
+        var actions = root.find('.full-start__buttons, .full-start__buttons-wrap').first();
         if (actions.length) actions.append(btn);
         else root.prepend(btn);
       }
@@ -2217,7 +2275,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.4.0',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.0',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

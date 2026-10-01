@@ -1,6 +1,6 @@
 {
   "name": "lampa-sergey-hub",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Sergey Online unified multi-source plugin for Lampa",
   "main": "plugin.js",
   "directories": {

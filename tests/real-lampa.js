@@ -52,14 +52,14 @@ async function checkCase(browser,label,ua,movie,minSources,staleBackend=false) {
       .map(e=>e.innerText.trim()).filter(Boolean)
   );
   const unique = [...new Set(items)];
+  const sorted = [...unique].sort((a,b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  if (JSON.stringify(unique) !== JSON.stringify(sorted)) throw new Error(label+': source rows are not alphabetical');
   const text = unique.join('\n').toLowerCase();
   for (const n of ['collaps','rezka','kinobase','zetflix']) {
     if (!text.includes(n)) throw new Error(label+': missing '+n);
   }
   if (unique.length < minSources) throw new Error(label+': only '+unique.length+' source rows');
   if (unique.length !== items.length) throw new Error(label+': duplicate source rows');
-  const sorted = [...unique].sort((a,b)=>a.toLowerCase()<b.toLowerCase()?-1:a.toLowerCase()>b.toLowerCase()?1:0);
-  if (JSON.stringify(unique) !== JSON.stringify(sorted)) throw new Error(label+': source rows are not alphabetical');
   const bad = backend.filter(x=>x[0] >= 400);
   if (bad.length) throw new Error(label+': backend HTTP errors '+JSON.stringify(bad.slice(0,5)));
   console.log('PASS',label,'sources='+unique.length,'backendCalls='+backend.length);
