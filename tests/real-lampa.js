@@ -41,7 +41,7 @@ async function checkCase(browser,label,ua,movie,minSources,staleBackend=false) {
   await page.waitForTimeout(2400);
   if (staleBackend) {
     const migrated = await page.evaluate(() => Lampa.Storage.get('sergey_online_backend',''));
-    if (migrated !== 'http://10.129.1.174:18118') throw new Error(label+': stale backend not migrated: '+migrated);
+    if (migrated !== 'https://sergey-online-backend.onrender.com') throw new Error(label+': stale backend not migrated: '+migrated);
   }
   const sort = page.locator('.filter--sort').last();
   if (!(await sort.count())) throw new Error(label+': Source filter missing');
@@ -96,7 +96,7 @@ async function checkManifestLaunch(browser,label,ua,movie) {
     throw new Error(label+': page error '+errors.join(' | '));
   }
   const migrated = await page.evaluate(() => Lampa.Storage.get('sergey_online_backend',''));
-  if (migrated !== 'http://10.129.1.174:18118') {
+  if (migrated !== 'https://sergey-online-backend.onrender.com') {
     throw new Error(label+': backend not migrated: '+migrated);
   }
   const bad = backend.filter(x=>x[0] >= 400);
