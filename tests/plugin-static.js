@@ -10,11 +10,11 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.2.1', src.includes('Sergey Online 1.2.1'));
+check('version 1.3.0', src.includes('Sergey Online 1.3.0'));
 check('stale backend migration', src.includes('SERGEY_OLD_BACKENDS') && src.includes('sergey_online_backend_custom') && src.includes('https://ab2024.ru'));
 check('backend preflight before open', src.includes('openSergeyActivity') && src.includes('/version?type=hash&_='));
 check('resetTemplates scope bridge', src.includes('var sergeyResetTemplates = null') && src.includes('sergeyResetTemplates = resetTemplates') && src.includes('if (sergeyResetTemplates) sergeyResetTemplates()'));
-check('LAN backend fixed for Fire Stick', src.includes('http://10.129.1.174:18118'));
+check('cloud backend default', src.includes("SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com'"));\ncheck('LAN backends migrated', src.includes('/^http:\\\/\\\\/10\\\\.129\\\\.1\\\\.\\\\d+:18118$/') || (src.includes('10.129.1.174:18118') && src.includes('10.129.1.182:18118')));\ncheck('cold start retry', src.includes('var attempts = 5') && src.includes('probe.timeout(15000)'));
 check('no hostname/127 auto backend substitution', !src.includes('location.hostname') && !src.includes("SERGEY_DEFAULT_BACKEND = 'http://127.0.0.1'"));
 check('separate Sergey Online button', src.includes('sergey-online--button') && src.includes("component: 'sergey_online'"));
 check('native source picker', src.includes('new Lampa.Filter') && src.includes("filter.set('sort'"));
