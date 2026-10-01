@@ -1,4 +1,4 @@
-# Sergey Online for Lampa
+# Wazo for Lampa
 
 Один плагин Lampa + облачный multi-source backend на Render.
 
@@ -6,15 +6,15 @@
 
 `https://luckygeniusss.github.io/lampa-sergey-hub/js`
 
-Плагин добавляет отдельную кнопку **Sergey Online**. Backend по умолчанию:
+Плагин добавляет отдельную кнопку **Wazo**. Backend по умолчанию:
 
 `https://sergey-online-backend.onrender.com`
 
-Старые локальные адреса `10.129.1.x:18118`, `hdpoisk` и `ab2024.ru` мигрируются автоматически. Пользовательский backend можно задать в `Настройки -> Sergey Online -> Сервер`.
+Старые локальные адреса `10.129.1.x:18118`, `hdpoisk` и `ab2024.ru` мигрируются автоматически. Пользовательский backend можно задать в `Настройки -> Wazo -> Сервер`.
 
 ## Что внутри
 
-- отдельная кнопка Sergey Online;
+- отдельная кнопка Wazo;
 - родной экран Lampa: **Источник / Фильтр / сезоны / озвучки / серии**;
 - динамический список источников через `/lite/events` + `/lifeevents`;
 - cookies/session/header/RCH-логика backend сохраняется;

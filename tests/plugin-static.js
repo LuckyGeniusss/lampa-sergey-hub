@@ -10,7 +10,7 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.5.1', src.includes('Sergey Online 1.5.1'));
+check('version 1.5.2', src.includes('Wazo 1.5.2'));
 check('stale backend migration', src.includes('SERGEY_OLD_BACKENDS') && src.includes('sergey_online_backend_custom') && src.includes('https://ab2024.ru'));
 check('backend preflight before open', src.includes('openSergeyActivity') && src.includes('/version?type=hash&_='));
 check('resetTemplates scope bridge', src.includes('var sergeyResetTemplates = null') && src.includes('sergeyResetTemplates = resetTemplates') && src.includes('if (sergeyResetTemplates) sergeyResetTemplates()'));
@@ -18,11 +18,11 @@ check('cloud backend default', src.includes("SERGEY_DEFAULT_BACKEND = 'https://s
 check('LAN backends migrated', src.includes('http://10.129.1.174:18118') && src.includes('http://10.129.1.182:18118') && src.includes('10\\.129\\.1\\.\\d+:18118'));
 check('cold start retry', src.includes('var attempts = 5') && src.includes('probe.timeout(15000)'));
 check('no hostname/127 auto backend substitution', !src.includes('location.hostname') && !src.includes("SERGEY_DEFAULT_BACKEND = 'http://127.0.0.1'"));
-check('separate Sergey Online button', src.includes('sergey-online--button') && src.includes("component: 'sergey_online'"));
+check('separate Wazo button', src.includes('sergey-online--button') && src.includes("component: 'sergey_online'"));
 check('active source picker is alphabetical', src.includes('function sourcePickerKeys()') && src.includes('if (available.length) list = available') && src.includes('return aa < bb ? -1 : aa > bb ? 1 : 0'));
 check('final source picker alphabetical hook', src.includes("__sergey_source_alpha_hook") && src.includes("Lampa.Select.listener.follow('preshow'") && src.includes('localeCompare'));
 check('failed source pruned', src.includes('if (sources[balanser]) sources[balanser].show = false') && src.includes('var keys = sourcePickerKeys()'));
-check('MOD-style direct button', src.includes(".full-start-new__buttons") && src.includes("button--play") && src.includes("sergey-online--button"));
+check('Wazo is primary leftmost button', src.includes(".full-start-new__buttons") && src.includes("newActions.prepend(btn)") && src.includes("sergey-online--button"));
 check('Filmix free device auth flow', src.includes('function sergeyFilmixPair(onDone)') && src.includes('token_request?') && src.includes("Lampa.Storage.set('filmix_token'"));
 check('Filmix auth uses native request', src.includes('network["native"]') && src.includes("Lampa.Storage.set('filmix_level'"));
 check('Filmix selection auto-pairs', src.includes("balanser_name === 'filmix'") && src.includes('sergeyFilmixPair(function()'));

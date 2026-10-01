@@ -1,4 +1,4 @@
-/* Sergey Online 1.5.1
+/* Wazo 1.5.2
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -1877,7 +1877,7 @@ else if (element.url) {
     var attempts = 5;
 
     try {
-      Lampa.Noty.show('Sergey Online: подключение к облачному серверу...');
+      Lampa.Noty.show('Wazo: подключение к облачному серверу...');
     } catch (e) {}
 
     function probeAttempt(left) {
@@ -1901,7 +1901,7 @@ else if (element.url) {
           sergeyBackendHealth.ok = false;
           sergeyBackendHealth.at = Date.now();
           try {
-            Lampa.Noty.show('Sergey Online: сервер недоступен ' + SERGEY_BACKEND);
+            Lampa.Noty.show('Wazo: сервер недоступен ' + SERGEY_BACKEND);
           } catch (e) {}
         },
         false,
@@ -2024,7 +2024,7 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addComponent({
         component: 'sergey_online_settings',
-        name: 'Sergey Online',
+        name: 'Wazo',
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M10 8L17 12L10 16V8Z" fill="currentColor"/></svg>'
       });
     } catch(e) {}
@@ -2032,7 +2032,7 @@ else if (element.url) {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
         param: {name:'sergey_online_backend', type:'input', default:SERGEY_DEFAULT_BACKEND, values:'', placeholder:SERGEY_DEFAULT_BACKEND},
-        field: {name:'Сервер', description:'Облачный HTTPS backend Sergey Online. Старые локальные адреса мигрируются автоматически. После ручного изменения перезапустите Lampa.'},
+        field: {name:'Сервер', description:'Облачный HTTPS backend Wazo. Старые локальные адреса мигрируются автоматически. После ручного изменения перезапустите Lampa.'},
         onChange: function(value) {
           try {
             var v = String(value || '').replace(/\/$/, '');
@@ -2067,8 +2067,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.1'},
-        field: {name:'Версия', description:'1.5.1 • Filmix auth • источники по алфавиту • cloud backend'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.2'},
+        field: {name:'Версия', description:'1.5.2 • Filmix auth • источники по алфавиту • cloud backend'}
       });
     } catch(e) {}
   }
@@ -2095,8 +2095,8 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.1',
-      name: 'Sergey Online',
+      version: '1.5.2',
+      name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
       onContextMenu: function onContextMenu(object) {
@@ -2109,14 +2109,14 @@ else if (element.url) {
         openSergeyActivity(object);
       }
     };
-	addSourceSearch('Sergey Online', 'spider');
-	addSourceSearch('Sergey Online - Anime', 'spider/anime');
+	addSourceSearch('Wazo', 'spider');
+	addSourceSearch('Wazo - Anime', 'spider/anime');
     Lampa.Manifest.plugins = manifst;
     Lampa.Lang.add({
       lampac_watch: { //
-        ru: 'Sergey Online',
-        en: 'Sergey Online',
-        uk: 'Sergey Online',
+        ru: 'Wazo',
+        en: 'Wazo',
+        uk: 'Wazo',
         zh: '在线观看'
       },
       lampac_video: { //
@@ -2150,9 +2150,9 @@ else if (element.url) {
         zh: '按住“确定”键调出上下文菜单'
       },
       title_online: { //
-        ru: 'Sergey Online',
-        uk: 'Sergey Online',
-        en: 'Sergey Online',
+        ru: 'Wazo',
+        uk: 'Wazo',
+        en: 'Wazo',
         zh: '在线的'
       },
       lampac_voice_subscribe: { //
@@ -2236,31 +2236,29 @@ else if (element.url) {
       if (!root || !root.length || root.find('.sergey-online--button').length) return;
 
       var btn = $(Lampa.Lang.translate(button));
-      btn.find('span').text('Sergey Online');
+      btn.find('span').text('Wazo');
       btn.on('hover:enter', function() {
         openSergeyActivity(e.movie);
       });
 
-      // Put Sergey Online directly beside the main Watch button on the
-      // current Lampa card, like MODS. The old torrent button can live inside
-      // a hidden legacy container, so it must not be our primary anchor.
+      // Wazo is the primary online action: keep it leftmost, before MODS and
+      // the other source buttons, without changing Lampa's internal actions.
       var newActions = root.find('.full-start-new__buttons').first();
       if (newActions.length) {
-        var playButton = newActions.find('.button--play').first();
-        if (playButton.length) playButton.after(btn);
-        else newActions.prepend(btn);
+        newActions.prepend(btn);
         return;
       }
 
-      var target = root.find('.view--torrent:visible').last();
-      if (!target.length && e.render && e.render.length && e.render.is(':visible')) target = e.render;
-      if (target.length) {
-        target.after(btn);
-      } else {
-        var actions = root.find('.full-start__buttons, .full-start__buttons-wrap').first();
-        if (actions.length) actions.append(btn);
-        else root.prepend(btn);
+      var actions = root.find('.full-start__buttons, .full-start__buttons-wrap').first();
+      if (actions.length) {
+        actions.prepend(btn);
+        return;
       }
+
+      var target = root.find('.view--torrent:visible').first();
+      if (!target.length && e.render && e.render.length && e.render.is(':visible')) target = e.render;
+      if (target.length) target.before(btn);
+      else root.prepend(btn);
     }
     Lampa.Listener.follow('full', function(e) {
       if (e.type == 'complite') {
@@ -2290,7 +2288,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.1',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.2',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();
