@@ -4,10 +4,12 @@ const path = require('path');
 
 const LAMPA = process.env.SERGEY_LAMPA_URL || 'http://127.0.0.1:18118/lampa-main/';
 const PLUGIN_URL = process.env.SERGEY_PLUGIN_URL || '';
+const FIRE_UA = 'Mozilla/5.0 (Linux; Android 7.1.2; AFTMM) AppleWebKit/537.36 (KHTML, like Gecko) Silk/130.4.6 Safari/537.36';
+const TEST_UA = process.env.SERGEY_TEST_UA === 'fire' ? FIRE_UA : '';
 const PLUGIN = PLUGIN_URL ? '' : fs.readFileSync(path.resolve(__dirname, '..', 'js'), 'utf8');
 
 async function boot(browser) {
-  const ctx = await browser.newContext();
+  const ctx = await browser.newContext(TEST_UA ? { userAgent: TEST_UA } : {});
   const page = await ctx.newPage();
 
   await page.goto(LAMPA, { waitUntil: 'domcontentloaded', timeout: 30000 });
