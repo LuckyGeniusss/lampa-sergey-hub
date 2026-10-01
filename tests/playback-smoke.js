@@ -131,18 +131,20 @@ async function selectSource(page, prefix) {
         original_language: 'ru'
       };
 
+      await page.evaluate(() => {
+        Lampa.Storage.set('filmix_token', '');
+      });
       await openMovie(page, loveMagic);
-      await selectSource(page, 'Filmix ');
 
-      await page.waitForFunction(
-        () => document.querySelectorAll('.online-prestige').length >= 2,
-        { timeout: 20000 }
-      );
-
-      const count = await page.locator('.online-prestige').count();
-      if (count < 2) throw new Error('Filmix returned too few rows for Любовная магия: ' + count);
-
-      console.log('PASS Filmix Любовная магия rows=' + count);
+      const sort = page.locator('.filter--sort').last();
+      if (!(await sort.count())) throw new Error('Source filter missing for Filmix safety check');
+      await sort.click();
+      await page.waitForTimeout(350);
+      const names = await page.locator('.selectbox .selector').allInnerTexts();
+      if (names.some((x) => /^Filmix/i.test(x.trim()))) {
+        throw new Error('anonymous Filmix is still advertised and may play the authorization replacement');
+      }
+      console.log('PASS Filmix anonymous replacement hidden');
       await ctx.close();
     }
   } finally {

@@ -53,11 +53,13 @@ async function checkCase(browser,label,ua,movie,minSources,staleBackend=false) {
   );
   const unique = [...new Set(items)];
   const text = unique.join('\n').toLowerCase();
-  for (const n of ['filmix','collaps','kodik','lumex','hdvb','uaflix']) {
+  for (const n of ['collaps','rezka','kinobase','zetflix']) {
     if (!text.includes(n)) throw new Error(label+': missing '+n);
   }
   if (unique.length < minSources) throw new Error(label+': only '+unique.length+' source rows');
   if (unique.length !== items.length) throw new Error(label+': duplicate source rows');
+  const sorted = [...unique].sort((a,b)=>a.toLowerCase()<b.toLowerCase()?-1:a.toLowerCase()>b.toLowerCase()?1:0);
+  if (JSON.stringify(unique) !== JSON.stringify(sorted)) throw new Error(label+': source rows are not alphabetical');
   const bad = backend.filter(x=>x[0] >= 400);
   if (bad.length) throw new Error(label+': backend HTTP errors '+JSON.stringify(bad.slice(0,5)));
   console.log('PASS',label,'sources='+unique.length,'backendCalls='+backend.length);
@@ -91,7 +93,7 @@ async function checkManifestLaunch(browser,label,ua,movie) {
     Array.from(document.querySelectorAll('.selectbox .selector'))
       .map(e=>e.innerText.trim()).filter(Boolean)
   );
-  if (items.length < 50) throw new Error(label+': only '+items.length+' source rows after manifest launch');
+  if (items.length < 15) throw new Error(label+': only '+items.length+' active source rows after manifest launch');
   if (errors.some(e => /resetTemplates|ReferenceError/i.test(e))) {
     throw new Error(label+': page error '+errors.join(' | '));
   }
@@ -112,9 +114,9 @@ async function checkManifestLaunch(browser,label,ua,movie) {
       id:603,tmdb_id:603,title:'The Matrix',original_title:'The Matrix',
       release_date:'1999-03-30',original_language:'en'
     };
-    await checkCase(browser,'Chrome movie',null,movie,50);
-    await checkCase(browser,'FireTV/Silk movie',FIRE_UA,movie,50);
-    await checkCase(browser,'FireTV/Silk stale-backend migration',FIRE_UA,movie,50,true);
+    await checkCase(browser,'Chrome movie',null,movie,15);
+    await checkCase(browser,'FireTV/Silk movie',FIRE_UA,movie,15);
+    await checkCase(browser,'FireTV/Silk stale-backend migration',FIRE_UA,movie,15,true);
     await checkManifestLaunch(browser,'FireTV/Silk manifest launch',FIRE_UA,movie);
   } finally { await browser.close(); }
   console.log('\nREAL LAMPA PLAYWRIGHT PASS');

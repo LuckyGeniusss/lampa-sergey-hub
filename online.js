@@ -1,4 +1,4 @@
-/* Sergey Online 1.3.0
+/* Sergey Online 1.4.0
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -351,6 +351,24 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       };
     }
 
+    function sourcePickerKeys() {
+      var list = filter_sources.slice(0);
+      var available = list.filter(function(key) {
+        return sources[key] && sources[key].show;
+      });
+
+      // Once discovery has real answers, do not keep dead/ghost providers in
+      // the TV picker. If discovery is still warming up, keep the full set so
+      // the filter is never empty.
+      if (available.length) list = available;
+
+      return list.sort(function(a, b) {
+        var aa = String(sources[a] && sources[a].name || a).toLowerCase();
+        var bb = String(sources[b] && sources[b].name || b).toLowerCase();
+        return aa < bb ? -1 : aa > bb ? 1 : 0;
+      });
+    }
+
 	function clarificationSearchAdd(value){
 		var id = Lampa.Utils.hash(object.movie.number_of_seasons ? object.movie.original_name : object.movie.original_title);
 		var all = Lampa.Storage.get('clarification_search','{}');
@@ -528,6 +546,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       query.push('similar=' + (object.similar ? true : false));
       query.push('rchtype=' + (((window.rch_nws && window.rch_nws[hostkey]) ? window.rch_nws[hostkey].type : (window.rch && window.rch[hostkey]) ? window.rch[hostkey].type : '') || ''));
       if (Lampa.Storage.get('account_email', '')) query.push('cub_id=' + Lampa.Utils.hash(Lampa.Storage.get('account_email', '')));
+      var filmixToken = String(Lampa.Storage.get('filmix_token', '') || '').trim();
+      if (filmixToken) query.push('filmix_token=' + encodeURIComponent(filmixToken));
       return url + (url.indexOf('?') >= 0 ? '&' : '?') + query.join('&');
     };
     this.getLastChoiceBalanser = function() {
@@ -552,7 +572,10 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
             balanser = Lampa.Storage.get('online_balanser', filter_sources[0]);
           }
           if (!sources[balanser]) balanser = filter_sources[0];
-          if (!sources[balanser].show && !object.lampac_custom_select) balanser = filter_sources[0];
+          if (!sources[balanser].show && !object.lampac_custom_select) {
+            var availableSources = sourcePickerKeys();
+            balanser = availableSources.length ? availableSources[0] : filter_sources[0];
+          }
           source = sources[balanser].url;
           Lampa.Storage.set('active_balanser', balanser);
           resolve(json);
@@ -593,7 +616,7 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
               sourcePut(j);
             });
             filter_sources = Lampa.Arrays.getKeys(sources);
-            filter.set('sort', filter_sources.map(function(e) {
+            filter.set('sort', sourcePickerKeys().map(function(e) {
               return {
                 title: sources[e].name,
                 source: e,
@@ -1149,7 +1172,7 @@ else if (element.url) {
       if (filter_items.voice && filter_items.voice.length) add('voice', Lampa.Lang.translate('torrent_parser_voice'));
       if (filter_items.season && filter_items.season.length) add('season', Lampa.Lang.translate('torrent_serial_season'));
       filter.set('filter', select);
-      filter.set('sort', filter_sources.map(function(e) {
+      filter.set('sort', sourcePickerKeys().map(function(e) {
         return {
           title: sources[e].name,
           source: e,
@@ -1867,6 +1890,91 @@ else if (element.url) {
     probeAttempt(attempts);
   }
 
+  function sergeyFilmixDeviceQuery(token) {
+    var devId = String(Lampa.Storage.get('sergey_filmix_device_id', '') || '');
+    if (!devId) {
+      devId = Lampa.Utils.uid(16);
+      Lampa.Storage.set('sergey_filmix_device_id', devId);
+    }
+    return 'user_dev_apk=2.0.1&user_dev_id=' + encodeURIComponent(devId) +
+      '&user_dev_name=' + encodeURIComponent('Sergey Online') +
+      '&user_dev_os=Android&user_dev_vendor=' + encodeURIComponent('Sergey Online') +
+      '&user_dev_token=' + encodeURIComponent(token || '');
+  }
+
+  function sergeyFilmixPair() {
+    var api = 'http://filmixapp.cyou/api/v2/';
+    var network = new Lampa.Reguest();
+    var userToken = '';
+    var userCode = '';
+    var timer = null;
+    var closed = false;
+
+    function stop() {
+      closed = true;
+      if (timer) clearInterval(timer);
+      try { network.clear(); } catch (e) {}
+    }
+
+    function checkProfile() {
+      if (!userToken || closed) return;
+      network.timeout(8000);
+      network.silent(
+        api + 'user_profile?' + sergeyFilmixDeviceQuery(userToken),
+        function(found) {
+          if (closed || !found || !found.user_data) return;
+          Lampa.Storage.set('filmix_token', userToken);
+          stop();
+          try { Lampa.Modal.close(); } catch (e) {}
+          try { Lampa.Noty.show('Filmix: устройство авторизовано'); } catch (e) {}
+        },
+        function() {},
+        false,
+        {dataType:'json'}
+      );
+    }
+
+    var body = $('<div><div class="broadcast__text">Откройте Filmix в своём аккаунте и добавьте устройство по этому коду. Это бесплатная авторизация Filmix; качество выше зависит от уровня вашего аккаунта.</div><br><div class="broadcast__device selector" style="text-align:center;font-size:2em">Получаем код...</div><br><div class="broadcast__scan"><div></div></div></div>');
+
+    Lampa.Modal.open({
+      title: 'Filmix',
+      html: body,
+      onBack: function() {
+        stop();
+        Lampa.Modal.close();
+        try { Lampa.Controller.toggle('settings_component'); } catch (e) {}
+      },
+      onSelect: function() {
+        if (!userCode) return;
+        Lampa.Utils.copyTextToClipboard(userCode, function() {
+          Lampa.Noty.show('Код Filmix скопирован');
+        }, function() {});
+      }
+    });
+
+    network.timeout(10000);
+    network.silent(
+      api + 'token_request?' + sergeyFilmixDeviceQuery(''),
+      function(found) {
+        if (closed) return;
+        if (found && found.status == 'ok' && found.code && found.user_code) {
+          userToken = String(found.code);
+          userCode = String(found.user_code);
+          body.find('.broadcast__device').text(userCode);
+          timer = setInterval(checkProfile, 5000);
+          checkProfile();
+        } else {
+          body.find('.broadcast__device').text('Filmix не выдал код');
+        }
+      },
+      function() {
+        if (!closed) body.find('.broadcast__device').text('Filmix сейчас недоступен');
+      },
+      false,
+      {dataType:'json'}
+    );
+  }
+
   function addSergeySettings() {
     if (!Lampa.SettingsApi) return;
     try {
@@ -1893,8 +2001,28 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.3.0'},
-        field: {name:'Версия', description:'1.3.0 • 78+ источников • cloud backend'}
+        param: {name:'filmix_token', type:'input', default:Lampa.Storage.get('filmix_token',''), values:'', placeholder:'Filmix device token'},
+        field: {name:'Filmix token', description:'Ваш собственный токен Filmix. Можно вставить вручную или получить через кнопку ниже.'},
+        onChange: function(value) {
+          Lampa.Storage.set('filmix_token', String(value || '').trim());
+        }
+      });
+    } catch(e) {}
+    try {
+      Lampa.SettingsApi.addParam({
+        component: 'sergey_online_settings',
+        param: {type:'button'},
+        field: {name:'Авторизовать Filmix', description:'Бесплатная привязка устройства Filmix. Будет показан код для вашего аккаунта.'},
+        onChange: function() {
+          sergeyFilmixPair();
+        }
+      });
+    } catch(e) {}
+    try {
+      Lampa.SettingsApi.addParam({
+        component: 'sergey_online_settings',
+        param: {name:'sergey_online_version', type:'static', default:'1.4.0'},
+        field: {name:'Версия', description:'1.4.0 • рабочие источники по алфавиту • cloud backend'}
       });
     } catch(e) {}
   }
@@ -1904,7 +2032,7 @@ else if (element.url) {
     window.sergey_online_plugin = true;
     var manifst = {
       type: 'video',
-      version: '1.3.0',
+      version: '1.4.0',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2036,26 +2164,47 @@ else if (element.url) {
     resetTemplates();
 
     function addButton(e) {
-      if (e.render.find('.sergey-online--button').length) return;
+      var root = e.root && e.root.length ? e.root : null;
+      if (!root) {
+        try {
+          root = Lampa.Activity.active().activity.render();
+        } catch (err) {}
+      }
+      if (!root || !root.length || root.find('.sergey-online--button').length) return;
+
       var btn = $(Lampa.Lang.translate(button));
-	  // //console.log(btn.clone().removeClass('focus').prop('outerHTML'))
       btn.on('hover:enter', function() {
         openSergeyActivity(e.movie);
       });
-      e.render.after(btn);
+
+      var target = e.render && e.render.length ? e.render : root.find('.view--torrent').last();
+
+      // MOD-style dedicated button: place it directly in the full-card action
+      // row even on builds/themes that do not render the torrent button.
+      if (target && target.length) {
+        target.after(btn);
+      } else {
+        var actions = root.find('.full-start__buttons, .full-start__buttons-wrap, .full-start').first();
+        if (actions.length) actions.append(btn);
+        else root.prepend(btn);
+      }
     }
     Lampa.Listener.follow('full', function(e) {
       if (e.type == 'complite') {
+        var root = e.object.activity.render();
         addButton({
-          render: e.object.activity.render().find('.view--torrent'),
+          root: root,
+          render: root.find('.view--torrent').last(),
           movie: e.data.movie
         });
       }
     });
     try {
       if (Lampa.Activity.active().component == 'full') {
+        var root = Lampa.Activity.active().activity.render();
         addButton({
-          render: Lampa.Activity.active().activity.render().find('.view--torrent'),
+          root: root,
+          render: root.find('.view--torrent').last(),
           movie: Lampa.Activity.active().card
         });
       }
@@ -2068,7 +2217,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.3.0',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.4.0',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

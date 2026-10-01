@@ -10,7 +10,7 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.3.0', src.includes('Sergey Online 1.3.0'));
+check('version 1.4.0', src.includes('Sergey Online 1.4.0'));
 check('stale backend migration', src.includes('SERGEY_OLD_BACKENDS') && src.includes('sergey_online_backend_custom') && src.includes('https://ab2024.ru'));
 check('backend preflight before open', src.includes('openSergeyActivity') && src.includes('/version?type=hash&_='));
 check('resetTemplates scope bridge', src.includes('var sergeyResetTemplates = null') && src.includes('sergeyResetTemplates = resetTemplates') && src.includes('if (sergeyResetTemplates) sergeyResetTemplates()'));
@@ -19,6 +19,10 @@ check('LAN backends migrated', src.includes('http://10.129.1.174:18118') && src.
 check('cold start retry', src.includes('var attempts = 5') && src.includes('probe.timeout(15000)'));
 check('no hostname/127 auto backend substitution', !src.includes('location.hostname') && !src.includes("SERGEY_DEFAULT_BACKEND = 'http://127.0.0.1'"));
 check('separate Sergey Online button', src.includes('sergey-online--button') && src.includes("component: 'sergey_online'"));
+check('active source picker is alphabetical', src.includes('function sourcePickerKeys()') && src.includes('if (available.length) list = available') && src.includes('return aa < bb ? -1 : aa > bb ? 1 : 0'));
+check('MOD-style direct button fallback', src.includes(".full-start__buttons, .full-start__buttons-wrap, .full-start") && src.includes("sergey-online--button"));
+check('Filmix free device auth flow', src.includes('function sergeyFilmixPair()') && src.includes('token_request?') && src.includes("Lampa.Storage.set('filmix_token'"));
+check('Filmix viewer token forwarded', src.includes("query.push('filmix_token='"));
 check('native source picker', src.includes('new Lampa.Filter') && src.includes("filter.set('sort'"));
 check('dynamic discovery', src.includes('lite/events?life=true') && src.includes('lifeevents?memkey='));
 check('provider state preserved', src.includes('online_choice_') && src.includes('online_last_balanser'));
