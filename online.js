@@ -1,4 +1,4 @@
-/* Sergey Online 1.5.0
+/* Sergey Online 1.5.1
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -111,7 +111,7 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
   window.rch_nws[hostkey].typeInvoke(SERGEY_BACKEND, function() {
 
     client.invoke("RchRegistry", JSON.stringify({
-      version: 151,
+      version: 152,
       host: location.host,
       rchtype: Lampa.Platform.is('android') ? 'apk' : Lampa.Platform.is('tizen') ? 'cors' : (window.rch_nws[hostkey].type || 'web'),
       apkVersion: window.rch_nws[hostkey].apkVersion,
@@ -1918,14 +1918,15 @@ else if (element.url) {
       devId = Lampa.Utils.uid(16);
       Lampa.Storage.set('sergey_filmix_device_id', devId);
     }
-    return 'user_dev_apk=2.0.1&user_dev_id=' + encodeURIComponent(devId) +
-      '&user_dev_name=' + encodeURIComponent('Sergey Online') +
-      '&user_dev_os=Android&user_dev_vendor=' + encodeURIComponent('Sergey Online') +
+    return 'app_lang=ru-rRU&user_dev_apk=2.2.0&user_dev_id=' + encodeURIComponent(devId) +
+      '&user_dev_name=' + encodeURIComponent('Xiaomi') +
+      '&user_dev_os=14&user_dev_vendor=' + encodeURIComponent('Xiaomi') +
       '&user_dev_token=' + encodeURIComponent(token || '');
   }
 
   function sergeyFilmixPair(onDone) {
-    var api = 'http://filmixapp.cyou/api/v2/';
+    var apiHosts = ['http://filmixapp.cyou/api/v2/', 'http://filmixapp.vip/api/v2/'];
+    var filmixHeaders = {'User-Agent':'okhttp/3.10.0'};
     var network = new Lampa.Reguest();
     var userToken = '';
     var userCode = '';
@@ -1941,24 +1942,32 @@ else if (element.url) {
     function checkProfile() {
       if (!userToken || closed) return;
       network.timeout(8000);
-      network["native"](
-        api + 'user_profile?' + sergeyFilmixDeviceQuery(userToken),
-        function(found) {
-          if (closed || !found || !found.user_data) return;
-          var status = found.user_data || {};
-          var level = status.is_pro_plus ? 'pro_plus' : (status.is_pro ? 'pro' : 'free');
-          Lampa.Storage.set('filmix_token', userToken);
-          Lampa.Storage.set('filmix_status', status);
-          Lampa.Storage.set('filmix_level', level);
-          stop();
-          try { Lampa.Modal.close(); } catch (e) {}
-          try { Lampa.Noty.show('Filmix: авторизация готова • ' + (level === 'pro_plus' ? '4K' : level === 'pro' ? 'FHD' : 'HD')); } catch (e) {}
-          if (typeof onDone === 'function') setTimeout(function(){ onDone(status); }, 50);
-        },
-        function() {},
-        false,
-        {dataType:'json'}
-      );
+      function profileAttempt(index) {
+        if (closed || index >= apiHosts.length) return;
+        network["native"](
+          apiHosts[index] + 'user_profile?' + sergeyFilmixDeviceQuery(userToken),
+          function(found) {
+            if (closed) return;
+            if (!found || !found.user_data) {
+              profileAttempt(index + 1);
+              return;
+            }
+            var status = found.user_data || {};
+            var level = status.is_pro_plus ? 'pro_plus' : (status.is_pro ? 'pro' : 'free');
+            Lampa.Storage.set('filmix_token', userToken);
+            Lampa.Storage.set('filmix_status', status);
+            Lampa.Storage.set('filmix_level', level);
+            stop();
+            try { Lampa.Modal.close(); } catch (e) {}
+            try { Lampa.Noty.show('Filmix: авторизация готова • ' + (level === 'pro_plus' ? '4K' : level === 'pro' ? 'FHD' : 'HD')); } catch (e) {}
+            if (typeof onDone === 'function') setTimeout(function(){ onDone(status); }, 50);
+          },
+          function() { profileAttempt(index + 1); },
+          false,
+          {dataType:'json', headers:filmixHeaders}
+        );
+      }
+      profileAttempt(0);
     }
 
     var body = $('<div><div class="broadcast__text">Откройте Filmix в своём аккаунте и добавьте устройство по этому коду. Это бесплатная авторизация Filmix; качество выше зависит от уровня вашего аккаунта.</div><br><div class="broadcast__device selector" style="text-align:center;font-size:2em">Получаем код...</div><br><div class="broadcast__scan"><div></div></div></div>');
@@ -1982,26 +1991,32 @@ else if (element.url) {
     });
 
     network.timeout(10000);
-    network["native"](
-      api + 'token_request?' + sergeyFilmixDeviceQuery(''),
-      function(found) {
-        if (closed) return;
-        if (found && found.status == 'ok' && found.code && found.user_code) {
-          userToken = String(found.code);
-          userCode = String(found.user_code);
-          body.find('.broadcast__device').text(userCode);
-          timer = setInterval(checkProfile, 5000);
-          checkProfile();
-        } else {
-          body.find('.broadcast__device').text('Filmix не выдал код');
-        }
-      },
-      function() {
-        if (!closed) body.find('.broadcast__device').text('Filmix сейчас недоступен');
-      },
-      false,
-      {dataType:'json'}
-    );
+    function tokenAttempt(index) {
+      if (closed) return;
+      if (index >= apiHosts.length) {
+        body.find('.broadcast__device').text('Filmix сейчас недоступен');
+        return;
+      }
+      network["native"](
+        apiHosts[index] + 'token_request?' + sergeyFilmixDeviceQuery(''),
+        function(found) {
+          if (closed) return;
+          if (found && found.status == 'ok' && found.code && found.user_code) {
+            userToken = String(found.code);
+            userCode = String(found.user_code);
+            body.find('.broadcast__device').text(userCode);
+            timer = setInterval(checkProfile, 5000);
+            checkProfile();
+          } else {
+            tokenAttempt(index + 1);
+          }
+        },
+        function() { tokenAttempt(index + 1); },
+        false,
+        {dataType:'json', headers:filmixHeaders}
+      );
+    }
+    tokenAttempt(0);
   }
 
   function addSergeySettings() {
@@ -2052,8 +2067,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.0'},
-        field: {name:'Версия', description:'1.5.0 • Filmix auth • источники по алфавиту • cloud backend'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.1'},
+        field: {name:'Версия', description:'1.5.1 • Filmix auth • источники по алфавиту • cloud backend'}
       });
     } catch(e) {}
   }
@@ -2080,7 +2095,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.0',
+      version: '1.5.1',
       name: 'Sergey Online',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2275,7 +2290,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.0',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.1',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

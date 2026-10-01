@@ -10,7 +10,7 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.5.0', src.includes('Sergey Online 1.5.0'));
+check('version 1.5.1', src.includes('Sergey Online 1.5.1'));
 check('stale backend migration', src.includes('SERGEY_OLD_BACKENDS') && src.includes('sergey_online_backend_custom') && src.includes('https://ab2024.ru'));
 check('backend preflight before open', src.includes('openSergeyActivity') && src.includes('/version?type=hash&_='));
 check('resetTemplates scope bridge', src.includes('var sergeyResetTemplates = null') && src.includes('sergeyResetTemplates = resetTemplates') && src.includes('if (sergeyResetTemplates) sergeyResetTemplates()'));
