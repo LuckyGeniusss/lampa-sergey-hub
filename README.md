@@ -1,16 +1,16 @@
 # Sergey Online for Lampa
 
-Один плагин Lampa + self-hosted backend на Mac mini.
+Один плагин Lampa + облачный multi-source backend на Render.
 
 ## Подключение в Lampa
 
 `https://luckygeniusss.github.io/lampa-sergey-hub/js`
 
-Плагин добавляет отдельную кнопку **Sergey Online**. Backend на домашней сети:
+Плагин добавляет отдельную кнопку **Sergey Online**. Backend по умолчанию:
 
-`http://10.129.1.174:18118`
+`https://sergey-online-backend.onrender.com`
 
-Адрес можно изменить в `Настройки -> Sergey Online -> Сервер`.
+Старые локальные адреса `10.129.1.x:18118`, `hdpoisk` и `ab2024.ru` мигрируются автоматически. Пользовательский backend можно задать в `Настройки -> Sergey Online -> Сервер`.
 
 ## Что внутри
 
@@ -19,23 +19,32 @@
 - динамический список источников через `/lite/events` + `/lifeevents`;
 - cookies/session/header/RCH-логика backend сохраняется;
 - дубли/legacy-алиасы не выдаются как отдельные реализации;
-- Telegram/Showy/paywall обходы не используются.
+- Telegram/Showy/paywall обходы не используются;
+- облачный HTTPS backend не зависит от IP или состояния Mac mini.
 
-Backend: `~/Projects/lampa-sergey-backend`, launchd:
-`~/Library/LaunchAgents/com.sergey.lampa-backend.plist`.
-
-Сейчас backend настроен на **78 уникальных локальных провайдеров**. Плагин 1.2.0 также автоматически сбрасывает старые сохранённые адреса серверов из ранних версий на текущий Mac mini backend и перед открытием проверяет его доступность. Дополнительные динамические модули добавляются автоматически. На тесте The Matrix реальная Lampa показала **69 строк источников** и backend отметил **29 источников активными**; на Breaking Bad — 23 активных; на «Любовная магия» (2021) — 23 активных.
+Текущий backend публикует **78 настроенных источников** и дополнительные динамические модули. Клиентский seed-инвентарь содержит 101 уникальный ID/алиас.
 
 ## Проверка
 
 ```bash
 cd ~/Projects/lampa-sergey-hub
-npm test
+npm run test:cloud
 ./scripts/healthcheck.sh
-npm run test:public
 ```
 
-`npm test` включает статическую проверку плагина, backend API, discovery фильма/сериала/«Любовной магии» и настоящий Playwright-тест на локальной сборке Lampa в обычном Chrome и с FireTV/Silk User-Agent.
-Дополнительно playback-smoke реально выбирает Collaps, получает playable proxy URL и проверяет Filmix на «Любовной магии».
+`npm run test:cloud` проверяет публичный Render backend, discovery, опубликованный GitHub Pages плагин, Lampa в Chrome и с FireTV/Silk User-Agent, а также реальное открытие Collaps и Filmix.
 
-Важно: Fire Stick должен видеть Mac mini по адресу `10.129.1.174:18118`. Если IP Mac изменится, нужно обновить поле **Сервер** в настройках Sergey Online или закрепить IP в роутере.
+Последняя проверка 2026-10-01:
+
+- `/healthz` и `/version`: HTTP 200, `Alpac 0.5`;
+- `/lite/withsearch`: 78 источников;
+- `/lite/events`: 81 запись;
+- The Matrix: 71 обнаружен, 29 активны;
+- Breaking Bad: 72 обнаружено, 21 активен;
+- «Любовная магия»: 72 обнаружено, 22 активны;
+- публичная Lampa: 70 строк источников в Chrome и FireTV/Silk;
+- Collaps: получен реальный proxy URL и вызван `Lampa.Player.play()`;
+- Filmix: «Любовная магия» возвращает 41 строку/серию;
+- FireTV/Silk playback-smoke: PASS для Collaps и Filmix.
+
+Доступность конкретного источника зависит от фильма, региона и состояния внешнего сервиса. Недоступные на конкретном запросе источники backend помечает как неактивные/ghost.
