@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const LAMPA = process.env.SERGEY_LAMPA_URL || 'http://127.0.0.1:18118/lampa-main/';
-const PLUGIN = fs.readFileSync(path.resolve(__dirname, '..', 'js'), 'utf8');
+const PLUGIN_URL = process.env.SERGEY_PLUGIN_URL || '';
+const PLUGIN = PLUGIN_URL ? '' : fs.readFileSync(path.resolve(__dirname, '..', 'js'), 'utf8');
 
 async function boot(browser) {
   const ctx = await browser.newContext();
@@ -18,7 +19,8 @@ async function boot(browser) {
   }
 
   await page.waitForTimeout(1700);
-  await page.addScriptTag({ content: PLUGIN });
+  if (PLUGIN_URL) await page.addScriptTag({ url: PLUGIN_URL });
+  else await page.addScriptTag({ content: PLUGIN });
   await page.waitForTimeout(300);
 
   await page.evaluate(() => {
@@ -131,8 +133,8 @@ async function selectSource(page, prefix) {
       await selectSource(page, 'Filmix ');
 
       await page.waitForFunction(
-        () => document.querySelectorAll('.online-prestige').length > 0,
-        { timeout: 12000 }
+        () => document.querySelectorAll('.online-prestige').length >= 2,
+        { timeout: 20000 }
       );
 
       const count = await page.locator('.online-prestige').count();
