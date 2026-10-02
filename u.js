@@ -2236,7 +2236,7 @@ else if (element.url) {
       if (!root || !root.length || root.find('.sergey-online--button').length) return;
 
       var btn = $(Lampa.Lang.translate(button));
-      btn.find('span').text('Wazo Online');
+      btn.find('span').text('Wazo');
       btn.on('hover:enter', function() {
         openSergeyActivity(e.movie);
       });
