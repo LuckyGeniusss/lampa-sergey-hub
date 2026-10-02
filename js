@@ -250,6 +250,100 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
     }
   }
 
+  // FNV-1a hash for device fingerprint
+  function fnv1a(str) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return (h >>> 0).toString(16);
+  }
+
+  // ── Comprehensive device fingerprint ──
+  // Survives cache clear / app reinstall (based on hardware, not storage).
+  // ~15 signals: canvas, WebGL, audio, screen, hardware, timezone, math.
+  var device_fp = '';
+  try {
+    var fp = [];
+
+    // 1. Screen (physical properties)
+    fp.push(screen.width + 'x' + screen.height + ':' + screen.availWidth + 'x' + screen.availHeight);
+    fp.push(screen.colorDepth || 0);
+    fp.push(window.devicePixelRatio || 1);
+
+    // 2. Hardware
+    fp.push(navigator.hardwareConcurrency || 0);
+    fp.push(navigator.deviceMemory || 0);
+    fp.push(navigator.maxTouchPoints || 0);
+
+    // 3. Platform / locale
+    fp.push(navigator.platform || '');
+    fp.push(navigator.language || '');
+    fp.push((navigator.languages || []).join(','));
+
+    // 4. Timezone
+    try { fp.push(Intl.DateTimeFormat().resolvedOptions().timeZone); } catch(e) { fp.push(''); }
+    fp.push(new Date().getTimezoneOffset());
+
+    // 5. Math engine quirks (differ between JS engines)
+    fp.push(Math.tan(-1e300));
+
+    // 6. Canvas fingerprint (GPU + font rendering)
+    try {
+      var c = document.createElement('canvas');
+      c.width = 280; c.height = 60;
+      var x = c.getContext('2d');
+      if (x) {
+        x.textBaseline = 'alphabetic';
+        x.fillStyle = '#f60';
+        x.fillRect(125, 1, 62, 20);
+        x.fillStyle = '#069';
+        x.font = '14px Arial';
+        x.fillText('Cwm fjordbank glyphs vext quiz', 2, 15);
+        x.fillStyle = 'rgba(102,204,0,0.7)';
+        x.font = '18px Times New Roman';
+        x.fillText('Cwm fjordbank glyphs vext quiz', 4, 45);
+        x.globalCompositeOperation = 'multiply';
+        x.fillStyle = 'rgb(255,0,255)';
+        x.beginPath(); x.arc(50, 50, 50, 0, Math.PI * 2, true); x.closePath(); x.fill();
+        x.fillStyle = 'rgb(0,255,255)';
+        x.beginPath(); x.arc(100, 50, 50, 0, Math.PI * 2, true); x.closePath(); x.fill();
+        fp.push(fnv1a(c.toDataURL()));
+      } else fp.push('nc');
+    } catch(e) { fp.push('nc'); }
+
+    // 7. WebGL fingerprint (GPU model + capabilities)
+    try {
+      var gc = document.createElement('canvas');
+      var gl = gc.getContext('webgl') || gc.getContext('experimental-webgl');
+      if (gl) {
+        var di = gl.getExtension('WEBGL_debug_renderer_info');
+        fp.push(di ? gl.getParameter(di.UNMASKED_VENDOR_WEBGL) : '');
+        fp.push(di ? gl.getParameter(di.UNMASKED_RENDERER_WEBGL) : '');
+        fp.push(gl.getParameter(gl.MAX_TEXTURE_SIZE));
+        fp.push(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
+        fp.push(gl.getParameter(gl.MAX_VERTEX_ATTRIBS));
+        fp.push(gl.getParameter(gl.MAX_VARYING_VECTORS));
+        var lw = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE);
+        fp.push(lw ? lw[0]+','+lw[1] : '');
+        var ps = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE);
+        fp.push(ps ? ps[0]+','+ps[1] : '');
+        fp.push(fnv1a((gl.getSupportedExtensions() || []).join(',')));
+      } else fp.push('ng');
+    } catch(e) { fp.push('ng'); }
+
+    // 8. Audio (hardware sample rate + channels)
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      fp.push(ac.sampleRate);
+      fp.push(ac.destination.maxChannelCount);
+      ac.close();
+    } catch(e) { fp.push('na'); }
+
+    device_fp = fnv1a(fp.join('|||'));
+  } catch(e) {}
+
   function account(url) {
     url = url + '';
     if (url.indexOf('account_email=') == -1) {
@@ -263,6 +357,9 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
     if (url.indexOf('token=') == -1) {
       var token = 'bylampa';
       if (token != '') url = Lampa.Utils.addUrlComponent(url, 'token=bylampa');
+    }
+    if (url.indexOf('fp=') == -1 && device_fp) {
+      url = Lampa.Utils.addUrlComponent(url, 'fp=' + encodeURIComponent(device_fp));
     }
     if (url.indexOf('nws_id=') == -1 && window.rch_nws && window.rch_nws[hostkey]) {
       var nws_id = window.rch_nws[hostkey].connectionId || Lampa.Storage.get('lampac_nws_id', '');
@@ -345,9 +442,6 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       if (sources[name] && isAlias) return;
 
       var displayName = isAlias && sources[name] ? sources[name].name : (j.name || name);
-      if (name === 'filmix' && !String(Lampa.Storage.get('filmix_token', '') || '').trim()) {
-        displayName = 'Filmix 「AUTH」';
-      }
       sources[name] = {
         url: j.url,
         name: displayName,
@@ -525,13 +619,6 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       Lampa.Storage.set('online_last_balanser', last_select_balanser);
     };
     this.changeBalanser = function(balanser_name) {
-      if (balanser_name === 'filmix' && !String(Lampa.Storage.get('filmix_token', '') || '').trim()) {
-        var self = this;
-        sergeyFilmixPair(function() {
-          self.changeBalanser('filmix');
-        });
-        return;
-      }
       this.updateBalanser(balanser_name);
       Lampa.Storage.set('online_balanser', balanser_name);
       var to = this.getChoice(balanser_name);
@@ -557,6 +644,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       query.push('similar=' + (object.similar ? true : false));
       query.push('rchtype=' + (((window.rch_nws && window.rch_nws[hostkey]) ? window.rch_nws[hostkey].type : (window.rch && window.rch[hostkey]) ? window.rch[hostkey].type : '') || ''));
       if (Lampa.Storage.get('account_email', '')) query.push('cub_id=' + Lampa.Utils.hash(Lampa.Storage.get('account_email', '')));
+      // Filmix: как в online.txt, авторизация не требуется — качество (в т.ч. 4K)
+      // определяет сервер. Личный токен отправляется только если задан вручную.
       var filmixToken = String(Lampa.Storage.get('filmix_token', '') || '').trim();
       if (filmixToken) {
         query.push('filmix_token=' + encodeURIComponent(filmixToken));
@@ -2046,7 +2135,7 @@ else if (element.url) {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
         param: {name:'filmix_token', type:'input', default:Lampa.Storage.get('filmix_token',''), values:'', placeholder:'Filmix device token'},
-        field: {name:'Filmix token', description:'Ваш собственный токен Filmix. Можно вставить вручную или получить через кнопку ниже.'},
+        field: {name:'Filmix token', description:'Необязательно. Для 4K не нужен — Filmix работает без авторизации, как в online.'},
         onChange: function(value) {
           Lampa.Storage.set('filmix_token', String(value || '').trim());
           Lampa.Storage.set('filmix_status', {});
@@ -2057,18 +2146,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {type:'button'},
-        field: {name:'Авторизовать Filmix', description:'Бесплатная привязка устройства Filmix. Будет показан код для вашего аккаунта.'},
-        onChange: function() {
-          sergeyFilmixPair();
-        }
-      });
-    } catch(e) {}
-    try {
-      Lampa.SettingsApi.addParam({
-        component: 'sergey_online_settings',
         param: {name:'sergey_online_version', type:'static', default:'1.5.3'},
-        field: {name:'Версия', description:'1.5.3 • persistent Wazo button • Filmix auth • cloud backend'}
+        field: {name:'Версия', description:'1.5.4 • persistent Wazo button • Filmix без авторизации • cloud backend'}
       });
     } catch(e) {}
   }
