@@ -22,7 +22,7 @@ check('separate Wazo button', src.includes('sergey-online--button') && src.inclu
 check('active source picker is alphabetical', src.includes('function sourcePickerKeys()') && src.includes('if (available.length) list = available') && src.includes('return aa < bb ? -1 : aa > bb ? 1 : 0'));
 check('final source picker alphabetical hook', src.includes("__sergey_source_alpha_hook") && src.includes("Lampa.Select.listener.follow('preshow'") && src.includes('localeCompare'));
 check('failed source pruned', src.includes('if (sources[balanser]) sources[balanser].show = false') && src.includes('var keys = sourcePickerKeys()'));
-check('Wazo is primary leftmost button', src.includes(".full-start-new__buttons") && src.includes("newActions.prepend(btn)") && src.includes("sergey-online--button"));
+check('Wazo is primary leftmost button', src.includes("pinWazoFirst") && src.includes("mods.before(btn)") && src.includes("sergey-online--button"));
 check('Filmix free device auth flow', src.includes('function sergeyFilmixPair(onDone)') && src.includes('token_request?') && src.includes("Lampa.Storage.set('filmix_token'"));
 check('Filmix auth uses native request', src.includes('network["native"]') && src.includes("Lampa.Storage.set('filmix_level'"));
 check('Filmix selection auto-pairs', src.includes("balanser_name === 'filmix'") && src.includes('sergeyFilmixPair(function()'));

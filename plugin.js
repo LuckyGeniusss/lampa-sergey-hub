@@ -2241,24 +2241,40 @@ else if (element.url) {
         openSergeyActivity(e.movie);
       });
 
-      // Wazo is the primary online action: keep it leftmost, before MODS and
-      // the other source buttons, without changing Lampa's internal actions.
-      var newActions = root.find('.full-start-new__buttons').first();
-      if (newActions.length) {
-        newActions.prepend(btn);
-        return;
+      // Wazo must stay before MODS even when another plugin inserts/reorders
+      // its button after our listener has already fired.
+      function pinWazoFirst() {
+        if (!btn || !btn.length || !btn.closest('body').length) return;
+
+        var mods = root.find('.view--torrent:visible').first();
+        if (!mods.length) {
+          root.find('.full-start__button:visible, .full-start-new__button:visible').each(function() {
+            var el = $(this);
+            var txt = String(el.text() || '').replace(/\s+/g, ' ').trim().toLowerCase();
+            if (txt.indexOf('mods') === 0) {
+              mods = el;
+              return false;
+            }
+          });
+        }
+
+        // Preferred placement: immediately before MODS.
+        if (mods.length) {
+          if (!mods.prev().is(btn)) mods.before(btn);
+          return;
+        }
+
+        // Fallback while MODS is still loading: first button in the action row.
+        var actions = root.find('.full-start-new__buttons, .full-start__buttons, .full-start__buttons-wrap').first();
+        if (actions.length && !actions.children().first().is(btn)) actions.prepend(btn);
       }
 
-      var actions = root.find('.full-start__buttons, .full-start__buttons-wrap').first();
-      if (actions.length) {
-        actions.prepend(btn);
-        return;
-      }
-
-      var target = root.find('.view--torrent:visible').first();
-      if (!target.length && e.render && e.render.length && e.render.is(':visible')) target = e.render;
-      if (target.length) target.before(btn);
-      else root.prepend(btn);
+      pinWazoFirst();
+      // MODS is often injected a little later, so enforce the final order briefly.
+      setTimeout(pinWazoFirst, 100);
+      setTimeout(pinWazoFirst, 500);
+      setTimeout(pinWazoFirst, 1200);
+      setTimeout(pinWazoFirst, 2500);
     }
     Lampa.Listener.follow('full', function(e) {
       if (e.type == 'complite') {
