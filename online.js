@@ -2244,7 +2244,7 @@ else if (element.url) {
       // Wazo must stay before MODS even when another plugin inserts/reorders
       // its button after our listener has already fired.
       function pinWazoFirst() {
-        if (!btn || !btn.length || !btn.closest('body').length) return;
+        if (!btn || !btn.length || !root || !root.length) return;
 
         var mods = root.find('.view--torrent:visible').first();
         if (!mods.length) {
