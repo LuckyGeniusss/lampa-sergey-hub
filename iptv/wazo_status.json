@@ -1,0 +1,84 @@
+{
+  "date_utc": "2026-10-30T19:00:45Z",
+  "checked": 2136,
+  "working": 1350,
+  "movies": 341,
+  "by_source": {
+    "UA IPTV-org": 145,
+    "RU-language IPTV-org": 338,
+    "IE IPTV-org": 34,
+    "UA Free-TV": 22,
+    "RU Free-TV": 12,
+    "Provider": 739,
+    "Kino Plus": 1,
+    "UA IPTV-org-UA": 54,
+    "Kids": 5
+  },
+  "sources": {
+    "UA IPTV-org": {
+      "fetched": true,
+      "extinf": 201,
+      "unique_added": 200
+    },
+    "RU-language IPTV-org": {
+      "fetched": true,
+      "extinf": 652,
+      "unique_added": 604
+    },
+    "IE IPTV-org": {
+      "fetched": true,
+      "extinf": 59,
+      "unique_added": 57
+    },
+    "UA Free-TV": {
+      "fetched": true,
+      "extinf": 47,
+      "unique_added": 26
+    },
+    "RU Free-TV": {
+      "fetched": true,
+      "extinf": 59,
+      "unique_added": 46
+    },
+    "Provider": {
+      "fetched": true,
+      "extinf": 1595,
+      "unique_added": 1061
+    },
+    "Kino Plus": {
+      "fetched": true,
+      "extinf": 537,
+      "unique_added": 21
+    },
+    "UA IPTV-org-UA": {
+      "fetched": true,
+      "extinf": 245,
+      "unique_added": 104
+    },
+    "Kids": {
+      "fetched": true,
+      "extinf": 54,
+      "unique_added": 17
+    },
+    "PeersTV (moved)": {
+      "fetched": true,
+      "extinf": 1,
+      "unique_added": 0
+    },
+    "Kherson webcam": {
+      "fetched": false,
+      "error": "HTTP Error 401: Unauthorized"
+    }
+  },
+  "seconds": 497,
+  "errors": [
+    [
+      "",
+      677
+    ],
+    [
+      "Command '['/opt/homebrew/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout",
+      109
+    ]
+  ]
+}
