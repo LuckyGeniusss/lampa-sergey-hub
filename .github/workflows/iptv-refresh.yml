@@ -1,31 +1,34 @@
-name: Refresh verified IPTV playlist
+name: Refresh Wazo TV verified IPTV playlists
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'iptv/build.py'
+      - 'iptv/build_wazo.py'
       - '.github/workflows/iptv-refresh.yml'
   schedule:
     - cron: '17 4 * * *'
 permissions:
   contents: write
 jobs:
-  refresh:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
-      - run: python iptv/build.py
-      - name: Publish verified playlist
+      - name: Install video decoder
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Test and remove broken IPTV streams
+        run: python iptv/build_wazo.py
+      - name: Publish current verified streams
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add iptv/verified.m3u iptv/movies-series.m3u iptv/status.json
+          git add iptv/wazo_tv.m3u iptv/wazo_cinema.m3u iptv/wazo_status.json
           if ! git diff --cached --quiet; then
-            git commit -m "Refresh verified IPTV streams"
+            git commit -m "Refresh verified Wazo TV IPTV streams"
             git push
           fi
