@@ -1,6 +1,10 @@
-name: Refresh IPTV playlist
+name: Refresh verified IPTV playlist
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'iptv/build.py'
+      - '.github/workflows/iptv-refresh.yml'
   schedule:
     - cron: '17 4 * * *'
 permissions:
@@ -8,18 +12,20 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - run: python iptv/build.py
-      - name: Publish playlist if changed
+      - name: Publish verified playlist
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add iptv/combined.m3u
+          git add iptv/combined.m3u iptv/status.json
           if ! git diff --cached --quiet; then
-            git commit -m "Refresh combined IPTV channels"
+            git commit -m "Refresh verified IPTV streams"
             git push
           fi
