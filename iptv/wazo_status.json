@@ -1,18 +1,18 @@
 {
-  "date_utc": "2026-10-30T19:00:45Z",
+  "date_utc": "2026-10-30T19:10:50Z",
   "checked": 2136,
-  "working": 1350,
-  "movies": 341,
+  "working": 1495,
+  "movies": 380,
   "by_source": {
-    "UA IPTV-org": 145,
-    "RU-language IPTV-org": 338,
-    "IE IPTV-org": 34,
+    "UA IPTV-org": 156,
+    "RU-language IPTV-org": 384,
+    "IE IPTV-org": 41,
     "UA Free-TV": 22,
-    "RU Free-TV": 12,
-    "Provider": 739,
+    "RU Free-TV": 10,
+    "Provider": 820,
     "Kino Plus": 1,
-    "UA IPTV-org-UA": 54,
-    "Kids": 5
+    "UA IPTV-org-UA": 55,
+    "Kids": 6
   },
   "sources": {
     "UA IPTV-org": {
@@ -70,15 +70,15 @@
       "error": "HTTP Error 401: Unauthorized"
     }
   },
-  "seconds": 497,
+  "seconds": 418,
   "errors": [
     [
       "",
-      677
+      597
     ],
     [
-      "Command '['/opt/homebrew/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout",
-      109
+      "Command '['/usr/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '50000",
+      44
     ]
   ]
 }
