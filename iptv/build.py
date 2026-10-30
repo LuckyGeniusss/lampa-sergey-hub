@@ -36,6 +36,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
 playlist = ["#EXTM3U"]
 for (meta,url,_),good in zip(entries,checks):
  if good: playlist.extend(meta + [url])
-(ROOT/"combined.m3u").write_text("\n".join(playlist)+"\n",encoding="utf-8")
+(ROOT/"verified.m3u").write_text("\n".join(playlist)+"\n",encoding="utf-8")
 (ROOT/"status.json").write_text(json.dumps({"total":len(entries),"verified":sum(checks),"checked_at_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),"sources":SOURCES},ensure_ascii=False,indent=2)+"\n")
 print("Probed:",len(entries),"video streams:",sum(checks),flush=True)
