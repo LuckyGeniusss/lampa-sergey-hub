@@ -5,7 +5,7 @@ Requires Pillow through PYTHONPATH. Run from Mac mini only.
 """
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
-import hashlib, io, os, subprocess, sys, zipfile
+import hashlib, io, os, subprocess, sys, zipfile, struct
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path('/Volumes/Wazo-Projects/Backups/WazoTV/2026-10-31/WazoTV_installed_before_brand.apk')
@@ -19,6 +19,39 @@ with zipfile.ZipFile(SOURCE) as z:
     original = Image.open(io.BytesIO(z.read('res/drawable/wazo_icon_v2.png'))).convert('RGBA')
     manifest = z.read('AndroidManifest.xml')
 assert original.size == (512, 512)
+
+def update_manifest_version_code(xml, previous=7, target=8):
+    """Patch android:versionCode in compiled Android binary XML.
+    Resolve the attribute through its resource ID, never a blind byte replace.
+    """
+    b=bytearray(xml)
+    root_type, hdr, total=struct.unpack_from('<HHI',b,0)
+    assert root_type==3 and total==len(b)
+    mapping=[]; pos=hdr; updates=0
+    while pos<total:
+        kind, header, length=struct.unpack_from('<HHI',b,pos)
+        assert length>=header>=8 and pos+length<=total
+        if kind==0x0180: # resource map
+            mapping=[struct.unpack_from('<I',b,pos+8+4*i)[0] for i in range((length-8)//4)]
+        elif kind==0x0102: # start element
+            ext=pos+16
+            attr_start, attr_len, count=struct.unpack_from('<HHH',b,ext+8)
+            for i in range(count):
+                attr=ext+attr_start+i*attr_len
+                name=struct.unpack_from('<I',b,attr+4)[0]
+                if name<len(mapping) and mapping[name]==0x0101021b:
+                    dt=struct.unpack_from('<B',b,attr+15)[0]
+                    val=struct.unpack_from('<I',b,attr+16)[0]
+                    assert dt==0x10 and val==previous
+                    struct.pack_into('<I',b,attr+16,target)
+                    updates+=1
+            break
+        pos+=length
+    assert updates==1, 'android:versionCode not found exactly once'
+    return bytes(b)
+
+manifest=update_manifest_version_code(manifest)
+
 
 # Convert square artwork into genuine 16:9 television art; never stretch original.
 w, h = 1280, 720
@@ -60,12 +93,12 @@ for name,im in assets.items():
     image_bytes[name]=buf.getvalue()
 # The existing versionName is a fixed-length UTF-16LE attribute.
 old='2.5.2'.encode('utf-16le')
-new='2.5.4'.encode('utf-16le')
+new='2.5.5'.encode('utf-16le')
 assert manifest.count(old)==1
 manifest=manifest.replace(old,new)
-unsigned = OUT/'WazoTV_2.5.4_unsigned.apk'
-aligned = OUT/'WazoTV_2.5.4_aligned.apk'
-signed = OUT/'WazoTV_2.5.4.apk'
+unsigned = OUT/'WazoTV_2.5.5_unsigned.apk'
+aligned = OUT/'WazoTV_2.5.5_aligned.apk'
+signed = OUT/'WazoTV_2.5.5.apk'
 with zipfile.ZipFile(SOURCE) as src,zipfile.ZipFile(unsigned,'w') as dst:
     for member in src.infolist():
         if member.filename.startswith('META-INF/'):

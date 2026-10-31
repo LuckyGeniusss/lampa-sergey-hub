@@ -2,6 +2,12 @@ name: Wazo VOD provider health
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "tests/lib.js"
+      - "tests/backend-health.js"
+      - "tests/provider-discovery.js"
+      - ".github/workflows/wazo-vod-health.yml"
   schedule:
     - cron: '5 7 * * *'
 
