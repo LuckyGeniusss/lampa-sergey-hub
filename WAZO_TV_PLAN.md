@@ -1,27 +1,36 @@
-# Wazo TV — work plan / 2026-10-31
+# Wazo TV — единый план работ (31.10.2026)
 
-## Verified state
-- Fire Stick 10.129.1.223 connects by ADB from Mac mini; package ie.siaivo.tv version 2.5.2.
-- Source plugin 1.5.7 publicly hosted on GitHub Pages (before this change).
-- Cloud backend online; reports 78 configured sources, 82 discovery entries. For The Matrix, 28 search-positive providers; **search success is not playback proof**.
-- IPTV app points to published wazo_tv.m3u and wazo_cinema.m3u. Keep these lists and user settings.
-- Previous S Online injection removed in installed APK 2.5.2; visual end-to-end playback needs separate confirmation.
+## Подтверждено / выполнено
+- Fire TV Stick (Fire OS 8): ADB `10.129.1.223:5555`, Wazo TV `ie.siaivo.tv` v2.5.2 установлена, данные других приложений сохранены.
+- Устаревшая инъекция S Online отключена в APK 2.5.2; оригинальная Lampa, SmartTube и Zona не удалялись.
+- Wazo Online 1.5.8 опубликован на GitHub Pages, встроен в кнопку **Wazo** на карточке фильма.
+- Облачный backend Render работает: 78 сконфигурированных провайдеров, 82 события в `/lite/events`; динамические провайдеры и доступность меняются.
+- Исправление 1.5.8: дождаться полного поиска источников; показать все уникальные варианты в одном меню; недоступные показывать отдельно; фильтровать автоматические переключения; запоминать отказавшие источники для фильма; сохранять ручной выбор.
+- На Fire Stick подтверждено: плагин загрузился; открывается карточка «Матрица», меню источников и список озвучек; Zagonka воспроизводит видеопоток в штатном плеере с буферизацией (31.10.2026). Это не доказательство работы остальных провайдеров.
+- IPTV-плейлисты `iptv/wazo_tv.m3u` и `iptv/wazo_cinema.m3u` доступны на GitHub (на момент проверки 3096/786 строк). Источники iptv-org и Free-TV уже присутствуют в скрипте сборки; не путать строки M3U с количеством работающих каналов.
+- Автопроверка Projectivy Premium уже существует отдельно — второй дубль не создавать.
 
-## Implemented in plugin 1.5.8
-- Unified source picker includes all discovered provider rows with unavailable state.
-- Wait for provider discovery completion rather than resolving on first provider.
-- Remove provider aliases/doubles; filter autopick to available only.
-- Bounded auto-fallback with per-title failed-provider cache (10 minutes).
-- Do not overwrite manual preference on automatic fallback.
-- Keep the original Lampa / Wazo playback interface and IPTV setup.
+## Приоритет 1 — воспроизведение Wazo
+1. Проверить 5–10 различных фильмов и несколько сериалов на Fire Stick: доступность конкретной ссылки, звук, качество, субтитры, выбор серии/озвучки, переключение при ошибке.
+2. Провести ежедневную/периодическую верификацию провайдеров, исключать неработающие ссылки и недоступные/платные источники из автозапуска без обхода авторизации.
+3. Дополнять backend только реально совместимыми и разрешёнными источниками с протестированным API, не дублировать алиасы одного провайдера.
+4. Убедиться, что обновление плагина приходит автоматически через GitHub Pages после перезапуска Wazo TV.
 
-## Next tasks
-1. On-device verify source list and actual HLS/MP4 playback (movie and series) after publishing.
-2. Audit a reproducible sample of IPTV channel playback on Fire TV; remove dead streams without deleting user playlists.
-3. Fix distorted app icons and square logo, then validate on TV at native dimensions.
-4. Verify remote control, Wolf Launcher Home behaviour, and persistence across reboot.
-5. Monitor Projectivy premium purchase through the existing separately scheduled task; do not bypass licensing.
-6. Re-check cloud provider health periodically, but do not equate HTTP 200 or provider names with working movies.
+## Приоритет 2 — IPTV
+1. Проверить собственные плейлисты, ранее проверенные 876 потоков (538 с видео / 338 без подтверждения) и возможный старый кеш ~537 каналов на устройстве.
+2. Обновить/объединить UA/RU/IE и категории «кино», «сериалы», «документальные», провести ffprobe+реальный playback sample с Fire TV, удалить только подтверждённые дубли и сломанные URL из новых публикаций.
+3. Сохранить пользовательские плейлисты и настройки; не стирать данные сторонних приложений.
 
-## Safety
-Do not clear Android app data, reset Fire Stick, uninstall original Lampa/SmartTube, or change launchers as part of source fixes.
+## Приоритет 3 — интерфейс и лаунчер
+1. Привести лого и значки Wazo TV к одобренному неоновому бренду без растяжения: PNG mipmap/adaptive и реальный тест на Fire TV.
+2. Проверить стабильный запуск одного выбранного лаунчера после Home и перезагрузки без отключения системных сервисов Amazon. Проверить Projectivy/Wolf и убрать конкурирующие перехватчики.
+3. Русский язык, меню и категории, плитки Zona → SmartTube → Lampa первыми, остальные элементы скрывать безопасно. Не удалять оригинальную Lampa, SmartTube, Zona и системные компоненты.
+4. Projectivy Premium только официально, согласно текущей отдельной проверке покупки; обход лицензии не использовать.
+
+## Проверки перед каждым выпуском
+- Резервная копия APK / исходников, точный хеш версии и возможность отката.
+- Node syntax/static, API discovery, запуск реального ролика, Fire TV UI/пульт, сохранение Home/плейлистов после рестарта.
+- Факт «список источников» ≠ «ссылка воспроизводится». Отчёт разделять на «настроено», «обнаружено», «открылось» и «воспроизводилось».
+
+## Известное ограничение
+Playwright-тест Lampa в headless Chrome падает внутри `Activity.push` до полной инициализации страницы. Это не считаем успехом тестов; проверка реального Fire TV для Zagonka выполнена.
