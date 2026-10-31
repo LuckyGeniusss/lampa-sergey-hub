@@ -1,4 +1,4 @@
-/* Wazo 1.5.5
+/* Wazo 1.5.6
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -9,10 +9,10 @@
   // Default backend: public HTTPS Render service.
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
-  var SERGEY_DEFAULT_BACKEND = 'https://beta.l-vid.online';
-  var SERGEY_BACKEND_MIGRATION = '1.3.0';
+  var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
+  var SERGEY_BACKEND_MIGRATION = '1.5.6';
   var SERGEY_OLD_BACKENDS = [
-    'https://sergey-online-backend.onrender.com',
+    'https://beta.l-vid.online',
     'https://ab2024.ru',
     'http://hdpoisk.ru:2053',
     'https://hdpoisk.ru:2053',
@@ -2186,7 +2186,7 @@ else if (element.url) {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
         param: {name:'sergey_online_version', type:'static', default:'1.5.3'},
-        field: {name:'Версия', description:'1.5.5 • persistent Wazo button • токен сервера как в on.js'}
+        field: {name:'Версия', description:'1.5.6 • persistent Wazo button • токен сервера как в on.js'}
       });
     } catch(e) {}
   }
