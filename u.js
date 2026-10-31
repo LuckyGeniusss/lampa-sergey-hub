@@ -1,4 +1,4 @@
-/* Wazo 1.5.13
+/* Wazo 1.5.14
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.13';
+  var SERGEY_BACKEND_MIGRATION = '1.5.14';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -2236,8 +2236,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.13'},
-        field: {name:'Версия', description:'1.5.13 • единый IPTV и скрытие старых списков'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.14'},
+        field: {name:'Версия', description:'1.5.14 • единый IPTV с отдельным ID'}
       });
     } catch(e) {}
   }
@@ -2259,8 +2259,7 @@ else if (element.url) {
         // Remove ONLY our retired files. Do not touch third-party/custom lists.
         if (!ours) { result.push(p); return; }
         if (addr === url && !kept) {
-          kept = p;
-          kept.name = 'Wazo TV — Все каналы';
+          kept = Object.assign({},p,{id:'wazo_unified',name:'Wazo TV — Все каналы'});
           result.push(kept);
         }
       });
@@ -2321,7 +2320,7 @@ else if (element.url) {
         var old=(title.indexOf('wazo tv — кино, сериалы и детские')===0 ||
                  title.indexOf('wazo tv — украинские, русскоязычные и ирландские')===0 ||
                  title.indexOf('wazo tv — ирландские каналы')===0);
-        if (old && url.indexOf(root)>=0 && node.getAttribute('data-wazo-retired')!=='1') {
+        if (old && node.getAttribute('data-wazo-retired')!=='1') {
           node.setAttribute('data-wazo-retired','1');
           node.classList.remove('selector');
           node.style.display='none';
@@ -2332,10 +2331,12 @@ else if (element.url) {
     }
     var observer = new MutationObserver(clean);
     observer.observe(document.body,{childList:true,subtree:true});
+    console.log('WAZO_MENU_WATCHER_READY 1.5.14');
     clean();
   }
 
   function startPlugin() {
+    console.log('WAZO_UNIFIED_PLUGIN_VERSION 1.5.14');
     addSergeySettings();
     // APK may re-register its original playlists at each start.
     // Migrate after APK init, retaining all unrelated user playlists.
@@ -2364,7 +2365,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.13',
+      version: '1.5.14',
       name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2644,7 +2645,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.13',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.14',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

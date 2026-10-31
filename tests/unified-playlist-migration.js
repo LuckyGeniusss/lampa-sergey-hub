@@ -17,7 +17,7 @@ const ctx={console:{log(){},warn(){},error(){}},Lampa:{Storage:{
 vm.createContext(ctx);
 vm.runInContext(src.slice(a,b)+'\nwazoEnsureUnifiedPlaylist();',ctx);
 assert.equal(values.length,3);assert.equal(values.filter(v=>v.url===root+'wazo_tv.m3u').length,1);
-assert.equal(values.find(v=>v.id==='wazo_tv').name,'Wazo TV — Все каналы');
+assert.equal(values.find(v=>v.id==='wazo_unified').name,'Wazo TV — Все каналы');
 assert.deepEqual(values.filter(v=>v.id==='foreign'||v.id==='external2').map(v=>v.id),['foreign','external2']);
 assert.equal(writes,1);
 vm.runInContext('wazoEnsureUnifiedPlaylist();',ctx);
@@ -25,4 +25,4 @@ assert.equal(writes,1,'must be idempotent');
 values=[{id:'personal',name:'Private',url:'https://private.example/a.m3u'},{id:'wazo_ireland',url:root+'wazo_ireland.m3u'}];writes=0;
 vm.runInContext('wazoEnsureUnifiedPlaylist();',ctx);
 assert.equal(values.length,2);assert.equal(values[0].id,'personal');assert.equal(values[1].id,'wazo_unified');assert.equal(writes,1);
-console.log('PASS: migration keeps user lists, removes obsolete Wazo lists, preserves active main ID, is idempotent');
+console.log('PASS: migration keeps user lists, removes obsolete Wazo lists, uses unique ID, is idempotent');
