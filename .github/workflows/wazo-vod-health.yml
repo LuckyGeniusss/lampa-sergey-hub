@@ -1,0 +1,30 @@
+name: Wazo VOD provider health
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 7 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wazo-vod-health
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      SERGEY_BACKEND: https://sergey-online-backend.onrender.com
+      SERGEY_TIMEOUT_MS: '30000'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check cloud backend, CORS and registered providers
+        run: node tests/backend-health.js
+      - name: Check live movie and series provider discovery
+        run: node tests/provider-discovery.js
