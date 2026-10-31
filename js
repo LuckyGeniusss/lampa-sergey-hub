@@ -1,4 +1,4 @@
-/* Wazo 1.5.6
+/* Wazo 1.5.7
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.6';
+  var SERGEY_BACKEND_MIGRATION = '1.5.7';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -489,7 +489,12 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       // the filter is never empty.
       if (available.length) list = available;
 
+      // Prefer providers with verified media responses; keep the remaining
+      // available providers as alphabetic fallbacks.
+      var preferred = ['zagonka', 'vkmovie'];
       return list.sort(function(a, b) {
+        var ai = preferred.indexOf(a), bi = preferred.indexOf(b);
+        if (ai != bi) return ai < 0 ? 1 : bi < 0 ? -1 : ai - bi;
         var aa = String(sources[a] && sources[a].name || a).toLowerCase();
         var bb = String(sources[b] && sources[b].name || b).toLowerCase();
         return aa < bb ? -1 : aa > bb ? 1 : 0;
@@ -647,9 +652,10 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       last_select_balanser[object.movie.id] = balanser_name;
       Lampa.Storage.set('online_last_balanser', last_select_balanser);
     };
-    this.changeBalanser = function(balanser_name) {
+    this.changeBalanser = function(balanser_name, autoSwitch) {
       this.updateBalanser(balanser_name);
-      Lampa.Storage.set('online_balanser', balanser_name);
+      // Automatic retries must not overwrite the manually preferred provider.
+      if (!autoSwitch) Lampa.Storage.set('online_balanser', balanser_name);
       var to = this.getChoice(balanser_name);
       var from = this.getChoice();
       if (from.voice_name) to.voice_name = from.voice_name;
@@ -688,7 +694,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       if (last_select_balanser[object.movie.id]) {
         return last_select_balanser[object.movie.id];
       } else {
-        return Lampa.Storage.get('online_balanser', filter_sources.length ? filter_sources[0] : '');
+        var defaultSource = sources.zagonka && sources.zagonka.show ? 'zagonka' : (filter_sources.length ? filter_sources[0] : '');
+        return Lampa.Storage.get('online_balanser', defaultSource);
       }
     };
     this.startSource = function(json) {
@@ -702,7 +709,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
           if (last_select_balanser[object.movie.id]) {
             balanser = last_select_balanser[object.movie.id];
           } else {
-            balanser = Lampa.Storage.get('online_balanser', filter_sources[0]);
+            var defaultSource = sources.zagonka && sources.zagonka.show ? 'zagonka' : filter_sources[0];
+            balanser = Lampa.Storage.get('online_balanser', defaultSource);
           }
           if (!sources[balanser]) balanser = filter_sources[0];
           if (!sources[balanser].show && !object.lampac_custom_select) {
@@ -1748,7 +1756,7 @@ else if (element.url) {
       var html = Lampa.Template.get('lampac_does_not_answer', {});
       html.find('.online-empty__buttons').remove();
       html.find('.online-empty__title').text(Lampa.Lang.translate('title_error'));
-      html.find('.online-empty__time').text(er && er.accsdb ? er.msg : Lampa.Lang.translate('lampac_does_not_answer_text').replace('{balanser}', balanser[balanser].name));
+      html.find('.online-empty__time').text(er && er.accsdb ? er.msg : Lampa.Lang.translate('lampac_does_not_answer_text').replace('{balanser}', sources[balanser] ? sources[balanser].name : balanser));
       scroll.clear();
       scroll.append(html);
       this.loading(false);
@@ -1789,7 +1797,7 @@ else if (element.url) {
           var next = keys[indx + 1] || keys[0];
           if (!next) return;
           balanser = next;
-          if (Lampa.Activity.active().activity == _this9.activity) _this9.changeBalanser(balanser);
+          if (Lampa.Activity.active().activity == _this9.activity) _this9.changeBalanser(balanser, true);
         }
       }, 1000);
     };
@@ -2186,7 +2194,7 @@ else if (element.url) {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
         param: {name:'sergey_online_version', type:'static', default:'1.5.3'},
-        field: {name:'Версия', description:'1.5.6 • persistent Wazo button • токен сервера как в on.js'}
+        field: {name:'Версия', description:'1.5.7 • persistent Wazo button • токен сервера как в on.js'}
       });
     } catch(e) {}
   }
