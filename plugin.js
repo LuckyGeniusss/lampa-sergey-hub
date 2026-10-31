@@ -1,4 +1,4 @@
-/* Wazo 1.5.8
+/* Wazo 1.5.9
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.8';
+  var SERGEY_BACKEND_MIGRATION = '1.5.9';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -398,6 +398,37 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
   }
 
   var Network = Lampa.Reguest;
+  var wazoPendingPlayback = null;
+  // WAZO_PLAYBACK_WATCHER_BEGIN
+  function wazoInstallPlaybackWatcher() {
+    if (window.__wazoPlaybackWatcherInstalled) return;
+    if (!Lampa.PlayerVideo || !Lampa.PlayerVideo.listener) return;
+    window.__wazoPlaybackWatcherInstalled = true;
+    console.log('WAZO_PLAYBACK_GUARD_READY 1.5.9');
+    Lampa.PlayerVideo.listener.follow('error', function(e) {
+      var pending = wazoPendingPlayback;
+      if (!pending || !e || !e.fatal) return;
+      if (Date.now() - pending.at > 90000) {
+        wazoPendingPlayback = null;
+        return;
+      }
+      wazoPendingPlayback = null;
+      try { pending.fail(e.error || 'HLS playback error'); }
+      catch (err) { console.warn('Wazo playback fallback failed', err); }
+    });
+    Lampa.PlayerVideo.listener.follow('timeupdate', function(e) {
+      var pending = wazoPendingPlayback;
+      if (!pending) return;
+      if (e && Number(e.current) >= 2) {
+        wazoPendingPlayback = null;
+        try { pending.ok(); } catch (err) {}
+      }
+    });
+    Lampa.PlayerVideo.listener.follow('destroy', function() {
+      wazoPendingPlayback = null;
+    });
+  }
+  // WAZO_PLAYBACK_WATCHER_END
 
   function component(object) {
     var network = new Network();
@@ -728,7 +759,7 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
             balanser = Lampa.Storage.get('online_balanser', defaultSource);
           }
           if (!sources[balanser]) balanser = filter_sources[0];
-          if (!sources[balanser].show && !object.lampac_custom_select) {
+          if ((!sources[balanser].show || failedSourcesForMovie()[balanser]) && !object.lampac_custom_select) {
             var availableSources = sourcePickerKeys().filter(function(key) {
               return !failedSourcesForMovie()[key];
             });
@@ -943,6 +974,20 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       var _this5 = this;
       this.draw(videos, {
         onEnter: function onEnter(item, html) {
+          function failedToStart(reason, fromPlayer, provider) {
+            if (provider !== balanser) return;
+            if (fromPlayer) {
+              try { if (Lampa.Player && Lampa.Player.close) Lampa.Player.close(); } catch (err) {}
+            }
+            setTimeout(function() {
+              try {
+                if (Lampa.Activity.active().activity !== _this5.activity) return;
+                Lampa.Noty.show('Wazo: источник недоступен, проверяем следующий');
+                _this5.doesNotAnswer({msg: reason});
+              } catch (err) { console.warn('Wazo fallback', err); }
+            }, fromPlayer ? 350 : 0);
+          }
+          var attemptedProvider = balanser;
           _this5.getFileUrl(item, function(json, json_call) {
             if (json && json.url) {
               var playlist = [];
@@ -1028,15 +1073,27 @@ else if (element.url) {
     Player.play(element);
   }
 }
-                Lampa.Player.play(element);
-                Lampa.Player.playlist(playlist);
+                wazoInstallPlaybackWatcher();
+                wazoPendingPlayback = {
+                  at: Date.now(),
+                  fail: function(reason) { failedToStart(reason, true, attemptedProvider); },
+                  ok: function() { _this5.updateBalanser(attemptedProvider); item.mark(); }
+                };
+                try {
+                  Lampa.Player.play(element);
+                  Lampa.Player.playlist(playlist);
+                } catch (err) {
+                  wazoPendingPlayback = null;
+                  failedToStart('player could not start', true, attemptedProvider);
+                  return;
+                }
 				if(element.subtitles_call) _this5.loadSubtitles(element.subtitles_call)
-                item.mark();
-                _this5.updateBalanser(balanser);
               } else {
-                Lampa.Noty.show(Lampa.Lang.translate('lampac_nolink'));
+                failedToStart('empty playback URL', false, attemptedProvider);
               }
-            } else Lampa.Noty.show(Lampa.Lang.translate('lampac_nolink'));
+            } else {
+              failedToStart('provider did not return a playable URL', false, attemptedProvider);
+            }
           }, true);
         },
         onContextMenu: function onContextMenu(item, html, data, call) {
@@ -2179,14 +2236,15 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.8'},
-        field: {name:'Версия', description:'1.5.8 • все источники в одном списке • ограниченное автопереключение'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.9'},
+        field: {name:'Версия', description:'1.5.9 • резерв при ошибке HLS и отсутствии ссылки'}
       });
     } catch(e) {}
   }
 
   function startPlugin() {
     addSergeySettings();
+    wazoInstallPlaybackWatcher();
     window.sergey_online_plugin = true;
 
     // Lampa themes/plugins can rebuild Select items after our Filter call.
@@ -2208,7 +2266,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.3',
+      version: '1.5.9',
       name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2488,7 +2546,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.3',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.9',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

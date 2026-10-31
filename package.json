@@ -1,6 +1,6 @@
 {
   "name": "lampa-sergey-hub",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "description": "Wazo Online unified multi-source plugin for Lampa",
   "main": "plugin.js",
   "directories": {
