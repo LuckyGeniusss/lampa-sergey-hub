@@ -65,6 +65,10 @@ http://stream.mcquack.net/339/index.m3u8
 http://stream.mcquack.net/466/index.m3u8
 #EXTINF:-1 tvg-id="ViasatEpicDrama.uk@Ukraine" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/e/e1/Viasat_Epic_Drama_2026.svg" group-title="Series",Viasat Epic Drama Ukraine (576p)
 http://195.189.60.253/118/index.m3u8
+#EXTINF:-1 tvg-id="ViasatHistory.ua@SD" tvg-logo="https://i.imgur.com/39qZ68J.png" http-referrer="http://live.tvstitch.com/" http-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36" group-title="Documentary",Viasat History (Ukraine)
+#EXTVLCOPT:http-referrer=http://live.tvstitch.com/
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+http://777905.live.tvstitch.com/playlist.m3u8?source=aHR0cDovLzE3Ni4xMjIuMTAzLjI0MTo3MDAwL2NoODYvdHJhY2tzLXYxYTEvbW9uby5tM3U4P2xpdmU9MSZpcD0xNzguMTM2LjQyLjIyMCZpZD05NDg4NjUmc2VjcmV0PW4xdTd1aTA2JnNzbD0xJjIxeW89MCZlPTE3OTA3NTM0ODYmc3Q9MVprUlhpb2xfODRPc2RMR2R0VDNzQQ%3D%3D&master=78
 #EXTINF:-1 tvg-id="ViasatKinoComedy.ua@SD" tvg-logo="https://i.imgur.com/qVYt8kP.png" http-referrer="http://live.tvstitch.com/" http-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36" group-title="Comedy;Movies",Viasat Kino Comedy
 #EXTVLCOPT:http-referrer=http://live.tvstitch.com/
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
@@ -77,6 +81,8 @@ http://777905.live.tvstitch.com/playlist.m3u8?source=aHR0cDovLzE3Ni4xMjIuMTAzLjI
 #EXTVLCOPT:http-referrer=http://live.tvstitch.com/
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
 http://777905.live.tvstitch.com/playlist.m3u8?source=aHR0cDovLzE3Ni4xMjIuMTAzLjI0MTo3MDAwL2NoNDUvdHJhY2tzLXYyYTEvbW9uby5tM3U4P2xpdmU9MSZpcD0xNzguMTM2LjQyLjIyMCZpZD05NDg4NjUmc2VjcmV0PW4xdTd1aTA2JnNzbD0xJjIxeW89MCZlPTE3OTA2MDExNzAmc3Q9VS12czVHQmhOdF9WQXJ4bHVYVzR2dw%3D%3D&master=599
+#EXTINF:-1 tvg-id="5minuttishiny.ru@SD" tvg-logo="https://cdn2-static.ntv.ru/home/promo/24740/5minut_live.jpg" group-title="Series",5 minut tishiny (1080p)
+https://cdn-dvr.ntv.ru/5_minut_tishiny/index.m3u8
 #EXTINF:-1 tvg-id="365daysTV.ru@SD" tvg-logo="https://i.imgur.com/NfnAiTR.png" group-title="Documentary",365 days TV (576p)
 http://stream.mcquack.net/70/index.m3u8
 #EXTINF:-1 tvg-id="AmediaHit.ru@SD" tvg-logo="https://i.imgur.com/a8ZBGBw.png" group-title="Movies;Series",Amedia Hit (1080p)
@@ -101,26 +107,14 @@ http://176.118.197.101/Bollywood_HD/index.m3u8
 https://xykt-fix.github.io/cinerama_edge01/hls/BOLLYWOOD_RU/Movie009.m3u8
 #EXTINF:-1 tvg-id="Carousel.ru@Plus4" tvg-logo="https://i.imgur.com/4wmnx1W.png" group-title="Kids",Carousel +4 (720p)
 http://185.37.150.46/Karusel/index.m3u8
-#EXTINF:-1 tvg-id="CartoonClassics.ru@SD" tvg-logo="https://sales.planbkino.tv//b/c/471.png" group-title="Kids",Cartoon Classics (Russia)
-http://88.218.242.237:8001/Cartoon_Classics
 #EXTINF:-1 tvg-id="Cinema.ru@SD" tvg-logo="https://i.imgur.com/b5e9qUA.png" group-title="Movies",Cinema (Russia) (576p)
 http://flussonic.linkintel.ru/cinema/index.m3u8
-#EXTINF:-1 tvg-id="CityEdenKinoAction.ru@HD" tvg-logo="https://i.imgur.com/uuzuvD0.png" group-title="Movies",City Eden KinoAction [Not 24/7]
-https://cityeden.catcast.tv/content/41333/index.m3u8
-#EXTINF:-1 tvg-id="CityEdenKinoArt.ru@HD" tvg-logo="https://i.imgur.com/67CWCtz.png" group-title="Movies",City Eden KinoArt [Not 24/7]
-https://cityeden.catcast.tv/content/38398/index.m3u8
 #EXTINF:-1 tvg-id="CityEdenKinoAsia.ru@HD" tvg-logo="https://i.imgur.com/gaket4B.png" group-title="Movies",City Eden KinoAsia [Not 24/7]
 https://cityeden.catcast.tv/content/34393/index.m3u8
-#EXTINF:-1 tvg-id="CityEdenKinoDok.ru@HD" tvg-logo="https://i.imgur.com/itRbMX3.png" group-title="Documentary;Series",City Eden KinoDok [Not 24/7]
-https://cityeden.catcast.tv/content/38354/index.m3u8
 #EXTINF:-1 tvg-id="CityEdenKinoDrama.ru@HD" tvg-logo="https://i.imgur.com/29ddffh.png" group-title="Movies",City Eden KinoDrama [Not 24/7]
 https://cityeden.catcast.tv/content/45269/index.m3u8
-#EXTINF:-1 tvg-id="CityEdenKinoFantastika.ru@HD" tvg-logo="https://i.imgur.com/I64FeIO.png" group-title="Movies",City Eden KinoFantastika [Not 24/7]
-https://cityeden.catcast.tv/content/45268/index.m3u8
-#EXTINF:-1 tvg-id="CityEdenKinoKomediya.ru@HD" tvg-logo="https://i.imgur.com/Aga2XVA.png" group-title="Movies",City Eden KinoKomediya [Not 24/7]
-https://cityeden.catcast.tv/content/41331/index.m3u8
-#EXTINF:-1 tvg-id="CityEdenKinoMistika.ru@HD" tvg-logo="https://i.imgur.com/s1Pid0K.png" group-title="Movies",City Eden KinoMistika [Not 24/7]
-https://cityeden.catcast.tv/content/40783/index.m3u8
+#EXTINF:-1 tvg-id="CityEdenKinoKlassika.ru@HD" tvg-logo="https://i.imgur.com/0qGCS1S.png" group-title="Movies",City Eden KinoKlassika [Not 24/7]
+https://cityeden.catcast.tv/content/34185/index.m3u8
 #EXTINF:-1 tvg-id="Detskiy.ru@SD" tvg-logo="https://mt.media/upload/iblock/c22/pndw8yi2jwgppdrjikm3eusqp8087kr3.png" group-title="Kids",Detskiy (576p)
 https://stream8.cinerama.uz/1033/tracks-v1a1/mono.m3u8
 #EXTINF:-1 tvg-id="Domkino.ru@SD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%D0%B0_%D0%94%D0%BE%D0%BC_%D0%9A%D0%B8%D0%BD%D0%BE.png/960px-%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%D0%B0_%D0%94%D0%BE%D0%BC_%D0%9A%D0%B8%D0%BD%D0%BE.png" group-title="Movies",Dom kino (576p)
@@ -144,8 +138,6 @@ http://stream.mcquack.net/363/index.m3u8
 https://live-rian.cdnvideo.ru/rian/rus-radio/playlist.m3u8
 #EXTINF:-1 tvg-id="IllusionPlus.ru@SD" tvg-logo="https://i.imgur.com/9GvuHQ5.png" group-title="Movies",Illusion+ (576p)
 http://176.118.197.101/Illuzion+/index.m3u8
-#EXTINF:-1 tvg-id="IndiyskoyeKino.ru@SD" tvg-logo="https://i.imgur.com/LL8GyCh.png" group-title="Movies",Indiyskoye Kino (576p)
-http://188.113.190.12/329/index.m3u8
 #EXTINF:-1 tvg-id="InvestigationDiscovery.ru@SD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/InvestigationDiscoveryLogo2020.svg/960px-InvestigationDiscoveryLogo2020.svg.png" group-title="Documentary",Investigation Discovery (Russia) (1080p)
 http://stream.mcquack.net/205/index.m3u8
 #EXTINF:-1 tvg-id="KapitanFantastika.ru@SD" tvg-logo="https://i.imgur.com/K3PSHiT.png" group-title="Kids",Kapitan Fantastika (1080p)
@@ -270,10 +262,6 @@ http://178.124.179.122:8080/HistoryHD/index.m3u8
 http://stream.mcquack.net/110/index.m3u8
 #EXTINF:-1 tvg-id="vijuTV1000action.ru@SD" tvg-logo="https://i.imgur.com/TMmyuzh.png" group-title="Movies",viju TV1000 action (576p)
 http://stream.mcquack.net/100/index.m3u8
-#EXTINF:-1 tvg-id="vijuTV1000novella.ru@HD" tvg-logo="https://www.cableman.ru/sites/default/files/viju_TV1000_%D0%BD%D0%BE%D0%B2%D0%B5%D0%BB%D0%BB%D0%B0_color_rgb_02%20%281%29.png" group-title="Movies",viju TV1000 novella HD (1080p)
-http://46.53.200.153:7777/play/VIJU_TV_1000_novella/index.m3u8
-#EXTINF:-1 tvg-id="vijuTV1000romantica.ru@HD" tvg-logo="https://rnnxdki1nv.a.trbcdn.net/viasat/production/tvchannels/dc243048-c5ad-4ccc-86c6-3a480874ec29/logos/flo59mr6lh1jf68g3021urgwtd5k" group-title="Series",viju TV1000 romantica HD (1080p)
-http://46.53.200.153:7777/play/Viju_Drama/index.m3u8
 #EXTINF:-1 tvg-id="vijuPlusMegahit.ru@HD" tvg-logo="https://i.imgur.com/oIQNddV.png" group-title="Movies",viju+ Megahit HD (1080p)
 http://stream.mcquack.net/200/index.m3u8
 #EXTINF:-1 tvg-id="vijuPlusPlanet.ru@HD" tvg-logo="https://i.imgur.com/9Weqdsk.png" group-title="Documentary",viju+ Planet HD (1080p)
@@ -284,22 +272,14 @@ http://stream.mcquack.net/202/index.m3u8
 http://stream.mcquack.net/311/index.m3u8
 #EXTINF:-1 tvg-id="Avatar.de@GB" tvg-logo="https://images.pluto.tv/channels/656df599c0fc8800089c75ab/colorLogoPNG.png" group-title="Animation;Kids;Series",Avatar (Germany)
 https://jmp2.uk/plu-656df599c0fc8800089c75ab.m3u8
-#EXTINF:-1 tvg-id="CagneyLacey.de@GB" tvg-logo="https://images.pluto.tv/channels/6960c5a906d76f50db2816dc/colorLogoPNG_1767949823270.png" group-title="Series",Cagney & Lacey
-https://jmp2.uk/plu-6960c5a906d76f50db2816dc.m3u8
 #EXTINF:-1 tvg-id="CSICrimeSceneInvestigation.de@GB" tvg-logo="https://images.pluto.tv/channels/6304f8d5ffb61000071ab478/colorLogoPNG.png" group-title="Series",CSI: Crime Scene Investigation
 https://jmp2.uk/plu-6304f8d5ffb61000071ab478.m3u8
 #EXTINF:-1 tvg-id="MoreTVCrime.de@GB" tvg-logo="https://images.pluto.tv/channels/639b558c73423d00071ce624/colorLogoPNG.png" group-title="Series",More TV Crime
 https://jmp2.uk/plu-639b558c73423d00071ce624.m3u8
-#EXTINF:-1 tvg-id="Nickelodeon.uk@SD" tvg-logo="https://i.imgur.com/E84jnP8.png" group-title="Kids",Nickelodeon (United Kingdom) (576p)
-http://tvsen7.aynascope.net/nicklodean/index.m3u8
-#EXTINF:-1 tvg-id="PlutoTVAlienInvasion.de@GB" tvg-logo="https://images.pluto.tv/channels/6462190b7cb4b1000862dd60/colorLogoPNG.png" group-title="Documentary",Pluto TV Alien Invasion (Germany)
-https://jmp2.uk/plu-6462190b7cb4b1000862dd60.m3u8
 #EXTINF:-1 tvg-id="PlutoTVAmericanTrueCrime.de@GB" tvg-logo="https://images.pluto.tv/channels/692ebafce72f03e07e7df985/colorLogoPNG_1768902223754.png" group-title="Documentary;Series",Pluto TV American True Crime
 https://jmp2.uk/plu-692ebafce72f03e07e7df985.m3u8
 #EXTINF:-1 tvg-id="PlutoTVAnimals.de@GB" tvg-logo="https://images.pluto.tv/channels/5d767ae7b456c8cf265ce922/colorLogoPNG.png" group-title="Documentary",Pluto TV Animals GB
 https://jmp2.uk/plu-5ddf8ea0d000120009bcad83.m3u8
-#EXTINF:-1 tvg-id="PlutoTVBritainatWar.de@GB" tvg-logo="https://images.pluto.tv/channels/625e8cb585ef320007806caf/colorLogoPNG.png" group-title="Documentary",Pluto TV Britain at War
-https://jmp2.uk/plu-625e8cb585ef320007806caf.m3u8
 #EXTINF:-1 tvg-id="PlutoTVConspiracy.de@GB" tvg-logo="https://images.pluto.tv/channels/5d4ae94ef1a1bbb350ca41bb/colorLogoPNG.png" group-title="Documentary",Pluto TV Conspiracy
 https://jmp2.uk/plu-5d4ae94ef1a1bbb350ca41bb.m3u8
 #EXTINF:-1 tvg-id="PlutoTVCrime.de@GB" tvg-logo="https://images.pluto.tv/channels/5e7b6c60fd20c50007910bf5/colorLogoPNG.png" group-title="Series",Pluto TV Crime GB
@@ -308,8 +288,6 @@ https://jmp2.uk/plu-5d767790d0438aceb41d03ae.m3u8
 https://jmp2.uk/plu-5c5c31f2f21b553c1f673fb0.m3u8
 #EXTINF:-1 tvg-id="PlutoTVFamilyMovieClub.de@GB" tvg-logo="https://images.pluto.tv/channels/5dc3fc6b9133f500099c7d98/colorLogoPNG.png" group-title="Movies",Pluto TV Family Movie Club
 https://jmp2.uk/plu-5dc3fc6b9133f500099c7d98.m3u8
-#EXTINF:-1 tvg-id="PlutoTVFantasyHorror.de@GB" tvg-logo="https://images.pluto.tv/channels/685041d936c9361b1921c26c/colorLogoPNG_1753696741486.png" group-title="Movies",Pluto TV Fantasy & Horror
-https://jmp2.uk/plu-685041d936c9361b1921c26c.m3u8
 #EXTINF:-1 tvg-id="PlutoTVFood.de@GB" tvg-logo="https://images.pluto.tv/channels/5dc280c9aa218c0009724b4b/colorLogoPNG_1769092247484.png" group-title="Cooking;Documentary",Pluto TV Food GB
 https://jmp2.uk/plu-5ddf930548ff9b00090d5686.m3u8
 #EXTINF:-1 tvg-id="PlutoTVInvestigation.de@GB" tvg-logo="https://images.pluto.tv/channels/63808dc806aa4700075f319a/colorLogoPNG.png" group-title="Series",Pluto TV Investigation
@@ -320,8 +298,6 @@ https://jmp2.uk/plu-5ad8d3a31b95267e225e4e09.m3u8
 https://jmp2.uk/plu-65a7b0814a10d800085ff2df.m3u8
 #EXTINF:-1 tvg-id="PlutoTVRetroToons.de@GB" tvg-logo="https://images.pluto.tv/channels/611e6a9b4bb5790007a6f0f8/colorLogoPNG.png" group-title="Animation;Kids",Pluto TV Retro Toons GB
 https://jmp2.uk/plu-5c5c2b9d8002db3c3e0b1c6d.m3u8
-#EXTINF:-1 tvg-id="PlutoTVScifiSeries.de@GB" tvg-logo="https://images.pluto.tv/channels/619247c34a270700077c8415/colorLogoPNG.png" group-title="Series",Pluto TV Sci-fi Series
-https://jmp2.uk/plu-619247c34a270700077c8415.m3u8
 #EXTINF:-1 tvg-id="PlutoTVSitcoms.de@GB" tvg-logo="https://images.pluto.tv/channels/5d767ab2b456c8cf265ce921/colorLogoPNG.png" group-title="Comedy;Series",Pluto TV Sitcoms GB
 https://jmp2.uk/plu-62f53dc6ee9a0400071dc22b.m3u8
 #EXTINF:-1 tvg-id="PlutoTVSpace.de@GB" tvg-logo="https://images.pluto.tv/channels/61409f8d6feb30000766b675/colorLogoPNG.png" group-title="Documentary",Pluto TV Space (Germany) GB
@@ -402,8 +378,6 @@ http://kinowalk.hopto.org/yurich_kinomix_live
 http://kinowalk.hopto.org/dak3767_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/131?unique=2026-04-18+14%3A59%3A01.656696&access_token=68e10dfb-bb95-4c50-ad98-3489a187164a",фильмы для вас
 http://kinowalk.hopto.org/maldrvsetv_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/138?unique=2026-02-20+01%3A57%3A49.533570&access_token=285f2593-438c-483d-9e44-56623b9aad6b",Фильмы сериалы трансляции
-http://kinowalk.hopto.org/id582512126_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/143?unique=2026-02-20+01%3A57%3A49.533570&access_token=7f24d00a-1b96-4adf-83f3-ca15905f92ff",SerialTV
 http://kinowalk.hopto.org/serialtv_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/144?unique=2026-02-20+01%3A57%3A49.533570&access_token=727fd810-96be-4f07-97df-b005856b3d17",serial4u
@@ -412,6 +386,8 @@ http://kinowalk.hopto.org/serial4u_live
 http://kinowalk.hopto.org/kinomania_stream_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/156?unique=2026-02-20+01%3A57%3A49.533570&access_token=b6fa67dd-5172-4283-9628-d86364b1fdcd",Alex.Films
 http://kinowalk.hopto.org/alex.films_live
+#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/170?unique=2026-02-20+01%3A57%3A49.533570&access_token=d1125d21-53c0-4f17-88e7-9176f005aa22",Тоха Стрим
+http://kinowalk.hopto.org/toxa_stream_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/171?unique=2026-02-20+01%3A57%3A49.533570&access_token=0ca348ad-f5c6-4d8d-9c81-43a5349f75f9",Мы из 90-х
 http://kinowalk.hopto.org/miiz90x_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/182?unique=2026-02-20+01%3A57%3A49.533570&access_token=dd29d873-f7ed-42eb-81cf-669887782fdb",lampoTV
@@ -434,52 +410,32 @@ http://kinowalk.hopto.org/and7610_live
 http://kinowalk.hopto.org/igrocomp_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/239?unique=2026-03-03+11%3A23%3A02.745062&access_token=d5965f8e-534f-458b-9634-f0f3bec9d7d3",dj Zour
 http://kinowalk.hopto.org/zsmedia_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/270?unique=2026-04-19+06%3A48%3A44.166070&access_token=e0548209-0821-42f4-8c7e-c49cd294d8d2",LifeZ
-http://kinowalk.hopto.org/zhekos_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/275?unique=2026-04-19+06%3A55%3A19.206545&access_token=e8a436a0-7eb4-46b1-8f7e-06fc05b14ca1",AlexVira
-http://kinowalk.hopto.org/alexvira_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/305?unique=2026-05-22+10%3A24%3A48.427204&access_token=90e551d1-4a68-439b-8ccd-efeda61ccf34",NEZABUDKA
-http://kinowalk.hopto.org/nezabudka_live
+#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/295?unique=2026-05-08+10%3A22%3A58.142219&access_token=aba5562b-f0f3-49e0-bbc0-acec67c0e8e7",Шурентий Live
+http://kinowalk.hopto.org/shurentiy_live_live
+#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/303?unique=2026-05-22+10%3A23%3A31.311706&access_token=988ea5ef-296b-4c20-a38a-cb90605c7a89",Киномульт_HD
+http://kinowalk.hopto.org/kinomult_hd_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/308?unique=2026-06-15+09%3A48%3A56.207257&access_token=9be562f6-87ff-4ed6-accb-a66125d5d590",FRXNKL1N
 http://kinowalk.hopto.org/frxnkl1n_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/311?unique=2026-06-15+09%3A58%3A34.066788&access_token=86955f71-9d69-4085-80ab-d9f331afbaca",Кладовая Фильмов
 http://kinowalk.hopto.org/skladfilm_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/312?unique=2026-06-15+10%3A11%3A36.264054&access_token=effa622b-b844-48ae-9516-9528a9f1410c",NeoVision TV
-http://kinowalk.hopto.org/neovisiontv_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/315?unique=2026-06-15+10%3A29%3A13.651493&access_token=840f7baa-6c2f-47db-9472-837aaec58b79",KinoPro
 http://kinowalk.hopto.org/kinopro_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/319?unique=2026-07-27+09%3A42%3A04.878357&access_token=b98f5d01-7f28-4de9-975b-62a52d41a566",Tyty35Rus
-http://kinowalk.hopto.org/tytytv_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/320?unique=2026-06-25+10%3A27%3A19.568369&access_token=a1dc2036-1032-4c19-ae54-0f8cedab33b1",RE_BOOT
 http://kinowalk.hopto.org/re_boot_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/322?unique=2026-06-26+12%3A35%3A54.250393&access_token=4e3d4986-59b7-43e8-9c30-29aaff262bb0",1st_witch
 http://kinowalk.hopto.org/witch_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/374?unique=2026-08-22+19%3A06%3A02.381591&access_token=fc4fd2e8-27db-4c33-9423-68ac534d0adc",KinoБайт-Лучшие фильмы
-http://kinowalk.hopto.org/moviebytes_live
+#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/326?unique=2026-06-26+14%3A51%3A18.003467&access_token=85cfea0b-99c3-4be9-9e19-6e92b9254d71",FilmsSerialsEveryDay
+http://kinowalk.hopto.org/filmsserialseveryday_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/389?unique=2026-08-28+10%3A44%3A27.482546&access_token=6e779780-a06b-4715-b6dd-a607775eda5f",Мир Ехо
 http://kinowalk.hopto.org/mirdobro_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/391?unique=2026-09-08+04%3A59%3A08.262286&access_token=e549c1e3-9b47-40ac-90d5-6fd535bbe0ec",VHS store
 http://kinowalk.hopto.org/channel36774366_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/180?unique=2026-02-20+01%3A57%3A49.533570&access_token=7d8225a9-48a4-4c51-863a-e0084ccfd33b",Aisman
-http://kinowalk.hopto.org/aisman_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/184?unique=2026-02-20+01%3A57%3A49.533570&access_token=111465ff-a492-486d-908a-2a0a7ec61768",Video Channel
 http://kinowalk.hopto.org/video_channel_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/198?unique=2026-02-21+20%3A43%3A54.719669&access_token=d72013c7-a66f-4533-b976-2972f914ad73",ChowAmigo
-http://kinowalk.hopto.org/chowamigo_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/202?unique=2026-02-21+20%3A44%3A21.583209&access_token=1895e10c-b884-45cf-b1e3-6e4d66617d8c",Евгений / Эра VHS
-http://kinowalk.hopto.org/vhs90s_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/228?unique=2026-02-26+21%3A02%3A41.011694&access_token=aa5cad91-128d-4187-8055-0f170c7c99e0",АPRICUS live
 http://kinowalk.hopto.org/apricus_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/229?unique=2026-02-27+00%3A42%3A39.447034&access_token=5669e3ab-5c82-4751-8438-03a8e7706ad8",VHS Power
-http://kinowalk.hopto.org/noir_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/268?unique=2026-04-18+15%3A04%3A59.116434&access_token=8ff60785-7597-4b0f-b23e-e69f60a328af",Дикарка
-http://kinowalk.hopto.org/dikarka_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/297?unique=2026-05-08+10%3A29%3A16.575395&access_token=a1e3028a-a788-4930-9b55-2c0d36ce90eb",VKTV HD CINEMA
-http://kinowalk.hopto.org/vktv_hd_cinema_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/333?unique=2026-07-23+16%3A57%3A08.393206&access_token=6cdc8c7c-09e4-4aaa-a6bf-e0bf95e43703",DVD online
-http://kinowalk.hopto.org/kinostream_rezerv_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/335?unique=2026-07-23+16%3A59%3A50.988372&access_token=8a94c915-f2ff-4758-8ea7-86b19aa2d19c",Kinoshnik_8
-http://kinowalk.hopto.org/kinoshnik_8_live
+#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/309?unique=2026-06-15+09%3A50%3A55.914779&access_token=21d8b6b2-8d4a-4c4e-9520-e3e8199f4677",MetalAlex
+http://kinowalk.hopto.org/metalalex_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/370?unique=2026-08-22+02%3A23%3A45.911848&access_token=d28a4b8e-a3c2-497b-8547-0754c45dadea",Kinowalk_tv
 http://kinowalk.hopto.org/kinowalk_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/394?unique=2026-09-20+06%3A39%3A16.755553&access_token=49e74283-a599-4c9e-8b17-2e114a2bebfb",ПАРАНОРМАЛЬНЫЙ АРХИВ
@@ -492,8 +448,6 @@ http://kinowalk.hopto.org/videoarsenal_live
 http://kinowalk.hopto.org/kinojam_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/135?unique=2026-07-27+13%3A53%3A12.491531&access_token=313f9f43-066e-401a-9645-4dead7dddb50",SeleCaoTV
 http://kinowalk.hopto.org/selecaotv_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/136?unique=2026-07-27+13%3A53%3A27.708328&access_token=1d33d5f2-8488-4625-bdda-098f544bce49",SeleCaoTV1
-http://kinowalk.hopto.org/selecaotv1_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/122?unique=2026-02-20+01%3A57%3A49.533570&access_token=0951c630-f716-4483-8366-ffae49225224",Video_Prokat
 http://kinowalk.hopto.org/video_prokat_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/123?unique=2026-07-25+14%3A22%3A30.153830&access_token=4c53055d-6634-4781-a1e5-8be0b7bc16c6",MovieToper
@@ -526,36 +480,30 @@ http://kinowalk.hopto.org/muzcoverradio_live
 http://kinowalk.hopto.org/kirafreak_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/383?unique=2026-08-24+10%3A30%3A06.786044&access_token=8ac503b4-1c4d-44db-8398-a5e9fcf09599",grislytoe
 http://kinowalk.hopto.org/grislytoe_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/396?unique=2026-09-24+19%3A57%3A51.509738&access_token=d3adaef7-f195-40f4-9f8f-90946394df57",Йохан грохан
-http://kinowalk.hopto.org/johan_grohan_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/397?unique=2026-09-26+12%3A23%3A29.559068&access_token=a790e444-cc11-40ea-9c11-056bd845b688",STRIMACH
-http://kinowalk.hopto.org/strimach_live
+#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="https://goodgame.ru/files/avatars/av_1643154_P8Jo.jpg",Dimpon TV
+http://kinowalk.hopto.org/dimpon_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="https://kinowalk.hopto.org/web/image/218/128x128?unique=2026-02-24%2017:40:47.422997&access_token=f67f6256-bd3e-439b-93fd-6a635aa57fd4",Solo ink
 http://kinowalk.hopto.org/soloink_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="https://goodgame.ru/files/avatars/av_1116296_BCRx.png",SeverTV
 http://kinowalk.hopto.org/severtv_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)",NikNik-TV
 https://hostrec.ru/live/wic2AtEFCLwsZcUkAgtZcjlYgjc.m3u8
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/148?unique=2026-02-20+01%3A57%3A49.533570&access_token=1f146571-2fd6-44f5-9534-64f2c358fc2a",Канал Disney Онлайн
-http://kinowalk.hopto.org/kanaldisneyonline_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/160?unique=2026-02-20+01%3A57%3A49.533570&access_token=07a454fd-a3fc-4f16-8042-67fc431210e8",JTX Online
 http://kinowalk.hopto.org/jtxonline_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/190?unique=2026-02-20+01%3A57%3A49.533570&access_token=eba28ca5-036f-4ab2-ac1d-7509d56d18b6",FoxKids-Remastered
-http://kinowalk.hopto.org/foxkids_remastered_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/234?unique=2026-03-03+11%3A23%3A02.745062&access_token=784ff379-6d4c-4f30-a16b-2b8cccf7de95",Kycman
 http://kinowalk.hopto.org/kycman_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/341?unique=2026-07-28+12%3A05%3A20.347774&access_token=5fa38c99-16ab-4396-af71-4c31e9a03afb",TopMoment TV
 http://kinowalk.hopto.org/topmoment_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/362?unique=2026-08-18+06%3A06%3A40.073859&access_token=975d1554-c87e-42f0-94dd-20a5867139f1",Мультфильмы VHS
 http://kinowalk.hopto.org/myvhs_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/271?unique=2026-04-19+06%3A49%3A49.005553&access_token=bfdd2f15-29dc-4a9f-9fd9-8c88201c1357",MAKARSTRIM
-http://kinowalk.hopto.org/makarstrim_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/392?unique=2026-09-08+09%3A55%3A57.168980&access_token=1ac628d3-d7c5-437b-a558-5ba8612d00c5",RetroMusic
 http://kinowalk.hopto.org/retromus_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/343?unique=2026-07-28+12%3A07%3A52.299856&access_token=9c11dbb4-9944-44c9-ba7b-09ce00c885b4",SANSEY_RU
 http://kinowalk.hopto.org/sansey_ru_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/344?unique=2026-07-28+12%3A08%3A53.376419&access_token=2b06a826-73eb-4ef0-ae60-ce714a327e16",CZM Music
 http://kinowalk.hopto.org/czmmusic_live
+#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/345?unique=2026-07-28+12%3A09%3A41.172468&access_token=a72f88b9-f2eb-45d2-ad31-617386c08484",NZTV
+http://kinowalk.hopto.org/nztv_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/360?unique=2026-08-17+19%3A25%3A23.235022&access_token=1b8ca5d4-8179-43aa-88e1-736d7d141bc9",VB_EDH90sandDH90s
 http://kinowalk.hopto.org/vb_edh90sanddh90s_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/364?unique=2026-08-18+15%3A58%3A59.400531&access_token=6aef4408-c919-4c26-8ca9-156a3ca30eb4",VB_GH_and_RandB
@@ -566,24 +514,20 @@ http://kinowalk.hopto.org/vbrusdancepops80_live
 http://kinowalk.hopto.org/oldclip_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/348?unique=2026-07-28+12%3A12%3A13.560538&access_token=bc3fd77c-e0f4-470e-95fc-e3fbeb2a310c",bstmsc
 http://kinowalk.hopto.org/bstmsc_live
-#EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/349?unique=2026-07-28+15%3A30%3A15.709752&access_token=2a4b04bf-4c80-42f3-963d-adad4d6baf08",mp4_collection
-http://kinowalk.hopto.org/mp4_collection_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/351?unique=2026-07-31+08%3A05%3A20.215597&access_token=46199c98-2416-4c56-b58a-888b0929008f",TechnoDanceMusic
 http://kinowalk.hopto.org/technodancemusic_live
 #EXTINF:-1 group-title="Кинозалы 🍿 (VPN)" tvg-logo="http://kinowalk.hopto.org/static-content/logo/373?unique=2026-08-22+08%3A24%3A32.579390&access_token=35e5eba9-d947-46f5-8385-293289dc3cd6",Um! Music
 http://kinowalk.hopto.org/umelyiretro_live
-#EXTINF:-1 group-title="Инет",Еврокино
-http://185.46.16.239:8000/Yevrokino
 #EXTINF:-1 group-title="Инет",НАШЕ НОВОЕ КИНО
 http://185.46.16.239:8000/Nickelodeon
 #EXTINF:-1 group-title="Инет",Cinema
 http://185.46.16.239:8000/Cinema
 #EXTINF:-1 group-title="Инет",Кинокомедия
 http://185.46.16.239:8000/Fox_HD
-#EXTINF:-1 group-title="Инет",Киномикс
-http://185.46.16.239:8000/Fox_Life_HD
 #EXTINF:-1 group-title="Инет",Мульт
 http://185.46.16.239:8000/Mult
+#EXTINF:-1 group-title="Инет",Мульт HD
+http://185.46.16.239:8000/Mir_24
 #EXTINF:-1 group-title="📺 Usba TV" tvg-logo="https://ushba.tv/assets/images/logo-roku1.png" ,Мультфильмы
 https://lbgo.bozztv.com/07/ushba80/tracks-v1a1/mono.m3u8
 #EXTINF:-1 group-title="📺 Usba TV" tvg-logo="https://ushba.tv/assets/images/logo-roku1.png" ,Кинозалы 1
@@ -592,8 +536,6 @@ https://lbgo.bozztv.com/07/ushba82/tracks-v1a1/mono.m3u8
 https://lbgo.bozztv.com/07/ushba-rvisionkinopanorama/tracks-v1a1/mono.m3u8
 #EXTINF:-1 group-title="📺 Usba TV" tvg-logo="https://ushba.tv/assets/images/logo-roku1.png" ,Retrovision Movies
 https://lbgo.bozztv.com/07/ushba-rvisionmovies/tracks-v1a1/mono.m3u8
-#EXTINF:-1 group-title="Catcast TV 🐈 Not 24/7" tvg-logo="https://img.catcast.tv/uploads/25062020/logos/38617-5ef3d12196e3e.png",Кино 1 International
-https://kino-1.catcast.tv/content/38617/index.m3u8
 #EXTINF:-1 group-title="📺 Usba TV" tvg-logo="https://i.postimg.cc/3Jg421y4/1.jpg" ,Кинозалы 24
 https://live20.bozztv.com/giatvplayout7/ushba-rfilrms-0/tracks-v1a1/mono.m3u8
 #EXTINF:-1 group-title="📺 Usba TV" tvg-logo="https://i.postimg.cc/3Jg421y4/1.jpg" ,Кинозалы 25
@@ -624,6 +566,15 @@ https://live20.bozztv.com/giatvplayout7/ushba65/index.m3u8
 https://live20.bozztv.com/giatvplayout7/ushba-rvisionkinopanorama/tracks-v1a1/mono.m3u8
 #EXTINF:-1 group-title="📺 Usba TV" tvg-logo="https://i.postimg.cc/3Jg421y4/1.jpg" ,Retrovision Movies
 https://live20.bozztv.com/giatvplayout7/ushba-rvisionmovies/tracks-v1a1/mono.m3u8
+#EXTINF:-1 group-title="Tube 🎯VPN",Киножелезо
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+https://bl.rutube.ru/livestream/4965b7b928c4a143d708ab424be01d37/index.m3u8?s=nmkId_cU817B7ylCk-2jeQ&e=2077359308&scheme=https
+#EXTINF:-1 group-title="Tube 🎯VPN",Кинолаффка
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+https://bl.rutube.ru/livestream/3b7d1499da9396462bfd17282d758d30/index.m3u8?s=U83AZ3dMFkHAL4J3YirS1A&e=2077359308&scheme=https
+#EXTINF:-1 group-title="Tube 🎯VPN",Кино и Жизнь
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+https://bl.rutube.ru/livestream/09e51eefa939595a4ac67182c6fb3e4e/index.m3u8?s=5Z6XUiXTN5xFPAFfg02tVQ&e=2077359309&scheme=https
 #EXTINF:-1 group-title="Internet42 LLC", Дом Кино
 http://176.118.197.101/Dom_kino/index.m3u8
 #EXTINF:-1 group-title="Internet42 LLC", Кинокомедия
@@ -658,6 +609,8 @@ https://flussonic.mkpnet.ru/tv-7510472b0133abb2/video.m3u8
 https://flussonic.mkpnet.ru/tv-e055808223a74709/video.m3u8
 #EXTINF:-1 group-title="Оргтехсервис 🎯VPN",Киносвидание
 https://flussonic.mkpnet.ru/tv-be2ba983babad866/video.m3u8
+#EXTINF:-1 group-title="Оргтехсервис 🎯VPN",КиноХит
+https://flussonic.mkpnet.ru/tv-513b9c22f4277475/video.m3u8
 #EXTINF:-1 group-title="Оргтехсервис 🎯VPN",Мульт
 https://flussonic.mkpnet.ru/tv-c8b065a591077c26/video.m3u8
 #EXTINF:-1 group-title="Оргтехсервис 🎯VPN",Мультиландия
@@ -670,8 +623,6 @@ http://stream.mcquack.net/171/index.m3u8
 http://stream.mcquack.net/133/index.m3u8
 #EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",Индийское кино
 http://stream.mcquack.net/104/index.m3u8
-#EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",CINEMAN
-http://stream.mcquack.net/122/index.m3u8
 #EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",КиноТВ
 http://stream.mcquack.net/221/index.m3u8
 #EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",CINEMA HD
@@ -680,12 +631,10 @@ http://stream.mcquack.net/62/index.m3u8
 http://stream.mcquack.net/484/index.m3u8
 #EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",CineMax 2
 http://stream.mcquack.net/475/index.m3u8
-#EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",CineMax 4
-http://stream.mcquack.net/472/index.m3u8
+#EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",CineMax 3
+http://stream.mcquack.net/474/index.m3u8
 #EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",CineMax 5
 http://stream.mcquack.net/471/index.m3u8
-#EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",FRESH CINEMA
-http://stream.mcquack.net/423/index.m3u8
 #EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",FRESH series
 http://stream.mcquack.net/430/index.m3u8
 #EXTINF:-1 group-title="TEST-1" tvg-rec="7" timeshift="7",FRESH KIDS
@@ -700,44 +649,32 @@ http://stream.mcquack.net/197/index.m3u8
 http://195.64.140.147:10042/42
 #EXTINF:-1 group-title="LLC G&G-Telecom",Киноужас
 http://195.64.140.147:10043/43
-#EXTINF:-1 group-title="LLC G&G-Telecom",Киномикс
-http://195.64.140.147:10044/44
-#EXTINF:-1 group-title="LLC G&G-Telecom",Киносвидание
-http://195.64.140.147:10045/45
-#EXTINF:-1 group-title="LLC G&G-Telecom",Кинохит
-http://195.64.140.147:10046/46
 #EXTINF:-1 group-title="LLC G&G-Telecom",Кинокомедия
 http://195.64.140.147:10047/47
-#EXTINF:-1 group-title="LLC G&G-Telecom",Киносерия
-http://195.64.140.147:10048/48
 #EXTINF:-1 group-title="LLC G&G-Telecom",Индийское Кино
 http://195.64.140.147:10049/49
 #EXTINF:-1 group-title="LLC G&G-Telecom",Родное Кино
 http://195.64.140.147:10052/52
 #EXTINF:-1 group-title="LLC G&G-Telecom",Наше Новое Кино
 http://195.64.140.147:10053/53
-#EXTINF:-1 group-title="LLC G&G-Telecom",Дом Кино
-http://195.64.140.147:10057/57
-#EXTINF:-1 group-title="LLC G&G-Telecom",ЕвроКино
-http://195.64.140.147:10088/88
+#EXTINF:-1 group-title="LLC G&G-Telecom",Классика Кино
+http://195.64.140.147:10061/61
+#EXTINF:-1 group-title="LLC G&G-Telecom",Мир Сериала
+http://195.64.140.147:10089/89
 #EXTINF:-1 group-title="LLC G&G-Telecom",Любимое Кино
 http://195.64.140.147:10091/91
-#EXTINF:-1 group-title="LLC G&G-Telecom",СТС Kids
-http://195.64.140.147:10129/129
 #EXTINF:-1 group-title="LLC G&G-Telecom",Мульт
 http://195.64.140.147:10132/132
 #EXTINF:-1 group-title="LLC G&G-Telecom",Мультимузыка
 http://195.64.140.147:10134/134
 #EXTINF:-1 group-title="LLC G&G-Telecom",Мультиландия
 http://195.64.140.147:10135/135
-#EXTINF:-1 group-title="Велком",TV1000 Кино
-http://46.53.200.153:7777/play/a01g/index.m3u8
+#EXTINF:-1 group-title="Ott Club",Кинопоказ
+http://stream.mcquack.net/64/tracks-v1a1/mono.ts.m3u8
 #EXTINF:-1 group-title="Ott Club",CineMan
 http://stream.mcquack.net/349/tracks-v1a1/mono.ts.m3u8
 #EXTINF:-1 group-title="Ott Club",CineMan Top
 http://stream.mcquack.net/350/tracks-v1a1/mono.ts.m3u8
-#EXTINF:-1 group-title="Ott Club",Cineman Premium
-http://stream.mcquack.net/470/tracks-v1a1/mono.ts.m3u8
 #EXTINF:-1 group-title="Ott Club",Cineman Катастрофы
 http://stream.mcquack.net/471/tracks-v1a1/mono.ts.m3u8
 #EXTINF:-1 group-title="Ott Club",Cineman Мелодрама
@@ -752,6 +689,8 @@ http://stream.mcquack.net/474/tracks-v1a1/mono.ts.m3u8
 http://stream.mcquack.net/221/tracks-v1a1/mono.ts.m3u8
 #EXTINF:-1 group-title="Ott Club",Fresh Series
 http://stream.mcquack.net/430/tracks-v1a1/mono.ts.m3u8
+#EXTINF:-1 group-title="Ott Club",Fresh Kids
+http://stream.mcquack.net/425/tracks-v1a1/mono.ts.m3u8
 #EXTINF:-1 group-title="Ott Club",Fresh Cinema
 http://stream.mcquack.net/423/tracks-v1a1/mono.ts.m3u8
 #EXTINF:-1 group-title="Ott Club",VPN Мужское кино
@@ -780,7 +719,63 @@ http://194.26.229.213/souzmultfilm/index.m3u8
 https://calypso.tortuga.tw/content/stream/films/despicable.me.4.2024.bdremux.1080p.ledoyen.dub_102367/hls/1080/index.m3u8
 #EXTINF:-1 group-title="CHILDREN'S 🧙",2x2
 http://5.188.221.43:8080/play/2x2
-#EXTINF:-1 group-title="CHILDREN'S 🧙",Солнце
-http://5.188.221.43:8080/play/disney
 #EXTINF:-1 group-title="CHILDREN'S 🧙",Карусель
 http://31.131.141.195:8000/play/1080/index.m3u8
+#EXTINF:-1 tvg-name="ABC Kids" tvg-logo="https://i.imgur.com/GWDRR1t.png" tvg-id="ABCKids.au" tvg-chno="3" tvg-country="AU" group-title="Australia",ABC Kids
+https://c.mjh.nz/abc-kids.m3u8
+#EXTINF:-1 tvg-name="BeJoy.Kids" tvg-logo="https://i.imgur.com/zuR9Go5.png" tvg-id="BeJoyKids.it" tvg-chno="247" tvg-country="IT" group-title="Italy",BeJoy.Kids
+https://stream.paroledivita.org/bejoy.m3u8
+#EXTINF:-1 tvg-name="EBS Kids" tvg-logo="https://i.imgur.com/62oo8Bx.png" tvg-id="EBSKids.kr" tvg-chno="19" tvg-country="KR" group-title="Korea",EBS Kids Ⓢ
+https://ebsonair.ebs.co.kr/ebsufamilypc/familypc1m/playlist.m3u8
+#EXTINF:-1 tvg-name="Pluto TV Spotlight" tvg-logo="https://i.imgur.com/AogTmZc.png" group-title="VOD Movies (EN)",Pluto TV Spotlight
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5ba3fb9c4b078e0f37ad34e8/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=51&deviceId=5ba3fb9c4b078e0f37ad34e8&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Action" tvg-logo="https://i.imgur.com/g8PCdh6.png" group-title="VOD Movies (EN)",Pluto TV Action
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/561d7d484dc7c8770484914a/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=54&deviceId=561d7d484dc7c8770484914a&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Comedy" tvg-logo="https://i.imgur.com/Pjs4lgs.png" group-title="VOD Movies (EN)",Pluto TV Comedy
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5a4d3a00ad95e4718ae8d8db/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=57&deviceId=5a4d3a00ad95e4718ae8d8db&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Drama" tvg-logo="https://i.imgur.com/B9srooj.png" group-title="VOD Movies (EN)",Pluto TV Drama
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5b4e92e4694c027be6ecece1/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=60&deviceId=5b4e92e4694c027be6ecece1&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Fantastic" tvg-logo="https://i.imgur.com/dOfXc5w.png" group-title="VOD Movies (EN)",Pluto TV Fantastic
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5b64a245a202b3337f09e51d/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=66&deviceId=5b64a245a202b3337f09e51d&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Romance" tvg-logo="https://i.imgur.com/j6livg0.png" group-title="VOD Movies (EN)",Pluto TV Romance
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5a66795ef91fef2c7031c599/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=70&deviceId=5a66795ef91fef2c7031c599&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Crime Movies" tvg-logo="https://i.imgur.com/PlAQrIb.png" group-title="VOD Movies (EN)",Pluto TV Crime Movies
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5f4d8594eb979c0007706de7/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=73&deviceId=5f4d8594eb979c0007706de7&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Thrillers" tvg-logo="https://i.imgur.com/jyiFzG4.png" group-title="VOD Movies (EN)",Pluto TV Thrillers
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5b4e69e08291147bd04a9fd7/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=74&deviceId=5b4e69e08291147bd04a9fd7&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Horror" tvg-logo="https://i.imgur.com/An93hAh.png" group-title="VOD Movies (EN)",Pluto TV Horror
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/569546031a619b8f07ce6e25/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=75&deviceId=569546031a619b8f07ce6e25&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Terror" tvg-logo="https://i.imgur.com/JLgn5jC.png" group-title="VOD Movies (EN)",Pluto TV Terror
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5c6dc88fcd232425a6e0f06e/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=76&deviceId=5c6dc88fcd232425a6e0f06e&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Black Cinema" tvg-logo="https://i.imgur.com/Zh1QGW9.png" group-title="VOD Movies (EN)",Black Cinema
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/58af4c093a41ca9d4ecabe96/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=80&deviceId=58af4c093a41ca9d4ecabe96&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Staff Picks" tvg-logo="https://i.imgur.com/DFDHAT8.png" group-title="VOD Movies (EN)",Pluto TV Staff Picks
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5f4d863b98b41000076cd061/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=90&deviceId=5f4d863b98b41000076cd061&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Documentaries" tvg-logo="https://i.imgur.com/Mr4ZsNZ.png" group-title="VOD Movies (EN)",Pluto TV Documentaries
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5b85a7582921777994caea63/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=91&deviceId=5b85a7582921777994caea63&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="90s Throwback" tvg-logo="https://i.imgur.com/sI1o3uK.png" group-title="VOD Movies (EN)",90s Throwback
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5f4d86f519358a00072b978e/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=94&deviceId=5f4d86f519358a00072b978e&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="80s Rewind" tvg-logo="https://i.imgur.com/0FaLAhK.png" group-title="VOD Movies (EN)",80s Rewind
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5ca525b650be2571e3943c63/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=95&deviceId=5ca525b650be2571e3943c63&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="70s Cinema" tvg-logo="https://i.imgur.com/wk9Baz9.png" group-title="VOD Movies (EN)",70s Cinema
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5f4d878d3d19b30007d2e782/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=96&deviceId=5f4d878d3d19b30007d2e782&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Paramount Movie Channel" tvg-logo="https://i.imgur.com/CfqRav0.png" group-title="VOD Movies (EN)",Paramount Movie Channel
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5cb0cae7a461406ffe3f5213/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=100&deviceId=5cb0cae7a461406ffe3f5213&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Westerns" tvg-logo="https://i.imgur.com/79R7m0b.png" group-title="VOD Movies (EN)",Pluto TV Westerns
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5b4e94282d4ec87bdcbb87cd/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=103&deviceId=5b4e94282d4ec87bdcbb87cd&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Classic Movies" tvg-logo="https://i.imgur.com/feWPHep.png" group-title="VOD Movies (EN)",Classic Movies
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/561c5b0dada51f8004c4d855/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=106&deviceId=561c5b0dada51f8004c4d855&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Pluto TV Cult Films" tvg-logo="https://i.imgur.com/kD3SkoC.png" group-title="VOD Movies (EN)",Pluto TV Cult Films
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/5c665db3e6c01b72c4977bc2/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=109&deviceId=5c665db3e6c01b72c4977bc2&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Flicks of Fury" tvg-logo="https://i.imgur.com/yhyzBfb.png" group-title="VOD Movies (EN)",Flicks of Fury
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/58e55b14ad8e9c364d55f717/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=112&deviceId=58e55b14ad8e9c364d55f717&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="The Asylum" tvg-logo="https://i.imgur.com/rOxQfdG.png" group-title="VOD Movies (EN)",The Asylum
+http://service-stitcher.clusters.pluto.tv/stitch/hls/channel/591105034c1806b47438342c/master.m3u8?terminate=false&deviceType=web&deviceMake=web&deviceModel=web&sid=115&deviceId=591105034c1806b47438342c&deviceVersion=DNT&appVersion=DNT&deviceDNT=0&userId=&advertisingId=&deviceLat=&deviceLon=&app_name=&appName=web&buildVersion=&appStoreUrl=&architecture=&includeExtendedEvents=false&marketingRegion=US&serverSideAds=false
+#EXTINF:-1 tvg-name="Cinema Italiano – Pluto TV" tvg-logo="https://i.imgur.com/drDX5DC.png" tvg-id="PlutoTVCinemaItalianoItaly.it" group-title="VOD Italy",Cinema Italiano – Pluto TV
+https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/608aa7d8359b270007861489/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1&advertisingId=channel&embedPartner=rokuChannel&appName=rokuchannel&is_lat=1&bmodel=bm1&content=channel&platform=web&tags=ROKU_CONTENT_TAGS&coppa=false&content_type=livefeed&rdid=channel&genre=ROKU_ADS_CONTENT_GENRE&content_rating=ROKU_ADS_CONTENT_RATING&studio_id=viacom&channel_id=channel
+#EXTINF:-1 tvg-name="Star Trek: The Original Series – Pluto TV" tvg-logo="https://i.imgur.com/VnUrFqB.png" group-title="VOD Italy",Star Trek: The Original Series – Pluto TV
+https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/6581a09edfed030008e12b39/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1&advertisingId=channel&embedPartner=rokuChannel&appName=rokuchannel&is_lat=1&bmodel=bm1&content=channel&platform=web&tags=ROKU_CONTENT_TAGS&coppa=false&content_type=livefeed&rdid=channel&genre=ROKU_ADS_CONTENT_GENRE&content_rating=ROKU_ADS_CONTENT_RATING&studio_id=viacom&channel_id=channel
+#EXTINF:-1 tvg-name="Kids – Pluto TV" tvg-logo="https://i.imgur.com/ybd7A0r.png" group-title="VOD Italy",Kids – Pluto TV
+https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/62444e195d2ab7000861694b/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1&advertisingId=channel&embedPartner=rokuChannel&appName=rokuchannel&is_lat=1&bmodel=bm1&content=channel&platform=web&tags=ROKU_CONTENT_TAGS&coppa=false&content_type=livefeed&rdid=channel&genre=ROKU_ADS_CONTENT_GENRE&content_rating=ROKU_ADS_CONTENT_RATING&studio_id=viacom&channel_id=channel
+#EXTINF:-1 tvg-name="Kids Ukraine – Pluto TV" tvg-logo="https://i.imgur.com/MrIlypV.png" group-title="VOD Italy",Kids Ukraine – Pluto TV
+https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/622a2d8da9d8210007d918c2/master.m3u8?deviceId=channel&deviceModel=web&deviceVersion=1.0&appVersion=1.0&deviceType=rokuChannel&deviceMake=rokuChannel&deviceDNT=1&advertisingId=channel&embedPartner=rokuChannel&appName=rokuchannel&is_lat=1&bmodel=bm1&content=channel&platform=web&tags=ROKU_CONTENT_TAGS&coppa=false&content_type=livefeed&rdid=channel&genre=ROKU_ADS_CONTENT_GENRE&content_rating=ROKU_ADS_CONTENT_RATING&studio_id=viacom&channel_id=channel

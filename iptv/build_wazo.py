@@ -17,7 +17,8 @@ SOURCES={
  'UA IPTV-org-UA':'https://iptv.org.ua/iptv/ua.m3u',
  'Kids':'https://iptv.org.ua/iptv/kids.m3u',
  'PeersTV (moved)':'https://iptv.org.ua/iptv/peerstv.m3u',
- 'Kherson webcam':'https://webcams.ks.ua/hls/ch0038.m3u8'
+ 'Kherson webcam':'https://webcams.ks.ua/hls/ch0038.m3u8',
+ 'Free-TV worldwide':'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8'
 }
 all_entries=[]
 seen={}
@@ -71,7 +72,7 @@ def check(entry):
   return {'url':url,'ok':False,'error':str(exc)[:100]}
 t0=time.time()
 results={}
-with ThreadPoolExecutor(max_workers=18) as pool:
+with ThreadPoolExecutor(max_workers=24) as pool:
  jobs={pool.submit(check,e):e for e in all_entries}
  for idx,f in enumerate(as_completed(jobs),1):
   r=f.result();results[r['url']]=r
