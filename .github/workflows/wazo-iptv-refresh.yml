@@ -1,0 +1,68 @@
+name: Wazo TV — verified IPTV refresh
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 4 * * 6'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wazo-iptv-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: FFmpeg
+        run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+      - name: Build in a temporary directory
+        env:
+          WAZO_IPTV_WORKERS: '12'
+        run: |
+          mkdir -p "$RUNNER_TEMP/wazo-iptv"
+          cp iptv/build_wazo.py "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
+          python "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
+      - name: Validate channel count and protect current playlist
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          old = Path('iptv')
+          new = Path(os.environ['RUNNER_TEMP']) / 'wazo-iptv'
+          def entries(path):
+              text = path.read_text(encoding='utf-8')
+              assert text.startswith('#EXTM3U\n')
+              urls = [x for x in text.splitlines() if x.startswith(('http://','https://'))]
+              assert len(urls) == len(set(urls)), 'duplicate IPTV URL'
+              return urls
+          a = entries(new / 'wazo_tv.m3u')
+          b = entries(new / 'wazo_cinema.m3u')
+          current = entries(old / 'wazo_tv.m3u')
+          report = json.loads((new / 'wazo_status.json').read_text())
+          assert report['working'] == len(a), 'report/playlists mismatch'
+          assert len(a) >= max(400, int(len(current) * 0.65)), 'new playlist lost too many streams'
+          assert len(b) >= 100, 'cinema playlist unexpectedly small'
+          assert set(b).issubset(set(a)), 'cinema not subset of full playlist'
+          assert len(set(a) & set(current)) >= int(len(current) * 0.45), 'provider outage or geoblock suspected'
+          print('IPTV passed:',len(a),'total,',len(b),'cinema,',
+                len(set(a) & set(current)),'retained from previous run')
+          PY
+      - name: Publish verified playlists
+        run: |
+          cp "$RUNNER_TEMP/wazo-iptv/wazo_tv.m3u" iptv/wazo_tv.m3u
+          cp "$RUNNER_TEMP/wazo-iptv/wazo_cinema.m3u" iptv/wazo_cinema.m3u
+          cp "$RUNNER_TEMP/wazo-iptv/wazo_status.json" iptv/wazo_status.json
+          git add iptv/wazo_tv.m3u iptv/wazo_cinema.m3u iptv/wazo_status.json
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git -c user.name='Wazo IPTV Bot' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'iptv: refresh tested channel streams'
+          git push origin HEAD:main

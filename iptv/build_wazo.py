@@ -2,7 +2,7 @@
 """Wazo TV: verify video frames for public IPTV streams, remove broken streams and local URLs."""
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
-import urllib.request, pathlib, json, subprocess, time, re, collections, sys, shutil
+import urllib.request, pathlib, json, subprocess, time, re, collections, sys, shutil, os
 ROOT=pathlib.Path(__file__).resolve().parent
 DEST=ROOT
 DEST.mkdir(exist_ok=True)
@@ -72,7 +72,7 @@ def check(entry):
   return {'url':url,'ok':False,'error':str(exc)[:100]}
 t0=time.time()
 results={}
-with ThreadPoolExecutor(max_workers=24) as pool:
+with ThreadPoolExecutor(max_workers=int(os.environ.get('WAZO_IPTV_WORKERS','24'))) as pool:
  jobs={pool.submit(check,e):e for e in all_entries}
  for idx,f in enumerate(as_completed(jobs),1):
   r=f.result();results[r['url']]=r
