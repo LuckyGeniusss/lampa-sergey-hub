@@ -10,7 +10,7 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.5.14', src.includes('Wazo 1.5.14'));
+check('version 1.5.15', src.includes('Wazo 1.5.15'));
 check('one unified playlist, preserving user playlists',
  src.includes('function wazoEnsureUnifiedPlaylist()') &&
  src.includes("id:'wazo_unified'") &&
