@@ -1,7 +1,7 @@
 {
-  "date_utc": "2026-10-31T10:27:11Z",
-  "checked": 4038,
-  "working": 2346,
+  "date_utc": "2026-10-31T11:36:12Z",
+  "checked": 5674,
+  "working": 2732,
   "movies": 375,
   "by_source": {
     "UA IPTV-org": 148,
@@ -15,7 +15,8 @@
     "Kids": 5,
     "Free-TV worldwide": 939,
     "IE Oireachtas official": 1,
-    "User uploaded IE checked (new)": 6
+    "User uploaded IE checked (new)": 6,
+    "IPTV-org world verified": 386
   },
   "sources": {
     "UA IPTV-org": {
@@ -94,19 +95,39 @@
   "verified_upload_working": 40,
   "verified_upload_added": 6,
   "groups": {
-    "Украинские каналы": 192,
-    "Детские": 41,
-    "Новости": 50,
-    "Развлечения": 29,
-    "Русскоязычные каналы": 317,
-    "Музыка": 34,
-    "Сериалы": 17,
-    "Другие": 786,
-    "Спорт": 32,
-    "Фильмы": 349,
-    "Документальные": 21,
     "Ирландские каналы": 2,
-    "Иностранные каналы": 476
+    "Украинские каналы": 192,
+    "Русскоязычные каналы": 319,
+    "Фильмы": 425,
+    "Сериалы": 79,
+    "Детские": 106,
+    "Документальные": 95,
+    "Новости": 89,
+    "Спорт": 48,
+    "Музыка": 65,
+    "Развлечения": 32,
+    "Иностранные каналы": 476,
+    "Другие": 804
   },
-  "unified_playlist": "iptv/wazo_tv.m3u"
+  "unified_playlist": "iptv/wazo_tv.m3u",
+  "world_index_qa": {
+    "source": "https://iptv-org.github.io/iptv/index.m3u",
+    "date_utc": "2026-10-31T11:36:12Z",
+    "index_entries": 11341,
+    "sample_checked": 818,
+    "sample_passed": 386,
+    "new_urls_added": 386,
+    "by_group_passed": {
+      "Kids": 74,
+      "IE": 1,
+      "Movies": 80,
+      "Series": 62,
+      "Documentary": 61,
+      "News": 38,
+      "Music": 31,
+      "Sports": 15,
+      "Education": 16,
+      "Other": 8
+    }
+  }
 }

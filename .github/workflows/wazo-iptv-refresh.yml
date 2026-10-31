@@ -32,6 +32,8 @@ jobs:
           mkdir -p "$RUNNER_TEMP/wazo-iptv"
           cp iptv/build_wazo.py "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
           cp iptv/curate_unified.py "$RUNNER_TEMP/wazo-iptv/curate_unified.py"
+          mkdir -p "$RUNNER_TEMP/wazo-iptv/sources"
+          cp iptv/sources/world_verified.json "$RUNNER_TEMP/wazo-iptv/sources/world_verified.json"
           python "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
       - name: Validate channel count and protect current playlist
         run: |

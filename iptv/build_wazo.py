@@ -64,6 +64,29 @@ if oirtv_url not in seen:
   'meta':['#EXTINF:-1 tvg-id="OireachtasTV.ie" group-title="Ирландские каналы",Oireachtas TV'],
   'source':'IE Oireachtas official','title':'Oireachtas TV'
  })
+# Curated, frame-tested streams from the worldwide IPTV-org index.
+# JSON is an internal source manifest, never a user-facing second playlist.
+world_manifest=ROOT/'sources/world_verified.json'
+if world_manifest.is_file():
+ try:
+  world_entries=json.loads(world_manifest.read_text(encoding='utf8'))
+  count=0
+  for e in world_entries:
+   url=e.get('url','')
+   meta=e.get('meta','')
+   if not url.startswith(('http://','https://')) or not meta.startswith('#EXTINF:') or url in seen:
+    continue
+   host=urlparse(url).hostname
+   if not host or host in ('127.0.0.1','localhost','0.0.0.0') or host.endswith('.local'):
+    continue
+   seen[url]=len(all_entries)
+   all_entries.append({'url':url,'meta':[meta]+e.get('options',[]),
+                       'source':'IPTV-org world verified',
+                       'title':e.get('name') or meta.rsplit(',',1)[-1]})
+   count+=1
+  source_stats['IPTV-org world verified']={'fetched':True,'extinf':len(world_entries),'unique_added':count}
+ except Exception as exc:
+  source_stats['IPTV-org world verified']={'fetched':False,'error':str(exc)[:180]}
 (DEST/'source_stats.json').write_text(json.dumps(source_stats,indent=2,ensure_ascii=False))
 print('CANDIDATES',len(all_entries),flush=True)
 (DEST/'candidates.json').write_text(json.dumps(all_entries,ensure_ascii=False))

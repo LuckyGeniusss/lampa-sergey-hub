@@ -13,6 +13,11 @@ def category(meta, name):
     tidmatch=re.search(r'tvg-id="([^"]*)"',meta,re.I)
     tid=(tidmatch.group(1) if tidmatch else '').casefold()
     keys=' '.join((g,t))
+    # Rebuilding a unified playlist must preserve already curated Wazo groups.
+    # Otherwise repeated render() turns foreign/Ukraine into 'Другие'.
+    known={label.casefold():label for label in GROUPS}
+    if g in known:
+        return known[g]
     # Only the actual two verified Irish broadcasters, never UK/Pluto FAST.
     if t in ('tg4', 'tg4 (1080p)', 'oireachtas tv', 'oireachtas tv (720p)') or tid.startswith(('tg4.ie','oireachtastv.ie')):
         return 'Ирландские каналы'
