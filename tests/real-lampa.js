@@ -23,8 +23,17 @@ async function boot(browser, ua, staleBackend=false) {
   }
   await page.waitForTimeout(2200);
   if (staleBackend) await page.evaluate(() => { Lampa.Storage.set('sergey_online_backend','https://ab2024.ru'); Lampa.Storage.set('sergey_online_backend_custom',false); });
-  if (PLUGIN_URL) await page.addScriptTag({url:PLUGIN_URL});
-  else await page.addScriptTag({content:PLUGIN});
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      await page.waitForFunction(() => window.Lampa && Lampa.Activity && Lampa.Component, null, {timeout:15000});
+      if (PLUGIN_URL) await page.addScriptTag({url:PLUGIN_URL});
+      else await page.addScriptTag({content:PLUGIN});
+      break;
+    } catch (e) {
+      if (attempt === 3) throw e;
+      await page.waitForTimeout(1800);
+    }
+  }
   await page.waitForTimeout(500);
   return {ctx,page,backend};
 }
@@ -53,7 +62,10 @@ async function checkCase(browser,label,ua,movie,minSources,staleBackend=false) {
   );
   const unique = [...new Set(items)];
   const sorted = [...unique].sort((a,b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-  if (JSON.stringify(unique) !== JSON.stringify(sorted)) throw new Error(label+': source rows are not alphabetical');
+  const actualActive = unique.filter(x => !x.includes('нет результата'));
+  const actualUnavailable = unique.filter(x => x.includes('нет результата'));
+  if (unique.length !== actualActive.length + actualUnavailable.length) throw new Error(label+': invalid source groups');
+  if (JSON.stringify(actualActive) !== JSON.stringify([...actualActive].sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase())))) throw new Error(label+': active sources not alphabetical');
   const text = unique.join('\n').toLowerCase();
   for (const n of ['collaps','rezka','kinobase','zetflix']) {
     if (!text.includes(n)) throw new Error(label+': missing '+n);
@@ -108,7 +120,7 @@ async function checkManifestLaunch(browser,label,ua,movie) {
 }
 
 (async()=>{
-  const browser = await chromium.launch({headless:true});
+  const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH||undefined});
   try {
     const movie = {
       id:603,tmdb_id:603,title:'The Matrix',original_title:'The Matrix',

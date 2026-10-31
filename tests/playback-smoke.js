@@ -21,8 +21,17 @@ async function boot(browser) {
   }
 
   await page.waitForTimeout(1700);
-  if (PLUGIN_URL) await page.addScriptTag({ url: PLUGIN_URL });
-  else await page.addScriptTag({ content: PLUGIN });
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      await page.waitForFunction(() => window.Lampa && Lampa.Activity && Lampa.Component, null, {timeout:15000});
+      if (PLUGIN_URL) await page.addScriptTag({ url: PLUGIN_URL });
+      else await page.addScriptTag({ content: PLUGIN });
+      break;
+    } catch (e) {
+      if (attempt === 3) throw e;
+      await page.waitForTimeout(1800);
+    }
+  }
   await page.waitForTimeout(300);
 
   await page.evaluate(() => {
@@ -74,7 +83,7 @@ async function selectSource(page, prefix) {
 }
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, executablePath:process.env.CHROME_PATH||undefined });
 
   try {
     {

@@ -1,4 +1,4 @@
-/* Wazo 1.5.7
+/* Wazo 1.5.8
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.7';
+  var SERGEY_BACKEND_MIGRATION = '1.5.8';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -478,27 +478,39 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       };
     }
 
-    function sourcePickerKeys() {
-      var list = filter_sources.slice(0);
-      var available = list.filter(function(key) {
-        return sources[key] && sources[key].show;
+    // Unified source picker: every discovered provider is visible, while
+    // automatic playback retries only providers with a positive search result.
+    function sourcePickerKeys(includeUnavailable) {
+      var list = filter_sources.filter(function(key) {
+        return sources[key] && (includeUnavailable || sources[key].show);
       });
-
-      // Once discovery has real answers, do not keep dead/ghost providers in
-      // the TV picker. If discovery is still warming up, keep the full set so
-      // the filter is never empty.
-      if (available.length) list = available;
-
-      // Prefer providers with verified media responses; keep the remaining
-      // available providers as alphabetic fallbacks.
       var preferred = ['zagonka', 'vkmovie'];
       return list.sort(function(a, b) {
+        if (sources[a].show !== sources[b].show) return sources[a].show ? -1 : 1;
         var ai = preferred.indexOf(a), bi = preferred.indexOf(b);
         if (ai != bi) return ai < 0 ? 1 : bi < 0 ? -1 : ai - bi;
-        var aa = String(sources[a] && sources[a].name || a).toLowerCase();
-        var bb = String(sources[b] && sources[b].name || b).toLowerCase();
+        var aa = String(sources[a].name || a).toLowerCase();
+        var bb = String(sources[b].name || b).toLowerCase();
         return aa < bb ? -1 : aa > bb ? 1 : 0;
       });
+    }
+    function sourcePickerRows() {
+      return sourcePickerKeys(true).map(function(e) {
+        return {
+          title: sources[e].name + (sources[e].show ? '' : ' · нет результата'),
+          source: e,
+          selected: e == balanser,
+          ghost: !sources[e].show
+        };
+      });
+    }
+    function failedSourcesForMovie() {
+      var key = String(object.movie.id || '') + ':' + String(object.movie.title || object.movie.name || '');
+      var cache = window.__wazoProviderFailures || (window.__wazoProviderFailures = {});
+      if (!cache[key] || Date.now() - cache[key].at > 600000) {
+        cache[key] = {at: Date.now(), failed: {}};
+      }
+      return cache[key].failed;
     }
 
 	function clarificationSearchAdd(value){
@@ -653,9 +665,12 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       Lampa.Storage.set('online_last_balanser', last_select_balanser);
     };
     this.changeBalanser = function(balanser_name, autoSwitch) {
-      this.updateBalanser(balanser_name);
-      // Automatic retries must not overwrite the manually preferred provider.
-      if (!autoSwitch) Lampa.Storage.set('online_balanser', balanser_name);
+      // Only explicit user changes become a stored preference.
+      if (!autoSwitch) {
+        this.updateBalanser(balanser_name);
+        Lampa.Storage.set('online_balanser', balanser_name);
+        delete failedSourcesForMovie()[balanser_name];
+      }
       var to = this.getChoice(balanser_name);
       var from = this.getChoice();
       if (from.voice_name) to.voice_name = from.voice_name;
@@ -714,8 +729,11 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
           }
           if (!sources[balanser]) balanser = filter_sources[0];
           if (!sources[balanser].show && !object.lampac_custom_select) {
-            var availableSources = sourcePickerKeys();
-            balanser = availableSources.length ? availableSources[0] : filter_sources[0];
+            var availableSources = sourcePickerKeys().filter(function(key) {
+              return !failedSourcesForMovie()[key];
+            });
+            if (!availableSources.length) return reject({msg:'Для этого фильма нет доступных источников'});
+            balanser = availableSources[0];
           }
           source = sources[balanser].url;
           Lampa.Storage.set('active_balanser', balanser);
@@ -729,24 +747,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       var _this3 = this;
       return new Promise(function(resolve, reject) {
         var url = _this3.requestParams(Defined.localhost + 'lifeevents?memkey=' + (_this3.memkey || ''));
-        var red = false;
-        var gou = function gou(json, any) {
-          if (json.accsdb) return reject(json);
-          var last_balanser = _this3.getLastChoiceBalanser();
-          if (!red) {
-            var _filter = json.online.filter(function(c) {
-              return any ? c.show : c.show && c.name.toLowerCase() == last_balanser;
-            });
-            if (_filter.length) {
-              red = true;
-              resolve(json.online.filter(function(c) {
-                return c.show;
-              }));
-            } else if (any) {
-              reject();
-            }
-          }
-        };
+        // Wait until discovery is complete; resolving on the first provider
+        // made the Wazo picker appear to have only 1–3 sources.
         var fin = function fin(call) {
           network.timeout(3000);
           network.silent(account(url), function(json) {
@@ -757,23 +759,11 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
               sourcePut(j);
             });
             filter_sources = Lampa.Arrays.getKeys(sources);
-            filter.set('sort', sourcePickerKeys().map(function(e) {
-              return {
-                title: sources[e].name,
-                source: e,
-                selected: e == balanser,
-                ghost: !sources[e].show
-              };
-            }));
+            filter.set('sort', sourcePickerRows());
             filter.chosen('sort', [sources[balanser] ? sources[balanser].name : balanser]);
-            gou(json);
-            var lastb = _this3.getLastChoiceBalanser();
-            if (life_wait_times > 15 || json.ready) {
+            if (json.ready || life_wait_times >= 15) {
               filter.render().find('.lampac-balanser-loader').remove();
-              gou(json, true);
-            } else if (!red && sources[lastb] && sources[lastb].show) {
-              gou(json, true);
-              life_wait_timer = setTimeout(fin, 1000);
+              resolve(json.online || []);
             } else {
               life_wait_timer = setTimeout(fin, 1000);
             }
@@ -1313,14 +1303,7 @@ else if (element.url) {
       if (filter_items.voice && filter_items.voice.length) add('voice', Lampa.Lang.translate('torrent_parser_voice'));
       if (filter_items.season && filter_items.season.length) add('season', Lampa.Lang.translate('torrent_serial_season'));
       filter.set('filter', select);
-      filter.set('sort', sourcePickerKeys().map(function(e) {
-        return {
-          title: sources[e].name,
-          source: e,
-          selected: e == balanser,
-          ghost: !sources[e].show
-        };
-      }));
+      filter.set('sort', sourcePickerRows());
       this.selected(filter_items);
     };
     /**
@@ -1772,9 +1755,8 @@ else if (element.url) {
       // This provider has now failed a real title request, so hide it for the
       // current card instead of leaving a misleading source row in the picker.
       if (sources[balanser]) sources[balanser].show = false;
-      filter.set('sort', sourcePickerKeys().map(function(e) {
-        return {title:sources[e].name, source:e, selected:e == balanser};
-      }));
+      failedSourcesForMovie()[balanser] = true;
+      filter.set('sort', sourcePickerRows());
 
       var tic = er && er.accsdb ? 10 : 3;
       html.find('.cancel').on('hover:enter', function() {
@@ -1787,17 +1769,21 @@ else if (element.url) {
       scroll.clear();
       scroll.append(html);
       this.loading(false);
+      var remaining = sourcePickerKeys().filter(function(key) {
+        return !failedSourcesForMovie()[key];
+      });
+      if (!remaining.length) {
+        html.find('.online-empty__title').text('Нет работающего источника для этого фильма');
+        html.find('.online-empty__time').text('Проверьте название фильма или выберите источник вручную.');
+        return;
+      }
       balanser_timer = setInterval(function() {
         tic--;
         html.find('.timeout').text(tic);
-        if (tic == 0) {
+        if (tic <= 0) {
           clearInterval(balanser_timer);
-          var keys = sourcePickerKeys();
-          var indx = keys.indexOf(balanser);
-          var next = keys[indx + 1] || keys[0];
-          if (!next) return;
-          balanser = next;
-          if (Lampa.Activity.active().activity == _this9.activity) _this9.changeBalanser(balanser, true);
+          var next = remaining[0];
+          if (Lampa.Activity.active().activity == _this9.activity) _this9.changeBalanser(next, true);
         }
       }, 1000);
     };
@@ -2193,8 +2179,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.3'},
-        field: {name:'Версия', description:'1.5.7 • persistent Wazo button • токен сервера как в on.js'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.8'},
+        field: {name:'Версия', description:'1.5.8 • все источники в одном списке • ограниченное автопереключение'}
       });
     } catch(e) {}
   }
@@ -2213,6 +2199,7 @@ else if (element.url) {
         if (!active || !Array.isArray(active.items)) return;
         if (!active.items.some(function(item){ return item && item.source; })) return;
         active.items.sort(function(a, b) {
+          if (!!(a && a.ghost) !== !!(b && b.ghost)) return a.ghost ? 1 : -1;
           var aa = String(a && a.title || '').toLowerCase();
           var bb = String(b && b.title || '').toLowerCase();
           return aa.localeCompare(bb);

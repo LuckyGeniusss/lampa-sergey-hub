@@ -1,4 +1,4 @@
-/* Wazo 1.5.3
+/* Wazo 1.5.8
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,8 +10,9 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.3.0';
+  var SERGEY_BACKEND_MIGRATION = '1.5.8';
   var SERGEY_OLD_BACKENDS = [
+    'https://beta.l-vid.online',
     'https://ab2024.ru',
     'http://hdpoisk.ru:2053',
     'https://hdpoisk.ru:2053',
@@ -54,7 +55,16 @@
 
   var unic_id = Lampa.Storage.get('lampac_unic_id', '');
   if (!unic_id) {
-    unic_id = Lampa.Utils.uid(8).toLowerCase();
+    unic_id = (function(){
+      function un(raw){ if(!raw) return ''; try{ var p=JSON.parse(raw); if(typeof p==='string'&&p) return p; }catch(e){ if(typeof raw==='string'&&raw) return raw; } return ''; }
+      try{ var b=un(localStorage.getItem('lampac_uid_backup')); if(b) return b; }catch(e){}
+      try{ var m=document.cookie.match(/(?:^|;\s*)alpac_uid=([^;]*)/); if(m&&m[1]) return decodeURIComponent(m[1]); }catch(e){}
+      var u='';
+      try{ var c=window.crypto||window.msCrypto; if(c&&c.getRandomValues){ var a=new Uint8Array(6); c.getRandomValues(a); for(var i=0;i<a.length;i++) u+=('0'+a[i].toString(16)).slice(-2); } }catch(e){}
+      if(u.length<12) u=(Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).slice(0,12);
+      try{ localStorage.setItem('lampac_uid_backup',u); }catch(e){}
+      return u.toLowerCase();
+    })();
     Lampa.Storage.set('lampac_unic_id', unic_id);
   }
 
@@ -69,6 +79,25 @@
   } else {
     return 0;
   }
+}
+
+// Токен сервера: ищем там же, где его сохраняет on.js после входа через Telegram-бота.
+// Порядок: ручной ввод в настройках -> Lampa.Storage -> cookie -> localStorage.
+function serverToken() {
+  var t = '';
+  try { t = String(Lampa.Storage.get('sergey_server_token', '') || '').trim(); } catch (e) {}
+  if (t) return t;
+  var names = ['alpac_token', 'lampac_token'];
+  for (var i = 0; i < names.length && !t; i++) {
+    try { t = String(Lampa.Storage.get(names[i], '') || '').trim(); } catch (e) {}
+  }
+  if (t) return t;
+  try {
+    var m = document.cookie.match(/(?:^|;\s*)(?:alpac_token|lampac_token)=([^;]*)/);
+    if (m && m[1]) return decodeURIComponent(m[1]);
+  } catch (e) {}
+  try { t = localStorage.getItem('lampac_auth_token') || ''; } catch (e) {}
+  return t;
 }
 
 var hostkey = SERGEY_BACKEND.replace('http://', '').replace('https://', '');
@@ -119,7 +148,7 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
 	  account_email: Lampa.Storage.get('account_email', ''),
 	  unic_id: Lampa.Storage.get('lampac_unic_id', ''),
 	  profile_id: Lampa.Storage.get('lampac_profile_id', ''),
-	  token: 'bylampa'
+	  token: serverToken() || 'bylampa'
     }));
 
     if (client._shouldReconnect && window.rch_nws[hostkey].rchRegistry) {
@@ -250,6 +279,100 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
     }
   }
 
+  // FNV-1a hash for device fingerprint
+  function fnv1a(str) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return (h >>> 0).toString(16);
+  }
+
+  // ── Comprehensive device fingerprint ──
+  // Survives cache clear / app reinstall (based on hardware, not storage).
+  // ~15 signals: canvas, WebGL, audio, screen, hardware, timezone, math.
+  var device_fp = '';
+  try {
+    var fp = [];
+
+    // 1. Screen (physical properties)
+    fp.push(screen.width + 'x' + screen.height + ':' + screen.availWidth + 'x' + screen.availHeight);
+    fp.push(screen.colorDepth || 0);
+    fp.push(window.devicePixelRatio || 1);
+
+    // 2. Hardware
+    fp.push(navigator.hardwareConcurrency || 0);
+    fp.push(navigator.deviceMemory || 0);
+    fp.push(navigator.maxTouchPoints || 0);
+
+    // 3. Platform / locale
+    fp.push(navigator.platform || '');
+    fp.push(navigator.language || '');
+    fp.push((navigator.languages || []).join(','));
+
+    // 4. Timezone
+    try { fp.push(Intl.DateTimeFormat().resolvedOptions().timeZone); } catch(e) { fp.push(''); }
+    fp.push(new Date().getTimezoneOffset());
+
+    // 5. Math engine quirks (differ between JS engines)
+    fp.push(Math.tan(-1e300));
+
+    // 6. Canvas fingerprint (GPU + font rendering)
+    try {
+      var c = document.createElement('canvas');
+      c.width = 280; c.height = 60;
+      var x = c.getContext('2d');
+      if (x) {
+        x.textBaseline = 'alphabetic';
+        x.fillStyle = '#f60';
+        x.fillRect(125, 1, 62, 20);
+        x.fillStyle = '#069';
+        x.font = '14px Arial';
+        x.fillText('Cwm fjordbank glyphs vext quiz', 2, 15);
+        x.fillStyle = 'rgba(102,204,0,0.7)';
+        x.font = '18px Times New Roman';
+        x.fillText('Cwm fjordbank glyphs vext quiz', 4, 45);
+        x.globalCompositeOperation = 'multiply';
+        x.fillStyle = 'rgb(255,0,255)';
+        x.beginPath(); x.arc(50, 50, 50, 0, Math.PI * 2, true); x.closePath(); x.fill();
+        x.fillStyle = 'rgb(0,255,255)';
+        x.beginPath(); x.arc(100, 50, 50, 0, Math.PI * 2, true); x.closePath(); x.fill();
+        fp.push(fnv1a(c.toDataURL()));
+      } else fp.push('nc');
+    } catch(e) { fp.push('nc'); }
+
+    // 7. WebGL fingerprint (GPU model + capabilities)
+    try {
+      var gc = document.createElement('canvas');
+      var gl = gc.getContext('webgl') || gc.getContext('experimental-webgl');
+      if (gl) {
+        var di = gl.getExtension('WEBGL_debug_renderer_info');
+        fp.push(di ? gl.getParameter(di.UNMASKED_VENDOR_WEBGL) : '');
+        fp.push(di ? gl.getParameter(di.UNMASKED_RENDERER_WEBGL) : '');
+        fp.push(gl.getParameter(gl.MAX_TEXTURE_SIZE));
+        fp.push(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
+        fp.push(gl.getParameter(gl.MAX_VERTEX_ATTRIBS));
+        fp.push(gl.getParameter(gl.MAX_VARYING_VECTORS));
+        var lw = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE);
+        fp.push(lw ? lw[0]+','+lw[1] : '');
+        var ps = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE);
+        fp.push(ps ? ps[0]+','+ps[1] : '');
+        fp.push(fnv1a((gl.getSupportedExtensions() || []).join(',')));
+      } else fp.push('ng');
+    } catch(e) { fp.push('ng'); }
+
+    // 8. Audio (hardware sample rate + channels)
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      fp.push(ac.sampleRate);
+      fp.push(ac.destination.maxChannelCount);
+      ac.close();
+    } catch(e) { fp.push('na'); }
+
+    device_fp = fnv1a(fp.join('|||'));
+  } catch(e) {}
+
   function account(url) {
     url = url + '';
     if (url.indexOf('account_email=') == -1) {
@@ -261,8 +384,11 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       if (uid) url = Lampa.Utils.addUrlComponent(url, 'uid=' + encodeURIComponent(uid));
     }
     if (url.indexOf('token=') == -1) {
-      var token = 'bylampa';
-      if (token != '') url = Lampa.Utils.addUrlComponent(url, 'token=bylampa');
+      var token = serverToken() || 'bylampa';
+      url = Lampa.Utils.addUrlComponent(url, 'token=' + encodeURIComponent(token));
+    }
+    if (url.indexOf('fp=') == -1 && device_fp) {
+      url = Lampa.Utils.addUrlComponent(url, 'fp=' + encodeURIComponent(device_fp));
     }
     if (url.indexOf('nws_id=') == -1 && window.rch_nws && window.rch_nws[hostkey]) {
       var nws_id = window.rch_nws[hostkey].connectionId || Lampa.Storage.get('lampac_nws_id', '');
@@ -345,9 +471,6 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       if (sources[name] && isAlias) return;
 
       var displayName = isAlias && sources[name] ? sources[name].name : (j.name || name);
-      if (name === 'filmix' && !String(Lampa.Storage.get('filmix_token', '') || '').trim()) {
-        displayName = 'Filmix 「AUTH」';
-      }
       sources[name] = {
         url: j.url,
         name: displayName,
@@ -355,22 +478,39 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       };
     }
 
-    function sourcePickerKeys() {
-      var list = filter_sources.slice(0);
-      var available = list.filter(function(key) {
-        return sources[key] && sources[key].show;
+    // Unified source picker: every discovered provider is visible, while
+    // automatic playback retries only providers with a positive search result.
+    function sourcePickerKeys(includeUnavailable) {
+      var list = filter_sources.filter(function(key) {
+        return sources[key] && (includeUnavailable || sources[key].show);
       });
-
-      // Once discovery has real answers, do not keep dead/ghost providers in
-      // the TV picker. If discovery is still warming up, keep the full set so
-      // the filter is never empty.
-      if (available.length) list = available;
-
+      var preferred = ['zagonka', 'vkmovie'];
       return list.sort(function(a, b) {
-        var aa = String(sources[a] && sources[a].name || a).toLowerCase();
-        var bb = String(sources[b] && sources[b].name || b).toLowerCase();
+        if (sources[a].show !== sources[b].show) return sources[a].show ? -1 : 1;
+        var ai = preferred.indexOf(a), bi = preferred.indexOf(b);
+        if (ai != bi) return ai < 0 ? 1 : bi < 0 ? -1 : ai - bi;
+        var aa = String(sources[a].name || a).toLowerCase();
+        var bb = String(sources[b].name || b).toLowerCase();
         return aa < bb ? -1 : aa > bb ? 1 : 0;
       });
+    }
+    function sourcePickerRows() {
+      return sourcePickerKeys(true).map(function(e) {
+        return {
+          title: sources[e].name + (sources[e].show ? '' : ' · нет результата'),
+          source: e,
+          selected: e == balanser,
+          ghost: !sources[e].show
+        };
+      });
+    }
+    function failedSourcesForMovie() {
+      var key = String(object.movie.id || '') + ':' + String(object.movie.title || object.movie.name || '');
+      var cache = window.__wazoProviderFailures || (window.__wazoProviderFailures = {});
+      if (!cache[key] || Date.now() - cache[key].at > 600000) {
+        cache[key] = {at: Date.now(), failed: {}};
+      }
+      return cache[key].failed;
     }
 
 	function clarificationSearchAdd(value){
@@ -524,16 +664,13 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       last_select_balanser[object.movie.id] = balanser_name;
       Lampa.Storage.set('online_last_balanser', last_select_balanser);
     };
-    this.changeBalanser = function(balanser_name) {
-      if (balanser_name === 'filmix' && !String(Lampa.Storage.get('filmix_token', '') || '').trim()) {
-        var self = this;
-        sergeyFilmixPair(function() {
-          self.changeBalanser('filmix');
-        });
-        return;
+    this.changeBalanser = function(balanser_name, autoSwitch) {
+      // Only explicit user changes become a stored preference.
+      if (!autoSwitch) {
+        this.updateBalanser(balanser_name);
+        Lampa.Storage.set('online_balanser', balanser_name);
+        delete failedSourcesForMovie()[balanser_name];
       }
-      this.updateBalanser(balanser_name);
-      Lampa.Storage.set('online_balanser', balanser_name);
       var to = this.getChoice(balanser_name);
       var from = this.getChoice();
       if (from.voice_name) to.voice_name = from.voice_name;
@@ -557,6 +694,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       query.push('similar=' + (object.similar ? true : false));
       query.push('rchtype=' + (((window.rch_nws && window.rch_nws[hostkey]) ? window.rch_nws[hostkey].type : (window.rch && window.rch[hostkey]) ? window.rch[hostkey].type : '') || ''));
       if (Lampa.Storage.get('account_email', '')) query.push('cub_id=' + Lampa.Utils.hash(Lampa.Storage.get('account_email', '')));
+      // Filmix: как в online.txt, авторизация не требуется — качество (в т.ч. 4K)
+      // определяет сервер. Личный токен отправляется только если задан вручную.
       var filmixToken = String(Lampa.Storage.get('filmix_token', '') || '').trim();
       if (filmixToken) {
         query.push('filmix_token=' + encodeURIComponent(filmixToken));
@@ -570,7 +709,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       if (last_select_balanser[object.movie.id]) {
         return last_select_balanser[object.movie.id];
       } else {
-        return Lampa.Storage.get('online_balanser', filter_sources.length ? filter_sources[0] : '');
+        var defaultSource = sources.zagonka && sources.zagonka.show ? 'zagonka' : (filter_sources.length ? filter_sources[0] : '');
+        return Lampa.Storage.get('online_balanser', defaultSource);
       }
     };
     this.startSource = function(json) {
@@ -584,12 +724,16 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
           if (last_select_balanser[object.movie.id]) {
             balanser = last_select_balanser[object.movie.id];
           } else {
-            balanser = Lampa.Storage.get('online_balanser', filter_sources[0]);
+            var defaultSource = sources.zagonka && sources.zagonka.show ? 'zagonka' : filter_sources[0];
+            balanser = Lampa.Storage.get('online_balanser', defaultSource);
           }
           if (!sources[balanser]) balanser = filter_sources[0];
           if (!sources[balanser].show && !object.lampac_custom_select) {
-            var availableSources = sourcePickerKeys();
-            balanser = availableSources.length ? availableSources[0] : filter_sources[0];
+            var availableSources = sourcePickerKeys().filter(function(key) {
+              return !failedSourcesForMovie()[key];
+            });
+            if (!availableSources.length) return reject({msg:'Для этого фильма нет доступных источников'});
+            balanser = availableSources[0];
           }
           source = sources[balanser].url;
           Lampa.Storage.set('active_balanser', balanser);
@@ -603,24 +747,8 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
       var _this3 = this;
       return new Promise(function(resolve, reject) {
         var url = _this3.requestParams(Defined.localhost + 'lifeevents?memkey=' + (_this3.memkey || ''));
-        var red = false;
-        var gou = function gou(json, any) {
-          if (json.accsdb) return reject(json);
-          var last_balanser = _this3.getLastChoiceBalanser();
-          if (!red) {
-            var _filter = json.online.filter(function(c) {
-              return any ? c.show : c.show && c.name.toLowerCase() == last_balanser;
-            });
-            if (_filter.length) {
-              red = true;
-              resolve(json.online.filter(function(c) {
-                return c.show;
-              }));
-            } else if (any) {
-              reject();
-            }
-          }
-        };
+        // Wait until discovery is complete; resolving on the first provider
+        // made the Wazo picker appear to have only 1–3 sources.
         var fin = function fin(call) {
           network.timeout(3000);
           network.silent(account(url), function(json) {
@@ -631,23 +759,11 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
               sourcePut(j);
             });
             filter_sources = Lampa.Arrays.getKeys(sources);
-            filter.set('sort', sourcePickerKeys().map(function(e) {
-              return {
-                title: sources[e].name,
-                source: e,
-                selected: e == balanser,
-                ghost: !sources[e].show
-              };
-            }));
+            filter.set('sort', sourcePickerRows());
             filter.chosen('sort', [sources[balanser] ? sources[balanser].name : balanser]);
-            gou(json);
-            var lastb = _this3.getLastChoiceBalanser();
-            if (life_wait_times > 15 || json.ready) {
+            if (json.ready || life_wait_times >= 15) {
               filter.render().find('.lampac-balanser-loader').remove();
-              gou(json, true);
-            } else if (!red && sources[lastb] && sources[lastb].show) {
-              gou(json, true);
-              life_wait_timer = setTimeout(fin, 1000);
+              resolve(json.online || []);
             } else {
               life_wait_timer = setTimeout(fin, 1000);
             }
@@ -1187,14 +1303,7 @@ else if (element.url) {
       if (filter_items.voice && filter_items.voice.length) add('voice', Lampa.Lang.translate('torrent_parser_voice'));
       if (filter_items.season && filter_items.season.length) add('season', Lampa.Lang.translate('torrent_serial_season'));
       filter.set('filter', select);
-      filter.set('sort', sourcePickerKeys().map(function(e) {
-        return {
-          title: sources[e].name,
-          source: e,
-          selected: e == balanser,
-          ghost: !sources[e].show
-        };
-      }));
+      filter.set('sort', sourcePickerRows());
       this.selected(filter_items);
     };
     /**
@@ -1630,7 +1739,7 @@ else if (element.url) {
       var html = Lampa.Template.get('lampac_does_not_answer', {});
       html.find('.online-empty__buttons').remove();
       html.find('.online-empty__title').text(Lampa.Lang.translate('title_error'));
-      html.find('.online-empty__time').text(er && er.accsdb ? er.msg : Lampa.Lang.translate('lampac_does_not_answer_text').replace('{balanser}', balanser[balanser].name));
+      html.find('.online-empty__time').text(er && er.accsdb ? er.msg : Lampa.Lang.translate('lampac_does_not_answer_text').replace('{balanser}', sources[balanser] ? sources[balanser].name : balanser));
       scroll.clear();
       scroll.append(html);
       this.loading(false);
@@ -1646,9 +1755,8 @@ else if (element.url) {
       // This provider has now failed a real title request, so hide it for the
       // current card instead of leaving a misleading source row in the picker.
       if (sources[balanser]) sources[balanser].show = false;
-      filter.set('sort', sourcePickerKeys().map(function(e) {
-        return {title:sources[e].name, source:e, selected:e == balanser};
-      }));
+      failedSourcesForMovie()[balanser] = true;
+      filter.set('sort', sourcePickerRows());
 
       var tic = er && er.accsdb ? 10 : 3;
       html.find('.cancel').on('hover:enter', function() {
@@ -1661,17 +1769,21 @@ else if (element.url) {
       scroll.clear();
       scroll.append(html);
       this.loading(false);
+      var remaining = sourcePickerKeys().filter(function(key) {
+        return !failedSourcesForMovie()[key];
+      });
+      if (!remaining.length) {
+        html.find('.online-empty__title').text('Нет работающего источника для этого фильма');
+        html.find('.online-empty__time').text('Проверьте название фильма или выберите источник вручную.');
+        return;
+      }
       balanser_timer = setInterval(function() {
         tic--;
         html.find('.timeout').text(tic);
-        if (tic == 0) {
+        if (tic <= 0) {
           clearInterval(balanser_timer);
-          var keys = sourcePickerKeys();
-          var indx = keys.indexOf(balanser);
-          var next = keys[indx + 1] || keys[0];
-          if (!next) return;
-          balanser = next;
-          if (Lampa.Activity.active().activity == _this9.activity) _this9.changeBalanser(balanser);
+          var next = remaining[0];
+          if (Lampa.Activity.active().activity == _this9.activity) _this9.changeBalanser(next, true);
         }
       }, 1000);
     };
@@ -2045,8 +2157,18 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
+        param: {name:'sergey_server_token', type:'input', default:Lampa.Storage.get('sergey_server_token',''), values:'', placeholder:'Токен сервера (необязательно)'},
+        field: {name:'Токен сервера', description:'Обычно подхватывается сам после входа через on.js. Вставьте вручную, только если автоопределение не сработало.'},
+        onChange: function(value) {
+          Lampa.Storage.set('sergey_server_token', String(value || '').trim());
+        }
+      });
+    } catch(e) {}
+    try {
+      Lampa.SettingsApi.addParam({
+        component: 'sergey_online_settings',
         param: {name:'filmix_token', type:'input', default:Lampa.Storage.get('filmix_token',''), values:'', placeholder:'Filmix device token'},
-        field: {name:'Filmix token', description:'Ваш собственный токен Filmix. Можно вставить вручную или получить через кнопку ниже.'},
+        field: {name:'Filmix token', description:'Необязательно. Для 4K не нужен — Filmix работает без авторизации, как в online.'},
         onChange: function(value) {
           Lampa.Storage.set('filmix_token', String(value || '').trim());
           Lampa.Storage.set('filmix_status', {});
@@ -2057,18 +2179,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {type:'button'},
-        field: {name:'Авторизовать Filmix', description:'Бесплатная привязка устройства Filmix. Будет показан код для вашего аккаунта.'},
-        onChange: function() {
-          sergeyFilmixPair();
-        }
-      });
-    } catch(e) {}
-    try {
-      Lampa.SettingsApi.addParam({
-        component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.3'},
-        field: {name:'Версия', description:'1.5.3 • persistent Wazo button • Filmix auth • cloud backend'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.8'},
+        field: {name:'Версия', description:'1.5.8 • все источники в одном списке • ограниченное автопереключение'}
       });
     } catch(e) {}
   }
@@ -2087,6 +2199,7 @@ else if (element.url) {
         if (!active || !Array.isArray(active.items)) return;
         if (!active.items.some(function(item){ return item && item.source; })) return;
         active.items.sort(function(a, b) {
+          if (!!(a && a.ghost) !== !!(b && b.ghost)) return a.ghost ? 1 : -1;
           var aa = String(a && a.title || '').toLowerCase();
           var bb = String(b && b.title || '').toLowerCase();
           return aa.localeCompare(bb);
