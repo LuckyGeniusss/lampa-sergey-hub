@@ -52,6 +52,15 @@ for name,addr in SOURCES.items():
  except Exception as exc:
   source_stats[name]={'fetched':False,'error':str(exc)[:180]}
  print('SOURCE',name,source_stats[name],flush=True)
+# Official HLS parliamentary broadcast. hls_1/2/3 are quality variants.
+oirtv_url='https://oirtv.oireachtas.ie/hls_2.m3u8'
+if oirtv_url not in seen:
+ seen[oirtv_url]=len(all_entries)
+ all_entries.append({
+  'url':oirtv_url,
+  'meta':['#EXTINF:-1 tvg-id="OireachtasTV.ie" group-title="Ирландские каналы",Oireachtas TV'],
+  'source':'IE Oireachtas official','title':'Oireachtas TV'
+ })
 (DEST/'source_stats.json').write_text(json.dumps(source_stats,indent=2,ensure_ascii=False))
 print('CANDIDATES',len(all_entries),flush=True)
 (DEST/'candidates.json').write_text(json.dumps(all_entries,ensure_ascii=False))
@@ -83,10 +92,27 @@ if len(okay)<200:
 out=['#EXTM3U']
 movies=['#EXTM3U']
 channels=collections.Counter()
+irish=['#EXTM3U']
+irish_names=set()
+def irish_channel(item):
+    # Irish broadcaster channels only, not international UK/Pluto FAST streams.
+    if item['source'] not in ('IE IPTV-org','IE Oireachtas official','Free-TV worldwide'):
+        return ''
+    title=item['title'].lower()
+    if title.startswith('tg4 ') or title=='tg4':return 'TG4'
+    if title=='oireachtas tv' or title.startswith('oireachtas tv ('):return 'Oireachtas TV'
+    return ''
 for item in all_entries:
  if item['url'] not in okay:continue
  label=item['meta'][0]
- parts=item['meta']
+ parts=item['meta'][:]
+ irname=irish_channel(item)
+ if irname and irname not in irish_names:
+  irish_names.add(irname)
+  ilabel=re.sub(r'group-title="[^"]*"', 'group-title="Ирландские каналы"',label)
+  if 'group-title=' not in ilabel:ilabel=ilabel.replace(',', ' group-title="Ирландские каналы",',1)
+  parts[0]=ilabel
+  irish+=parts+[item['url']]
  out+=parts+[item['url']]
  source=item['source'].lower(); title=item['title'].lower()
  group=re.search(r'group-title="([^"]+)"',label,re.I)
@@ -96,7 +122,8 @@ for item in all_entries:
  channels[item['source']]+=1
 (DEST/'wazo_tv.m3u').write_text('\n'.join(out)+'\n',encoding='utf8')
 (DEST/'wazo_cinema.m3u').write_text('\n'.join(movies)+'\n',encoding='utf8')
-report={'date_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'checked':len(all_entries),'working':len(okay),'movies':len([v for v in movies if v.startswith('#EXTINF')]),'by_source':channels,'sources':source_stats,'seconds':round(time.time()-t0),'errors':collections.Counter(r['error'].split('\n')[-1][:100] for r in results.values() if not r['ok']).most_common(20)}
+(DEST/'wazo_ireland.m3u').write_text('\n'.join(irish)+'\n',encoding='utf8')
+report={'date_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'checked':len(all_entries),'working':len(okay),'movies':len([v for v in movies if v.startswith('#EXTINF')]),'ireland_verified':len(irish_names),'by_source':channels,'sources':source_stats,'seconds':round(time.time()-t0),'errors':collections.Counter(r['error'].split('\n')[-1][:100] for r in results.values() if not r['ok']).most_common(20)}
 (DEST/'wazo_status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
 (DEST/'failures.json').write_text(json.dumps([x for x in results.values() if not x['ok']],ensure_ascii=False))
 print('DONE',json.dumps({k:v for k,v in report.items() if k not in ['sources','errors']},ensure_ascii=False,default=dict),flush=True)

@@ -1,0 +1,79 @@
+{
+  "time_utc": "2026-10-31T09:58:37Z",
+  "candidates": 17,
+  "verified": 2,
+  "channels": [
+    {
+      "name": "TG4",
+      "origin": "https://iptv-org.github.io/iptv/countries/ie.m3u",
+      "url": "https://fastly.live.brightcove.com/6384196213112/eu-west-1/1555966122001/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJob3N0IjoieDl2YzlnLmVncmVzcy55ODN1ZWIiLCJhY2NvdW50X2lkIjoiMTU1NTk2NjEyMjAwMSIsImVobiI6ImZhc3RseS5saXZlLmJyaWdodGNvdmUuY29tIiwiaXNzIjoiYmxpdmUtcGxheWJhY2stc291cmNlLWFwaSIsInN1YiI6InBhdGhtYXB0b2tlbiIsImF1ZCI6WyIxNTU1OTY2MTIyMDAxIl0sImp0aSI6IjYzODQxOTYyMTMxMTIifQ.Co2xR3kmJBoxTaFTpwU0b37lJ05vNt-y32-SwfM26EA/chunklist.m3u8"
+    },
+    {
+      "name": "Oireachtas TV",
+      "origin": "Oireachtas direct broadcaster HLS",
+      "url": "https://oirtv.oireachtas.ie/hls_2.m3u8"
+    }
+  ],
+  "failed": [
+    {
+      "name": "RTEjr [Not 24/7]",
+      "reason": "site:55337/live/littlespiked/cam1gail2brian3/20641.m3u8.\nError opening input files: Server returned 401 Unauthorized (authorization failed)\n"
+    },
+    {
+      "name": "Oireachtas TV Committee Room 3 (720p)",
+      "reason": "ror opening input file https://d33zah5htxvoxb.cloudfront.net/el/live/cr3/hls.m3u8.\nError opening input files: Server returned 404 Not Found\n"
+    },
+    {
+      "name": "Oireachtas TV Committee Room 4 (720p)",
+      "reason": "ror opening input file https://d33zah5htxvoxb.cloudfront.net/el/live/cr4/hls.m3u8.\nError opening input files: Server returned 404 Not Found\n"
+    },
+    {
+      "name": "Oireachtas TV Dail Eireann (720p)",
+      "reason": "or opening input file https://d33zah5htxvoxb.cloudfront.net/el/live/dail/hls.m3u8.\nError opening input files: Server returned 404 Not Found\n"
+    },
+    {
+      "name": "Oireachtas TV Committee Room 2 (720p)",
+      "reason": "ror opening input file https://d33zah5htxvoxb.cloudfront.net/el/live/cr2/hls.m3u8.\nError opening input files: Server returned 404 Not Found\n"
+    },
+    {
+      "name": "Oireachtas TV (720p)",
+      "reason": "r opening input file https://d33zah5htxvoxb.cloudfront.net/el/live/oirtv/hls.m3u8.\nError opening input files: Server returned 404 Not Found\n"
+    },
+    {
+      "name": "Oireachtas TV Seanad Eireann (720p)",
+      "reason": " opening input file https://d33zah5htxvoxb.cloudfront.net/el/live/seanad/hls.m3u8.\nError opening input files: Server returned 404 Not Found\n"
+    },
+    {
+      "name": "Oireachtas TV Committee Room 1 (720p)",
+      "reason": "ror opening input file https://d33zah5htxvoxb.cloudfront.net/el/live/cr1/hls.m3u8.\nError opening input files: Server returned 404 Not Found\n"
+    },
+    {
+      "name": "Virgin Media 1",
+      "reason": "/live-virginmedia.simplestreamcdn.com/s3/rewrite/virgin_one/index.m3u8.\nError opening input files: Invalid data found when processing input\n"
+    },
+    {
+      "name": "Virgin Media 4",
+      "reason": "live-virginmedia.simplestreamcdn.com/s3/rewrite/virgin_four/index.m3u8.\nError opening input files: Invalid data found when processing input\n"
+    },
+    {
+      "name": "Virgin Media 3",
+      "reason": "ive-virginmedia.simplestreamcdn.com/s3/rewrite/virgin_three/index.m3u8.\nError opening input files: Invalid data found when processing input\n"
+    },
+    {
+      "name": "Virgin Media 2",
+      "reason": "/live-virginmedia.simplestreamcdn.com/s3/rewrite/virgin_two/index.m3u8.\nError opening input files: Invalid data found when processing input\n"
+    },
+    {
+      "name": "RTÉ One",
+      "reason": "din', '-loglevel', 'error', '-rw_timeout', '5000000', '-analyzeduration', '1600000', '-probesize', '180000', '-i', 'https://live.rte.ie/live"
+    },
+    {
+      "name": "RTÉ2",
+      "reason": "din', '-loglevel', 'error', '-rw_timeout', '5000000', '-analyzeduration', '1600000', '-probesize', '180000', '-i', 'https://live.rte.ie/live"
+    },
+    {
+      "name": "RTE News",
+      "reason": "din', '-loglevel', 'error', '-rw_timeout', '5000000', '-analyzeduration', '1600000', '-probesize', '180000', '-i', 'https://live.rte.ie/live"
+    }
+  ]
+}

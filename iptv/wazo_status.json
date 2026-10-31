@@ -1,7 +1,7 @@
 {
-  "date_utc": "2026-10-31T07:55:38Z",
-  "checked": 4031,
-  "working": 2339,
+  "date_utc": "2026-10-31T10:00:01Z",
+  "checked": 4032,
+  "working": 2340,
   "movies": 375,
   "by_source": {
     "UA IPTV-org": 148,
@@ -13,7 +13,8 @@
     "Kino Plus": 1,
     "UA IPTV-org-UA": 54,
     "Kids": 5,
-    "Free-TV worldwide": 939
+    "Free-TV worldwide": 939,
+    "IE Oireachtas official": 1
   },
   "sources": {
     "UA IPTV-org": {
@@ -86,5 +87,6 @@
       "Command '['/opt/homebrew/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout",
       116
     ]
-  ]
+  ],
+  "ireland_verified": 2
 }
