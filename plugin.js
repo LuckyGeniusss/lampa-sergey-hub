@@ -1,4 +1,4 @@
-/* Wazo 1.5.11
+/* Wazo 1.5.12
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.11';
+  var SERGEY_BACKEND_MIGRATION = '1.5.12';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -2236,8 +2236,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.11'},
-        field: {name:'Версия', description:'1.5.11 • единый IPTV-плейлист с категориями'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.12'},
+        field: {name:'Версия', description:'1.5.12 • единый IPTV: миграция локальной базы'}
       });
     } catch(e) {}
   }
@@ -2274,11 +2274,40 @@ else if (element.url) {
     } catch (err) {console.warn('Wazo unified playlist:',err);}
   }
 
+  function wazoMigrateIptvDb() {
+    if (!Lampa.DB) return;
+    var root = 'https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/';
+    var names = [root+'wazo_tv.m3u',root+'wazo_cinema.m3u',root+'wazo_ireland.m3u'];
+    var db = new Lampa.DB('cub_iptv',['playlist','params','epg','favorites','other','epg_channels','locked'],6);
+    db.logs = false;
+    db.openDatabase().then(function() {
+      return db.getDataAnyCase('playlist','list');
+    }).then(function(data) {
+      if (!data || !Array.isArray(data.list)) return;
+      var filtered = data.list.filter(function(item) {
+        return !item || names.indexOf(String(item.url||'').split('?')[0]) < 0;
+      });
+      if (filtered.length === data.list.length) {
+        console.log('WAZO_IPTV_DB_OK ' + filtered.length);
+        return;
+      }
+      // Backup the previous Cub IPTV playlist list locally before any write.
+      Lampa.Storage.set('wazo_iptv_db_backup_20261031',data);
+      var copy = Object.assign({},data,{list:filtered});
+      return db.rewriteData('playlist','list',copy).then(function() {
+        console.log('WAZO_IPTV_DB_MIGRATED ' + data.list.length + ' -> ' + filtered.length);
+      });
+    }).catch(function(err) {
+      console.warn('Wazo IPTV DB migrate:',err);
+    });
+  }
+
   function startPlugin() {
     addSergeySettings();
     // APK may re-register its original playlists at each start.
     // Migrate after APK init, retaining all unrelated user playlists.
     setTimeout(wazoEnsureUnifiedPlaylist, 1800);
+    setTimeout(wazoMigrateIptvDb, 2600);
     wazoInstallPlaybackWatcher();
     window.sergey_online_plugin = true;
 
@@ -2301,7 +2330,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.11',
+      version: '1.5.12',
       name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2581,7 +2610,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.11',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.12',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();
