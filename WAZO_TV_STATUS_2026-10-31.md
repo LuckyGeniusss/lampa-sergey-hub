@@ -21,3 +21,14 @@
 - Основной публичный репозиторий: https://github.com/LuckyGeniusss/lampa-sergey-hub
 - Mac mini, рабочая копия: `/Volumes/Wazo-Fast/Projects/WazoTV-sources-20261031`
 - Не путать старую ветку `sergey-1.5-final` в `/Volumes/Wazo-Fast/Projects/lampa-sergey-hub` с текущей опубликованной веткой `main`.
+
+## Дополнительная проверка 31.10.2026, 09:06–09:10 UTC
+- На Fire Stick уже установлена **Wazo TV 2.5.5**. Версия не переустанавливалась, пользовательские данные не изменялись.
+- Исправление 16:9 иконки **фактически подтверждено скриншотом Projectivy**: на главном экране теперь показан широкий Wazo TV баннер с логотипом и надписью, без прежних боковых чёрных полей. Прежняя запись об оставшейся неисправности иконки выше более не актуальна.
+- Кнопка Home возвращает в Projectivy, порядок плиток сохраняется: Wazo TV, Zona, SmartTube, Lampa.
+- Тест `node tests/backend-health.js`: **PASS**, облачный backend отвечает, 78 провайдеров зарегистрированы.
+- Тест `node tests/provider-discovery.js`: **PASS**, на «Матрице» 72 кандидата/28 предварительно активных, на Breaking Bad 73/21, на «Любовная магия» 73/21; цифры не являются доказательством воспроизведения всех источников.
+- GitHub Actions `Wazo VOD provider health` завершился успешно 2026-10-31 08:47 UTC: https://github.com/LuckyGeniusss/lampa-sergey-hub/actions/runs/41185998993.
+- Два неудачных запуска старого `Refresh Wazo TV verified IPTV playlists` (08:00 и 07:59 UTC) относятся к **удалённому из текущей ветки небезопасному workflow**. Актуальный workflow `wazo-iptv-refresh.yml` остаётся еженедельным; его самостоятельный успешный прогон пока не подтверждён.
+- Дополнительный `ffprobe`-тест на Mac mini: потоки `1+1 Марафон` и `Setanta Sports 1 Eurasia` отвечают с видео 1920×1080 и аудио. Это выборочная проверка двух URL из опубликованного списка, а не проверка на Fire Stick.
+- На Mac mini есть незакоммиченные изменения `scripts/rebuild_wazo_brand.py`, `tests/lib.js`, `.github/workflows/wazo-vod-health.yml`: они соответствуют более новому опубликованному коммиту `dc3a773`; во избежание конфликта файлы не перезаписывались.
