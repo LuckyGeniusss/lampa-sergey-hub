@@ -1,6 +1,6 @@
 # Wazo TV — Ирландские каналы
 
-Плейлист: `https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/wazo_ireland.m3u`
+Плейлист: `https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/wazo_tv.m3u`
 
 Проверено из Ирландии (Mac mini, 31 октября 2026) декодированием кадров FFmpeg:
 

@@ -31,6 +31,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/wazo-iptv"
           cp iptv/build_wazo.py "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
+          cp iptv/curate_unified.py "$RUNNER_TEMP/wazo-iptv/curate_unified.py"
           python "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
       - name: Validate channel count and protect current playlist
         run: |
@@ -46,28 +47,23 @@ jobs:
               assert len(urls) == len(set(urls)), 'duplicate IPTV URL'
               return urls
           a = entries(new / 'wazo_tv.m3u')
-          b = entries(new / 'wazo_cinema.m3u')
-          ie = entries(new / 'wazo_ireland.m3u')
           current = entries(old / 'wazo_tv.m3u')
           report = json.loads((new / 'wazo_status.json').read_text())
           assert report['working'] == len(a), 'report/playlists mismatch'
           assert len(a) >= max(400, int(len(current) * 0.65)), 'new playlist lost too many streams'
-          assert len(b) >= 100, 'cinema playlist unexpectedly small'
-          assert set(b).issubset(set(a)), 'cinema not subset of full playlist'
-          assert len(ie) >= 1, 'Irish public streams not available; keep last known list'
-          assert set(ie).issubset(set(a)), 'Irish list must be included in full playlist'
-          assert len(ie) == len({u for u in ie}), 'duplicate Irish channels'
+          assert report['groups'].get('Ирландские каналы',0) >= 1, 'Irish verified streams missing'
+          assert report['groups'].get('Детские',0) >= 10, 'Kids group missing'
+          assert report['groups'].get('Фильмы',0) >= 20, 'Movies group missing'
+          assert report['groups'].get('Украинские каналы',0) >= 20, 'Ukraine group missing'
           assert len(set(a) & set(current)) >= int(len(current) * 0.45), 'provider outage or geoblock suspected'
-          print('IPTV passed:',len(a),'total,',len(b),'cinema,',
+          print('IPTV passed:',len(a),'total,',
                 len(set(a) & set(current)),'retained from previous run')
           PY
       - name: Publish verified playlists
         run: |
           cp "$RUNNER_TEMP/wazo-iptv/wazo_tv.m3u" iptv/wazo_tv.m3u
-          cp "$RUNNER_TEMP/wazo-iptv/wazo_cinema.m3u" iptv/wazo_cinema.m3u
-          cp "$RUNNER_TEMP/wazo-iptv/wazo_ireland.m3u" iptv/wazo_ireland.m3u
           cp "$RUNNER_TEMP/wazo-iptv/wazo_status.json" iptv/wazo_status.json
-          git add iptv/wazo_tv.m3u iptv/wazo_cinema.m3u iptv/wazo_ireland.m3u iptv/wazo_status.json
+          git add iptv/wazo_tv.m3u iptv/wazo_status.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git -c user.name='Wazo IPTV Bot' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'iptv: refresh tested channel streams'
           git push origin HEAD:main

@@ -10,13 +10,13 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.5.10', src.includes('Wazo 1.5.10'));
-check('irish playlist registered without deleting user playlists',
- src.includes('function wazoEnsureIrishPlaylist()') &&
- src.includes("id:'wazo_ireland'") &&
- src.includes("name:'Wazo TV — Ирландские каналы'") &&
- src.includes('all.some(function(p)') &&
- src.includes('setTimeout(wazoEnsureIrishPlaylist, 1800)'));
+check('version 1.5.11', src.includes('Wazo 1.5.11'));
+check('one unified playlist, preserving user playlists',
+ src.includes('function wazoEnsureUnifiedPlaylist()') &&
+ src.includes("id:'wazo_unified'") &&
+ src.includes("name:'Wazo TV — Все каналы'") &&
+ src.includes("if (!ours) { result.push(p); return; }") &&
+ src.includes('setTimeout(wazoEnsureUnifiedPlaylist, 1800)'));
 check('stale backend migration', src.includes('SERGEY_OLD_BACKENDS') && src.includes('sergey_online_backend_custom') && src.includes('https://ab2024.ru'));
 check('backend preflight before open', src.includes('openSergeyActivity') && src.includes('/version?type=hash&_='));
 check('resetTemplates scope bridge', src.includes('var sergeyResetTemplates = null') && src.includes('sergeyResetTemplates = resetTemplates') && src.includes('if (sergeyResetTemplates) sergeyResetTemplates()'));

@@ -1,4 +1,4 @@
-/* Wazo 1.5.10
+/* Wazo 1.5.11
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.10';
+  var SERGEY_BACKEND_MIGRATION = '1.5.11';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -2236,33 +2236,49 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.10'},
-        field: {name:'Версия', description:'1.5.10 • Ирландские каналы и резерв при ошибке HLS'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.11'},
+        field: {name:'Версия', description:'1.5.11 • единый IPTV-плейлист с категориями'}
       });
     } catch(e) {}
   }
 
-  function wazoEnsureIrishPlaylist() {
+  function wazoEnsureUnifiedPlaylist() {
     try {
-      var url = 'https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/wazo_ireland.m3u';
+      var root = 'https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/';
+      var url = root + 'wazo_tv.m3u';
       var key = 'iptv_playlist_custom';
       var all = Lampa.Storage.get(key, '[]');
       if (!Array.isArray(all)) return;
-      if (all.some(function(p) {return p && p.url === url;})) {
-        console.log('WAZO_IRISH_PLAYLIST_READY ' + all.length);
-        return;
+      var before = JSON.stringify(all);
+      var result = [];
+      var kept = null;
+      all.forEach(function(p) {
+        if (!p || typeof p !== 'object') { result.push(p); return; }
+        var addr = (p.url || '').split('?')[0];
+        var ours = [root + 'wazo_tv.m3u', root + 'wazo_cinema.m3u', root + 'wazo_ireland.m3u'].indexOf(addr) >= 0;
+        // Remove ONLY our retired files. Do not touch third-party/custom lists.
+        if (!ours) { result.push(p); return; }
+        if (addr === url && !kept) {
+          kept = p;
+          kept.name = 'Wazo TV — Все каналы';
+          result.push(kept);
+        }
+      });
+      if (!kept) {
+        kept = {id:'wazo_unified',custom:true,url:url,name:'Wazo TV — Все каналы'};
+        result.push(kept);
       }
-      all.push({id:'wazo_ireland',custom:true,url:url,name:'Wazo TV — Ирландские каналы'});
-      Lampa.Storage.set(key,all);
-      console.log('WAZO_IRISH_PLAYLIST_SAVED ' + all.length);
-    } catch (err) {console.warn('Wazo Ireland playlist:',err);}
+      var changed = before !== JSON.stringify(result);
+      if (changed) Lampa.Storage.set(key,result);
+      console.log('WAZO_UNIFIED_PLAYLIST_READY ' + result.length + ' custom records, single Wazo playlist');
+    } catch (err) {console.warn('Wazo unified playlist:',err);}
   }
 
   function startPlugin() {
     addSergeySettings();
-    // The main APK writes its two playlists first; append a third without
-    // deleting user playlists or racing the initial Lampa storage setup.
-    setTimeout(wazoEnsureIrishPlaylist, 1800);
+    // APK may re-register its original playlists at each start.
+    // Migrate after APK init, retaining all unrelated user playlists.
+    setTimeout(wazoEnsureUnifiedPlaylist, 1800);
     wazoInstallPlaybackWatcher();
     window.sergey_online_plugin = true;
 
@@ -2285,7 +2301,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.10',
+      version: '1.5.11',
       name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2565,7 +2581,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.10',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.11',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();

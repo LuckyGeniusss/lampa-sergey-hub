@@ -25,9 +25,12 @@ seen={}
 source_stats={}
 for name,addr in SOURCES.items():
  try:
-  req=urllib.request.Request(addr,headers={'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X)','Accept':'*/*'})
-  response=urllib.request.urlopen(req,timeout=18)
-  text=response.read(1500000).decode('utf-8-sig','replace')
+  if addr.startswith('local://'):
+   text=(ROOT/addr.removeprefix('local://')).read_text(encoding='utf-8-sig')
+  else:
+   req=urllib.request.Request(addr,headers={'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X)','Accept':'*/*'})
+   response=urllib.request.urlopen(req,timeout=18)
+   text=response.read(1500000).decode('utf-8-sig','replace')
   lines=text.splitlines()
   pending=[]
   new=0
@@ -89,41 +92,13 @@ with ThreadPoolExecutor(max_workers=int(os.environ.get('WAZO_IPTV_WORKERS','24')
 okay={url for url,r in results.items() if r['ok']}
 if len(okay)<200:
  raise SystemExit('Safety abort: fewer than 200 streams passed, keep previous verified playlists')
-out=['#EXTM3U']
-movies=['#EXTM3U']
+from curate_unified import render
 channels=collections.Counter()
-irish=['#EXTM3U']
-irish_names=set()
-def irish_channel(item):
-    # Irish broadcaster channels only, not international UK/Pluto FAST streams.
-    if item['source'] not in ('IE IPTV-org','IE Oireachtas official','Free-TV worldwide'):
-        return ''
-    title=item['title'].lower()
-    if title.startswith('tg4 ') or title=='tg4':return 'TG4'
-    if title=='oireachtas tv' or title.startswith('oireachtas tv ('):return 'Oireachtas TV'
-    return ''
-for item in all_entries:
- if item['url'] not in okay:continue
- label=item['meta'][0]
- parts=item['meta'][:]
- irname=irish_channel(item)
- if irname and irname not in irish_names:
-  irish_names.add(irname)
-  ilabel=re.sub(r'group-title="[^"]*"', 'group-title="Ирландские каналы"',label)
-  if 'group-title=' not in ilabel:ilabel=ilabel.replace(',', ' group-title="Ирландские каналы",',1)
-  parts[0]=ilabel
-  irish+=parts+[item['url']]
- out+=parts+[item['url']]
- source=item['source'].lower(); title=item['title'].lower()
- group=re.search(r'group-title="([^"]+)"',label,re.I)
- group=(group.group(1).lower() if group else '')
- if any(x in (' '.join([source,group,title])) for x in ['kino plus','movies','series','cinema','кино','фильм','сериал','documentary','kids','детск','cartoon','мульт']):
-  movies+=parts+[item['url']]
- channels[item['source']]+=1
-(DEST/'wazo_tv.m3u').write_text('\n'.join(out)+'\n',encoding='utf8')
-(DEST/'wazo_cinema.m3u').write_text('\n'.join(movies)+'\n',encoding='utf8')
-(DEST/'wazo_ireland.m3u').write_text('\n'.join(irish)+'\n',encoding='utf8')
-report={'date_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'checked':len(all_entries),'working':len(okay),'movies':len([v for v in movies if v.startswith('#EXTINF')]),'ireland_verified':len(irish_names),'by_source':channels,'sources':source_stats,'seconds':round(time.time()-t0),'errors':collections.Counter(r['error'].split('\n')[-1][:100] for r in results.values() if not r['ok']).most_common(20)}
+verified_entries=[item for item in all_entries if item['url'] in okay]
+unified,groups=render(verified_entries)
+(DEST/'wazo_tv.m3u').write_text(unified,encoding='utf8')
+for item in verified_entries:channels[item['source']]+=1
+report={'date_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'checked':len(all_entries),'working':len(okay),'groups':dict(groups),'ireland_verified':groups.get('Ирландские каналы',0),'unified_playlist':'iptv/wazo_tv.m3u','by_source':channels,'sources':source_stats,'seconds':round(time.time()-t0),'errors':collections.Counter(r['error'].split('\n')[-1][:100] for r in results.values() if not r['ok']).most_common(20)}
 (DEST/'wazo_status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
 (DEST/'failures.json').write_text(json.dumps([x for x in results.values() if not x['ok']],ensure_ascii=False))
 print('DONE',json.dumps({k:v for k,v in report.items() if k not in ['sources','errors']},ensure_ascii=False,default=dict),flush=True)

@@ -1,7 +1,7 @@
 {
-  "date_utc": "2026-10-31T10:00:01Z",
-  "checked": 4032,
-  "working": 2340,
+  "date_utc": "2026-10-31T10:27:11Z",
+  "checked": 4038,
+  "working": 2346,
   "movies": 375,
   "by_source": {
     "UA IPTV-org": 148,
@@ -14,7 +14,8 @@
     "UA IPTV-org-UA": 54,
     "Kids": 5,
     "Free-TV worldwide": 939,
-    "IE Oireachtas official": 1
+    "IE Oireachtas official": 1,
+    "User uploaded IE checked (new)": 6
   },
   "sources": {
     "UA IPTV-org": {
@@ -88,5 +89,24 @@
       116
     ]
   ],
-  "ireland_verified": 2
+  "ireland_verified": 2,
+  "verified_upload_total": 59,
+  "verified_upload_working": 40,
+  "verified_upload_added": 6,
+  "groups": {
+    "Украинские каналы": 192,
+    "Детские": 41,
+    "Новости": 50,
+    "Развлечения": 29,
+    "Русскоязычные каналы": 317,
+    "Музыка": 34,
+    "Сериалы": 17,
+    "Другие": 786,
+    "Спорт": 32,
+    "Фильмы": 349,
+    "Документальные": 21,
+    "Ирландские каналы": 2,
+    "Иностранные каналы": 476
+  },
+  "unified_playlist": "iptv/wazo_tv.m3u"
 }

@@ -118,7 +118,7 @@ for name,e in items:
     logo=re.search(r'tvg-logo="([^"]+)"',e['meta'])
     inf='#EXTINF:-1'+(' tvg-id="'+tid.group(1)+'"' if tid else '')+(' tvg-logo="'+logo.group(1)+'"' if logo else '')+' group-title="Ирландские каналы",'+name
     out.extend([inf]+e['opt']+[e['url']])
-(ROOT/'wazo_ireland.m3u').write_text('\n'.join(out)+'\n',encoding='utf8')
+# Single-list policy: write QA report, never publish a second M3U.
 report={'time_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'candidates':len(candidates),'verified':len(items),'channels':[{'name':name,'origin':e['source'],'url':e['url']} for name,e in items],'failed':[{'name':e['name'],'reason':e['error'][-140:]} for e in results if not e['ok']]}
 (ROOT/'wazo_ireland_status.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
 print('FINAL',len(items),[name for name,_ in items],flush=True)
