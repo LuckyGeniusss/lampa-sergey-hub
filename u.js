@@ -1,4 +1,4 @@
-/* Wazo 1.5.12
+/* Wazo 1.5.13
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.12';
+  var SERGEY_BACKEND_MIGRATION = '1.5.13';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -2236,8 +2236,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.12'},
-        field: {name:'Версия', description:'1.5.12 • единый IPTV: миграция локальной базы'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.13'},
+        field: {name:'Версия', description:'1.5.13 • единый IPTV и скрытие старых списков'}
       });
     } catch(e) {}
   }
@@ -2302,12 +2302,46 @@ else if (element.url) {
     });
   }
 
+  // Cub may also render legacy Wazo entries from a signed-in account.
+  // Hide only those obsolete Wazo rows; never remove third-party playlists.
+  function wazoHideLegacyPlaylistRows() {
+    if (window.__wazoUnifiedMenuCleaner || !window.MutationObserver || !document.body) return;
+    window.__wazoUnifiedMenuCleaner = true;
+    var root = 'raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/';
+    function clean() {
+      var hidden = 0;
+      var nodes = document.querySelectorAll('.iptv-playlist-item');
+      for (var i=0; i<nodes.length; i++) {
+        var node=nodes[i];
+        var name=node.querySelector('.iptv-playlist-item__name-text');
+        var link=node.querySelector('.iptv-playlist-item__url');
+        if (!name || !link) continue;
+        var title=(name.textContent||'').trim().toLowerCase();
+        var url=(link.textContent||'').trim();
+        var old=(title.indexOf('wazo tv — кино, сериалы и детские')===0 ||
+                 title.indexOf('wazo tv — украинские, русскоязычные и ирландские')===0 ||
+                 title.indexOf('wazo tv — ирландские каналы')===0);
+        if (old && url.indexOf(root)>=0 && node.getAttribute('data-wazo-retired')!=='1') {
+          node.setAttribute('data-wazo-retired','1');
+          node.classList.remove('selector');
+          node.style.display='none';
+          hidden++;
+        }
+      }
+      if (hidden) console.log('WAZO_LEGACY_ROWS_HIDDEN '+hidden);
+    }
+    var observer = new MutationObserver(clean);
+    observer.observe(document.body,{childList:true,subtree:true});
+    clean();
+  }
+
   function startPlugin() {
     addSergeySettings();
     // APK may re-register its original playlists at each start.
     // Migrate after APK init, retaining all unrelated user playlists.
     setTimeout(wazoEnsureUnifiedPlaylist, 1800);
     setTimeout(wazoMigrateIptvDb, 2600);
+    wazoHideLegacyPlaylistRows();
     wazoInstallPlaybackWatcher();
     window.sergey_online_plugin = true;
 
@@ -2330,7 +2364,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.12',
+      version: '1.5.13',
       name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2610,7 +2644,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.12',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.13',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();
