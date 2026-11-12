@@ -25,6 +25,8 @@ jobs:
           python-version: '3.11'
       - name: FFmpeg
         run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+      - name: Check playlist renderer compatibility
+        run: python iptv/test_curate_unified.py
       - name: Build in a temporary directory
         env:
           WAZO_IPTV_WORKERS: '12'

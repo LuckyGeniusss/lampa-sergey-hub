@@ -63,17 +63,28 @@ def parse(text):
 def render(entries):
     seen=set(); rows=[];counts=Counter()
     for e in entries:
-        url=e['url']
-        if url in seen:continue
+        url=e.get('url','')
+        if not url or url in seen:continue
+        # parse() returns a metadata string + options; build_wazo.py passes
+        # a list of EXTINF/EXTVLCOPT lines and uses the key `title`.
+        raw_meta=e.get('meta', '')
+        if isinstance(raw_meta, (list,tuple)):
+            if not raw_meta:continue
+            meta=raw_meta[0]
+            options=list(raw_meta[1:])+list(e.get('options',[]))
+        else:
+            meta=raw_meta
+            options=list(e.get('options',[]))
+        if not isinstance(meta,str) or not meta.startswith('#EXTINF:'):continue
+        title=str(e.get('name') or e.get('title') or meta.rsplit(',',1)[-1]).strip()
+        if not title:continue
         seen.add(url)
-        meta=e['meta']
-        title=e['name']
         group=category(meta,title)
         prefix=meta.rsplit(',',1)[0]
         # Group names from upstream are often mixtures or repeated; overwrite.
         prefix=re.sub(r'\s*group-title="[^"]*"','',prefix,flags=re.I).rstrip()
         meta=prefix+' group-title="'+group+'",'+title
-        rows.append((GROUPS.index(group), title.casefold(), meta, list(e.get('options',[])),url,group))
+        rows.append((GROUPS.index(group), title.casefold(), meta, options,url,group))
         counts[group]+=1
     rows.sort(key=lambda x:(x[0],x[1]))
     lines=['#EXTM3U']
