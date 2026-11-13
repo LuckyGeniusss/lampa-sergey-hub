@@ -8,8 +8,10 @@ DEST=ROOT
 DEST.mkdir(exist_ok=True)
 SOURCES={
  'UA IPTV-org':'https://iptv-org.github.io/iptv/countries/ua.m3u',
+ 'Ukrainian-language IPTV-org':'https://iptv-org.github.io/iptv/languages/ukr.m3u',
  'RU-language IPTV-org':'https://iptv-org.github.io/iptv/languages/rus.m3u',
  'IE IPTV-org':'https://iptv-org.github.io/iptv/countries/ie.m3u',
+ 'UK IPTV-org':'https://iptv-org.github.io/iptv/countries/uk.m3u',
  'UA Free-TV':'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_ukraine.m3u8',
  'RU Free-TV':'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_russia.m3u8',
  'Provider':'https://tva.org.ua/ip/sam/provayder.m3u',
