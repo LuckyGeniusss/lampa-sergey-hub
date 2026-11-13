@@ -1,0 +1,3 @@
+#EXTM3U refresh="6"
+#EXTINF:-1 type="playlist",Wazo TV — auto-refresh (6h)
+https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/wazo_tv.m3u
