@@ -89,6 +89,19 @@ if world_manifest.is_file():
   source_stats['IPTV-org world verified']={'fetched':True,'extinf':len(world_entries),'unique_added':count}
  except Exception as exc:
   source_stats['IPTV-org world verified']={'fetched':False,'error':str(exc)[:180]}
+from verified_cache import load_cache, save_cache
+# A source returning HTTP 403 must not make its formerly verified URLs disappear
+# before they can be checked again. This is an internal candidate cache only.
+cache_path=ROOT/'sources/verified_cache.json'
+cached_rows=load_cache(cache_path)
+cache_new=0
+for item in cached_rows:
+ url=item['url']
+ if url in seen: continue
+ seen[url]=len(all_entries)
+ all_entries.append({**item,'source':'Verified candidate cache'})
+ cache_new+=1
+source_stats['Verified candidate cache']={'fetched':True,'extinf':len(cached_rows),'unique_added':cache_new}
 (DEST/'source_stats.json').write_text(json.dumps(source_stats,indent=2,ensure_ascii=False))
 print('CANDIDATES',len(all_entries),flush=True)
 (DEST/'candidates.json').write_text(json.dumps(all_entries,ensure_ascii=False))
@@ -122,8 +135,9 @@ channels=collections.Counter()
 verified_entries=[item for item in all_entries if item['url'] in okay]
 unified,groups=render(verified_entries)
 (DEST/'wazo_tv.m3u').write_text(unified,encoding='utf8')
+cache_count=save_cache(cache_path,cached_rows,verified_entries)
 for item in verified_entries:channels[item['source']]+=1
-report={'date_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'checked':len(all_entries),'working':len(okay),'groups':dict(groups),'ireland_verified':groups.get('Ирландские каналы',0),'unified_playlist':'iptv/wazo_tv.m3u','by_source':channels,'sources':source_stats,'seconds':round(time.time()-t0),'errors':collections.Counter(r['error'].split('\n')[-1][:100] for r in results.values() if not r['ok']).most_common(20)}
+report={'date_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'checked':len(all_entries),'working':len(okay),'groups':dict(groups),'ireland_verified':groups.get('Ирландские каналы',0),'unified_playlist':'iptv/wazo_tv.m3u','by_source':channels,'sources':source_stats,'seconds':round(time.time()-t0),'candidate_cache_size':cache_count,'errors':collections.Counter(r['error'].split('\n')[-1][:100] for r in results.values() if not r['ok']).most_common(20)}
 (DEST/'wazo_status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
 (DEST/'failures.json').write_text(json.dumps([x for x in results.values() if not x['ok']],ensure_ascii=False))
 print('DONE',json.dumps({k:v for k,v in report.items() if k not in ['sources','errors']},ensure_ascii=False,default=dict),flush=True)

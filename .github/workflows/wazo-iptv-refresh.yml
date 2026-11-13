@@ -25,8 +25,10 @@ jobs:
           python-version: '3.11'
       - name: FFmpeg
         run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
-      - name: Check playlist renderer compatibility
-        run: python iptv/test_curate_unified.py
+      - name: Check playlist renderer and candidate-cache compatibility
+        run: |
+          python iptv/test_curate_unified.py
+          python iptv/test_verified_cache.py
       - name: Build in a temporary directory
         env:
           WAZO_IPTV_WORKERS: '12'
@@ -34,8 +36,10 @@ jobs:
           mkdir -p "$RUNNER_TEMP/wazo-iptv"
           cp iptv/build_wazo.py "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
           cp iptv/curate_unified.py "$RUNNER_TEMP/wazo-iptv/curate_unified.py"
+          cp iptv/verified_cache.py "$RUNNER_TEMP/wazo-iptv/verified_cache.py"
           mkdir -p "$RUNNER_TEMP/wazo-iptv/sources"
           cp iptv/sources/world_verified.json "$RUNNER_TEMP/wazo-iptv/sources/world_verified.json"
+          cp iptv/sources/verified_cache.json "$RUNNER_TEMP/wazo-iptv/sources/verified_cache.json"
           python "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
       - name: Validate channel count and protect current playlist
         run: |
@@ -54,12 +58,15 @@ jobs:
           current = entries(old / 'wazo_tv.m3u')
           report = json.loads((new / 'wazo_status.json').read_text())
           assert report['working'] == len(a), 'report/playlists mismatch'
-          assert len(a) >= max(400, int(len(current) * 0.65)), 'new playlist lost too many streams'
+          cache = json.loads((new / 'sources/verified_cache.json').read_text())
+          assert len(cache) >= len(a), 'candidate cache must include all verified streams'
+          assert report['candidate_cache_size'] == len(cache), 'candidate cache size mismatch'
+          assert len(a) >= max(400, int(len(current) * 0.75)), 'new playlist lost too many streams'
           assert report['groups'].get('Ирландские каналы',0) >= 1, 'Irish verified streams missing'
           assert report['groups'].get('Детские',0) >= 10, 'Kids group missing'
           assert report['groups'].get('Фильмы',0) >= 20, 'Movies group missing'
           assert report['groups'].get('Украинские каналы',0) >= 20, 'Ukraine group missing'
-          assert len(set(a) & set(current)) >= int(len(current) * 0.45), 'provider outage or geoblock suspected'
+          assert len(set(a) & set(current)) >= int(len(current) * 0.60), 'provider outage or geoblock suspected'
           print('IPTV passed:',len(a),'total,',
                 len(set(a) & set(current)),'retained from previous run')
           PY
@@ -67,7 +74,8 @@ jobs:
         run: |
           cp "$RUNNER_TEMP/wazo-iptv/wazo_tv.m3u" iptv/wazo_tv.m3u
           cp "$RUNNER_TEMP/wazo-iptv/wazo_status.json" iptv/wazo_status.json
-          git add iptv/wazo_tv.m3u iptv/wazo_status.json
+          cp "$RUNNER_TEMP/wazo-iptv/sources/verified_cache.json" iptv/sources/verified_cache.json
+          git add iptv/wazo_tv.m3u iptv/wazo_status.json iptv/sources/verified_cache.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git -c user.name='Wazo IPTV Bot' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'iptv: refresh tested channel streams'
           git push origin HEAD:main
