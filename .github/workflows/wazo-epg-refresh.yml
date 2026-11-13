@@ -1,0 +1,63 @@
+name: Wazo TV — daily XMLTV guide
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 3 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wazo-iptv-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh-guide:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check mapping rules
+        run: python iptv/test_epg_merge.py
+      - name: Build guide using multiple XMLTV providers
+        run: |
+          mkdir -p "$RUNNER_TEMP/wazo-epg"
+          python iptv/epg_merge.py \
+            --playlist iptv/wazo_tv.m3u \
+            --out-m3u "$RUNNER_TEMP/wazo-epg/wazo_tv.m3u" \
+            --out-epg "$RUNNER_TEMP/wazo-epg/wazo_epg.xml.gz" \
+            --sources-dir "$RUNNER_TEMP/wazo-epg/providers"
+          mv "$RUNNER_TEMP/wazo-epg/wazo_epg.xml.report.json" "$RUNNER_TEMP/wazo-epg/epg_status.json"
+      - name: Validate non-destructive refresh
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          old=Path('iptv/wazo_tv.m3u').read_text()
+          root=Path(os.environ['RUNNER_TEMP'])/'wazo-epg'
+          new=(root/'wazo_tv.m3u').read_text()
+          oldstreams=[v for v in old.splitlines() if v.startswith(('http://','https://'))]
+          newstreams=[v for v in new.splitlines() if v.startswith(('http://','https://'))]
+          report=json.loads((root/'epg_status.json').read_text())
+          assert oldstreams==newstreams,'EPG job must not change channel URLs or their order'
+          assert new.startswith('#EXTM3U url-tvg=')
+          assert report['streams']==len(oldstreams)
+          assert report['with_programme']>=180
+          assert (root/'wazo_epg.xml.gz').stat().st_size>50000
+          print('Guide validated',report['with_programme'],'programme-bearing channels')
+          PY
+      - name: Publish guide and tvg-id mappings
+        run: |
+          cp "$RUNNER_TEMP/wazo-epg/wazo_tv.m3u" iptv/wazo_tv.m3u
+          cp "$RUNNER_TEMP/wazo-epg/wazo_epg.xml.gz" iptv/wazo_epg.xml.gz
+          cp "$RUNNER_TEMP/wazo-epg/epg_status.json" iptv/epg_status.json
+          git add iptv/wazo_tv.m3u iptv/wazo_epg.xml.gz iptv/epg_status.json
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git -c user.name='Wazo EPG Bot' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'epg: refresh unified daily TV guide'
+          git push origin HEAD:main

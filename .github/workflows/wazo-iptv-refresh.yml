@@ -29,6 +29,7 @@ jobs:
         run: |
           python iptv/test_curate_unified.py
           python iptv/test_verified_cache.py
+          python iptv/test_epg_merge.py
       - name: Build in a temporary directory
         env:
           WAZO_IPTV_WORKERS: '12'
@@ -37,10 +38,21 @@ jobs:
           cp iptv/build_wazo.py "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
           cp iptv/curate_unified.py "$RUNNER_TEMP/wazo-iptv/curate_unified.py"
           cp iptv/verified_cache.py "$RUNNER_TEMP/wazo-iptv/verified_cache.py"
+          cp iptv/epg_merge.py "$RUNNER_TEMP/wazo-iptv/epg_merge.py"
           mkdir -p "$RUNNER_TEMP/wazo-iptv/sources"
           cp iptv/sources/world_verified.json "$RUNNER_TEMP/wazo-iptv/sources/world_verified.json"
           cp iptv/sources/verified_cache.json "$RUNNER_TEMP/wazo-iptv/sources/verified_cache.json"
           python "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
+      - name: Build and match unified XMLTV EPG
+        run: |
+          mkdir -p "$RUNNER_TEMP/wazo-iptv/epg_sources"
+          python "$RUNNER_TEMP/wazo-iptv/epg_merge.py" \
+            --playlist "$RUNNER_TEMP/wazo-iptv/wazo_tv.m3u" \
+            --out-m3u "$RUNNER_TEMP/wazo-iptv/wazo_tv_epg.m3u" \
+            --out-epg "$RUNNER_TEMP/wazo-iptv/wazo_epg.xml.gz" \
+            --sources-dir "$RUNNER_TEMP/wazo-iptv/epg_sources"
+          mv "$RUNNER_TEMP/wazo-iptv/wazo_tv_epg.m3u" "$RUNNER_TEMP/wazo-iptv/wazo_tv.m3u"
+          mv "$RUNNER_TEMP/wazo-iptv/wazo_epg.xml.report.json" "$RUNNER_TEMP/wazo-iptv/epg_status.json"
       - name: Validate channel count and protect current playlist
         run: |
           python - <<'PY'
@@ -50,7 +62,7 @@ jobs:
           new = Path(os.environ['RUNNER_TEMP']) / 'wazo-iptv'
           def entries(path):
               text = path.read_text(encoding='utf-8')
-              assert text.startswith('#EXTM3U\n')
+              assert text.startswith('#EXTM3U'), 'invalid M3U header'
               urls = [x for x in text.splitlines() if x.startswith(('http://','https://'))]
               assert len(urls) == len(set(urls)), 'duplicate IPTV URL'
               return urls
@@ -58,6 +70,11 @@ jobs:
           current = entries(old / 'wazo_tv.m3u')
           report = json.loads((new / 'wazo_status.json').read_text())
           assert report['working'] == len(a), 'report/playlists mismatch'
+          epg_report = json.loads((new / 'epg_status.json').read_text())
+          assert epg_report['streams'] == len(a)
+          assert epg_report['with_programme'] >= 180
+          assert (new / 'wazo_tv.m3u').read_text().startswith('#EXTM3U url-tvg=')
+          assert (new / 'wazo_epg.xml.gz').stat().st_size >= 50000
           cache = json.loads((new / 'sources/verified_cache.json').read_text())
           assert len(cache) >= len(a), 'candidate cache must include all verified streams'
           assert report['candidate_cache_size'] == len(cache), 'candidate cache size mismatch'
@@ -74,8 +91,10 @@ jobs:
         run: |
           cp "$RUNNER_TEMP/wazo-iptv/wazo_tv.m3u" iptv/wazo_tv.m3u
           cp "$RUNNER_TEMP/wazo-iptv/wazo_status.json" iptv/wazo_status.json
+          cp "$RUNNER_TEMP/wazo-iptv/wazo_epg.xml.gz" iptv/wazo_epg.xml.gz
+          cp "$RUNNER_TEMP/wazo-iptv/epg_status.json" iptv/epg_status.json
           cp "$RUNNER_TEMP/wazo-iptv/sources/verified_cache.json" iptv/sources/verified_cache.json
-          git add iptv/wazo_tv.m3u iptv/wazo_status.json iptv/sources/verified_cache.json
+          git add iptv/wazo_tv.m3u iptv/wazo_status.json iptv/sources/verified_cache.json iptv/wazo_epg.xml.gz iptv/epg_status.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git -c user.name='Wazo IPTV Bot' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'iptv: refresh tested channel streams'
           git push origin HEAD:main

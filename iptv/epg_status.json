@@ -1,0 +1,72 @@
+{
+  "streams": 3088,
+  "assigned": 825,
+  "with_programme": 543,
+  "methods": {
+    "exact": 5,
+    "id": 118,
+    "name": 702
+  },
+  "groups": {
+    "Ирландские каналы": {
+      "mapped": 2
+    },
+    "Украинские каналы": {
+      "unmatched": 128,
+      "mapped": 52
+    },
+    "Русскоязычные каналы": {
+      "mapped": 143,
+      "unmatched": 190
+    },
+    "Фильмы": {
+      "unmatched": 445
+    },
+    "Сериалы": {
+      "unmatched": 94
+    },
+    "Детские": {
+      "unmatched": 82,
+      "mapped": 32
+    },
+    "Документальные": {
+      "unmatched": 78,
+      "mapped": 21
+    },
+    "Новости": {
+      "unmatched": 77,
+      "mapped": 17
+    },
+    "Спорт": {
+      "mapped": 30,
+      "unmatched": 45
+    },
+    "Музыка": {
+      "mapped": 16,
+      "unmatched": 44
+    },
+    "Развлечения": {
+      "unmatched": 38,
+      "mapped": 13
+    },
+    "Иностранные каналы": {
+      "unmatched": 430,
+      "mapped": 47
+    },
+    "Другие": {
+      "unmatched": 612,
+      "mapped": 452
+    }
+  },
+  "programmes": 185738,
+  "by_source": {
+    "lite": 172679,
+    "ua": 1728,
+    "ie": 230,
+    "uk": 889,
+    "ru": 2825,
+    "gb": 4812,
+    "world": 2575
+  },
+  "epg_gzip_bytes": 3824201
+}
