@@ -1,39 +1,39 @@
 {
-  "date_utc": "2026-11-13T16:07:49Z",
-  "checked": 4957,
-  "working": 3088,
+  "date_utc": "2026-11-14T11:52:41Z",
+  "checked": 4975,
+  "working": 3057,
   "groups": {
-    "Украинские каналы": 180,
-    "Русскоязычные каналы": 333,
-    "Детские": 114,
+    "Украинские каналы": 189,
+    "Русскоязычные каналы": 335,
+    "Детские": 110,
     "Сериалы": 94,
-    "Новости": 94,
-    "Развлечения": 51,
-    "Музыка": 60,
-    "Фильмы": 445,
-    "Другие": 1064,
-    "Спорт": 75,
-    "Документальные": 99,
+    "Развлечения": 50,
+    "Музыка": 61,
+    "Фильмы": 426,
+    "Другие": 1070,
+    "Спорт": 68,
+    "Новости": 91,
+    "Документальные": 102,
     "Ирландские каналы": 2,
-    "Иностранные каналы": 477
+    "Иностранные каналы": 459
   },
   "ireland_verified": 2,
   "unified_playlist": "iptv/wazo_tv.m3u",
   "by_source": {
-    "UA IPTV-org": 145,
+    "UA IPTV-org": 149,
     "Ukrainian-language IPTV-org": 4,
     "RU-language IPTV-org": 379,
     "IE IPTV-org": 40,
-    "UK IPTV-org": 124,
-    "UA Free-TV": 20,
+    "UK IPTV-org": 122,
+    "UA Free-TV": 23,
     "RU Free-TV": 9,
-    "Provider": 892,
+    "Provider": 883,
     "Kino Plus": 1,
-    "UA IPTV-org-UA": 75,
-    "Kids": 6,
-    "Free-TV worldwide": 1054,
+    "UA IPTV-org-UA": 76,
+    "Kids": 5,
+    "Free-TV worldwide": 1025,
     "IE Oireachtas official": 1,
-    "IPTV-org world verified": 338
+    "IPTV-org world verified": 340
   },
   "sources": {
     "UA IPTV-org": {
@@ -73,8 +73,8 @@
     },
     "Provider": {
       "fetched": true,
-      "extinf": 1740,
-      "unique_added": 1215
+      "extinf": 1771,
+      "unique_added": 1231
     },
     "Kino Plus": {
       "fetched": true,
@@ -83,12 +83,12 @@
     },
     "UA IPTV-org-UA": {
       "fetched": true,
-      "extinf": 244,
-      "unique_added": 103
+      "extinf": 275,
+      "unique_added": 105
     },
     "Kids": {
       "fetched": true,
-      "extinf": 54,
+      "extinf": 56,
       "unique_added": 17
     },
     "PeersTV (moved)": {
@@ -112,20 +112,20 @@
     },
     "Verified candidate cache": {
       "fetched": true,
-      "extinf": 3112,
+      "extinf": 3195,
       "unique_added": 0
     }
   },
-  "seconds": 1261,
-  "candidate_cache_size": 3195,
+  "seconds": 1454,
+  "candidate_cache_size": 3237,
   "errors": [
     [
       "",
-      1713
+      1708
     ],
     [
       "Command '['/usr/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '50000",
-      156
+      210
     ]
   ]
 }
