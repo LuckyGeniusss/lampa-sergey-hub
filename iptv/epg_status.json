@@ -58,15 +58,15 @@
       "mapped": 452
     }
   },
-  "programmes": 185738,
+  "programmes": 172628,
   "by_source": {
-    "lite": 172679,
-    "ua": 1728,
+    "lite": 159738,
+    "ua": 1111,
     "ie": 230,
-    "uk": 889,
-    "ru": 2825,
-    "gb": 4812,
+    "uk": 886,
+    "ru": 2833,
+    "gb": 5255,
     "world": 2575
   },
-  "epg_gzip_bytes": 3824201
+  "epg_gzip_bytes": 3750751
 }
