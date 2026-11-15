@@ -4,7 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
-from verified_cache import load_cache, save_cache, CACHE_AGE_SECONDS, is_public_stream_url
+from verified_cache import (load_cache, save_cache, CACHE_AGE_SECONDS, is_public_stream_url,
+                            load_cache_with_fallback, recover_candidates_from_playlist)
 
 class VerifiedCacheTest(unittest.TestCase):
     def test_retain_candidates_but_require_reverification(self):
@@ -42,6 +43,47 @@ class VerifiedCacheTest(unittest.TestCase):
             p.write_text('{"invalid":true}', encoding="utf-8")
             with self.assertRaises(ValueError):
                 load_cache(p, now=2000000000)
+
+    def test_recover_corrupted_cache_from_previous_playlist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cache = root / "verified_cache.json"
+            old_m3u = root / "previous_wazo_tv.m3u"
+            m3u = (
+                '#EXTM3U url-tvg="https://example.org/epg.xml.gz"\n'
+                '#EXTINF:-1 group-title="Ирландские каналы",Valid\n'
+                '#EXTVLCOPT:http-user-agent=Mozilla/5.0\n'
+                'https://example.org/valid.m3u8\n'
+                '#EXTINF:-1,Local invalid\n'
+                'http://127.0.0.1/private.m3u8\n'
+                '#EXTINF:-1,Valid again\n'
+                'https://example.org/valid.m3u8\n'
+            )
+            old_m3u.write_text(m3u, encoding="utf-8")
+            cache.write_text("{broken json", encoding="utf-8")
+            rows, reason = load_cache_with_fallback(cache, old_m3u, now=2000000000)
+            self.assertEqual(reason, "JSONDecodeError")
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["url"], "https://example.org/valid.m3u8")
+            self.assertEqual(rows[0]["last_verified"], 2000000000)
+            self.assertIn("#EXTVLCOPT:http-user-agent=Mozilla/5.0", rows[0]["meta"])
+            self.assertEqual(cache.read_text(), "{broken json")
+            self.assertEqual(len(recover_candidates_from_playlist(old_m3u)), 1)
+
+    def test_corrupt_cache_without_previous_playlist_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp) / "verified_cache.json"
+            cache.write_text("{broken json", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "no valid previous playlist"):
+                load_cache_with_fallback(cache, Path(tmp) / "missing.m3u")
+
+    def test_valid_cache_does_not_use_previous_playlist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp) / "verified_cache.json"
+            cache.write_text("[]", encoding="utf-8")
+            rows, reason = load_cache_with_fallback(cache, Path(tmp) / "missing.m3u")
+            self.assertEqual(rows, [])
+            self.assertIsNone(reason)
 
     def test_atomic_save_preserves_old_cache_if_replace_fails(self):
         with tempfile.TemporaryDirectory() as tmp:

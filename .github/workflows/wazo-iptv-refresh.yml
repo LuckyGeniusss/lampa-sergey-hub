@@ -42,6 +42,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/wazo-iptv/sources"
           cp iptv/sources/world_verified.json "$RUNNER_TEMP/wazo-iptv/sources/world_verified.json"
           cp iptv/sources/verified_cache.json "$RUNNER_TEMP/wazo-iptv/sources/verified_cache.json"
+          cp iptv/wazo_tv.m3u "$RUNNER_TEMP/wazo-iptv/previous_wazo_tv.m3u"
           python "$RUNNER_TEMP/wazo-iptv/build_wazo.py"
       - name: Build and match unified XMLTV EPG
         run: |

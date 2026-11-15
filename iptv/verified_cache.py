@@ -114,3 +114,45 @@ def load_cache_rows(raw, now):
         if row and 0 <= now - row["last_verified"] <= CACHE_AGE_SECONDS:
             good.append(row)
     return sorted(good, key=lambda e: (-e["last_verified"], e["url"]))[:CACHE_LIMIT]
+
+
+def recover_candidates_from_playlist(path, now=None):
+    """Recover candidates from a previously published M3U, never treat them as verified."""
+    now = int(time.time() if now is None else now)
+    path = Path(path)
+    if not path.is_file():
+        return []
+    text = path.read_text(encoding="utf-8-sig")
+    if not text.lstrip().startswith("#EXTM3U"):
+        return []
+    rows = {}
+    metadata = []
+    for line in text.splitlines():
+        line = line.strip()
+        if line.startswith("#EXTINF:"):
+            metadata = [line]
+        elif line.startswith("#") and metadata:
+            metadata.append(line)
+        elif line.startswith(("http://", "https://")):
+            if metadata:
+                row = _normalise({
+                    "url": line, "meta": metadata, "last_verified": now
+                })
+                if row:
+                    # Preserve original channel metadata and VLC options on duplicate URLs.
+                    rows.setdefault(row["url"], row)
+            metadata = []
+        elif line:
+            metadata = []
+    return list(rows.values())[:CACHE_LIMIT]
+
+
+def load_cache_with_fallback(cache_path, previous_playlist_path, now=None):
+    """Recover only if the internal JSON cache is unreadable; re-verify all candidates."""
+    try:
+        return load_cache(cache_path, now=now), None
+    except (ValueError, UnicodeError, OSError) as exc:
+        recovered = recover_candidates_from_playlist(previous_playlist_path, now=now)
+        if not recovered:
+            raise ValueError("IPTV cache unreadable and no valid previous playlist") from exc
+        return recovered, type(exc).__name__

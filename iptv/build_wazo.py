@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Wazo TV: verify video frames for public IPTV streams, remove broken streams and local URLs."""
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from verified_cache import is_public_stream_url, load_cache, save_cache
+from verified_cache import is_public_stream_url, load_cache_with_fallback, save_cache
 import urllib.request, pathlib, json, subprocess, time, re, collections, sys, shutil, os
 ROOT=pathlib.Path(__file__).resolve().parent
 DEST=ROOT
@@ -90,7 +90,15 @@ if world_manifest.is_file():
 # A source returning HTTP 403 must not make its formerly verified URLs disappear
 # before they can be checked again. This is an internal candidate cache only.
 cache_path=ROOT/'sources/verified_cache.json'
-cached_rows=load_cache(cache_path)
+previous_playlist=ROOT/'previous_wazo_tv.m3u'
+if not previous_playlist.is_file():
+ previous_playlist=ROOT/'wazo_tv.m3u'
+cached_rows,cache_recovery_reason=load_cache_with_fallback(cache_path,previous_playlist)
+if cache_recovery_reason:
+ print('WARNING: candidate cache recovered from previous playlist:',cache_recovery_reason,flush=True)
+ source_stats['Verified cache recovery']={
+  'fetched':True,'recovered':len(cached_rows),'reason':cache_recovery_reason
+ }
 cache_new=0
 for item in cached_rows:
  url=item['url']
