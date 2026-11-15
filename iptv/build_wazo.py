@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Wazo TV: verify video frames for public IPTV streams, remove broken streams and local URLs."""
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from urllib.parse import urlparse
+from verified_cache import is_public_stream_url, load_cache, save_cache
 import urllib.request, pathlib, json, subprocess, time, re, collections, sys, shutil, os
 ROOT=pathlib.Path(__file__).resolve().parent
 DEST=ROOT
@@ -42,8 +42,7 @@ for name,addr in SOURCES.items():
    elif line.startswith('#') and pending: pending.append(line)
    elif line.startswith(('http://','https://')) and pending:
     url=line.strip()
-    host=urlparse(url).hostname
-    if not host or host in ('127.0.0.1','localhost','0.0.0.0') or host.endswith('.local'):
+    if not is_public_stream_url(url):
      pending=[];continue
     if url not in seen:
      # Don't include revision notices, or dead-man messages.
@@ -78,8 +77,7 @@ if world_manifest.is_file():
    meta=e.get('meta','')
    if not url.startswith(('http://','https://')) or not meta.startswith('#EXTINF:') or url in seen:
     continue
-   host=urlparse(url).hostname
-   if not host or host in ('127.0.0.1','localhost','0.0.0.0') or host.endswith('.local'):
+   if not is_public_stream_url(url):
     continue
    seen[url]=len(all_entries)
    all_entries.append({'url':url,'meta':[meta]+e.get('options',[]),
@@ -89,7 +87,6 @@ if world_manifest.is_file():
   source_stats['IPTV-org world verified']={'fetched':True,'extinf':len(world_entries),'unique_added':count}
  except Exception as exc:
   source_stats['IPTV-org world verified']={'fetched':False,'error':str(exc)[:180]}
-from verified_cache import load_cache, save_cache
 # A source returning HTTP 403 must not make its formerly verified URLs disappear
 # before they can be checked again. This is an internal candidate cache only.
 cache_path=ROOT/'sources/verified_cache.json'
