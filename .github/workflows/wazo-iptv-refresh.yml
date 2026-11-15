@@ -56,10 +56,12 @@ jobs:
       - name: Validate channel count and protect current playlist
         run: |
           python - <<'PY'
-          import json, os
+          import json, os, sys
           from pathlib import Path
           old = Path('iptv')
           new = Path(os.environ['RUNNER_TEMP']) / 'wazo-iptv'
+          sys.path.insert(0, str(new))
+          from verified_cache import is_public_stream_url
           def entries(path):
               text = path.read_text(encoding='utf-8')
               assert text.startswith('#EXTM3U'), 'invalid M3U header'
@@ -68,6 +70,7 @@ jobs:
               return urls
           a = entries(new / 'wazo_tv.m3u')
           current = entries(old / 'wazo_tv.m3u')
+          assert all(is_public_stream_url(url) for url in a), 'non-public or malformed stream URL'
           report = json.loads((new / 'wazo_status.json').read_text())
           assert report['working'] == len(a), 'report/playlists mismatch'
           epg_report = json.loads((new / 'epg_status.json').read_text())
