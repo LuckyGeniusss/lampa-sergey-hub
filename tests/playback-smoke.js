@@ -65,21 +65,27 @@ async function openMovie(page, movie) {
 async function selectSource(page, prefix) {
   const sort = page.locator('.filter--sort').last();
   if (!(await sort.count())) throw new Error('Source filter missing');
-  await sort.click();
-  await page.waitForTimeout(250);
-
-  const rows = page.locator('.selectbox .selector');
-  const texts = await rows.allInnerTexts();
-
-  const exact = texts.findIndex((t) =>
-    t.trim().toLowerCase().startsWith(prefix.toLowerCase())
-  );
-
-  if (exact < 0) throw new Error('Source not found: ' + prefix);
-  await rows.nth(exact).click();
-  await page.waitForTimeout(1900);
-
-  return texts;
+  // Source discovery may finish after the component and its filter are rendered,
+  // especially when the cloud backend is waking up. Retry the filter, not the movie.
+  let texts = [];
+  for (let attempt = 0; attempt < 10; attempt++) {
+    await sort.click();
+    await page.waitForTimeout(350);
+    const rows = page.locator('.selectbox .selector');
+    texts = await rows.allInnerTexts();
+    const exact = texts.findIndex((t) =>
+      t.trim().toLowerCase().startsWith(prefix.toLowerCase())
+    );
+    if (exact >= 0) {
+      await rows.nth(exact).click();
+      await page.waitForTimeout(1900);
+      return texts;
+    }
+    await page.evaluate(() => Lampa.Select.close());
+    await page.waitForTimeout(1900);
+  }
+  throw new Error('Source not found after discovery wait: ' + prefix +
+    '; menu entries: ' + JSON.stringify(texts.slice(0, 35)));
 }
 
 (async () => {
