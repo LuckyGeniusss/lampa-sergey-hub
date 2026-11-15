@@ -7,6 +7,9 @@ on:
       - "tests/lib.js"
       - "tests/backend-health.js"
       - "tests/provider-discovery.js"
+      - "tests/playback-failover.js"
+      - "js"
+      - "package.json"
       - ".github/workflows/wazo-vod-health.yml"
   schedule:
     - cron: '5 7 * * *'
@@ -30,6 +33,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check fatal HLS fallback logic (offline)
+        run: node tests/playback-failover.js
       - name: Check cloud backend, CORS and registered providers
         run: node tests/backend-health.js
       - name: Check live movie and series provider discovery
