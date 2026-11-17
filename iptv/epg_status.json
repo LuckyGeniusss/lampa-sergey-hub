@@ -1,7 +1,7 @@
 {
   "streams": 3057,
   "assigned": 827,
-  "with_programme": 536,
+  "with_programme": 539,
   "methods": {
     "exact": 5,
     "id": 119,
@@ -58,15 +58,15 @@
       "mapped": 460
     }
   },
-  "programmes": 236051,
+  "programmes": 229856,
   "by_source": {
-    "lite": 224225,
+    "lite": 218446,
     "ua": 597,
     "ie": 278,
-    "uk": 901,
-    "ru": 2836,
-    "gb": 5170,
-    "world": 2044
+    "uk": 906,
+    "ru": 2495,
+    "gb": 5157,
+    "world": 1977
   },
-  "epg_gzip_bytes": 4490840
+  "epg_gzip_bytes": 4368467
 }
