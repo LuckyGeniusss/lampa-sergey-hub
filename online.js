@@ -26,7 +26,7 @@
       var stored = String(Lampa.Storage.get('sergey_online_backend', '') || '').replace(/\/$/, '');
       var custom = Lampa.Storage.get('sergey_online_backend_custom', false) === true;
 
-      if (SERGEY_OLD_BACKENDS.indexOf(stored) >= 0 || /^http:\/\/10\.129\.1\.\d+:18118$/.test(stored)) {
+      if (!custom && (SERGEY_OLD_BACKENDS.indexOf(stored) >= 0 || /^http:\/\/10\.129\.1\.\d+:18118$/.test(stored))) {
         stored = '';
         custom = false;
         Lampa.Storage.set('sergey_online_backend_custom', false);
