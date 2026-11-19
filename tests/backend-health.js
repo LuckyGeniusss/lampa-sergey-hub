@@ -43,10 +43,14 @@ const { BACKEND, getJson, get, logSection } = require('./lib');
     }
   } catch (e) { console.log('FAIL /lite/events:', e.message); failures++; }
 
+  // The websocket JS is a shared runtime dependency, not guaranteed on LAN
+  // Lampac installs (observed HTTP 503 with otherwise healthy local API).
+  // Verify the same canonical HTTPS asset that the plugin now loads.
   try {
-    const nws = await get('/js/nws-client-es5.js');
+    const url = 'https://sergey-online-backend.onrender.com/js/nws-client-es5.js';
+    const nws = await fetch(url, {signal: AbortSignal.timeout(12000)});
     const body = await nws.text();
-    console.log('/js/nws-client-es5.js:', nws.status, 'bytes=' + body.length);
+    console.log('nws asset origin:', url, 'status:', nws.status, 'bytes:', body.length);
     if (!nws.ok || body.length < 1000 || !body.includes('NativeWsClient')) failures++;
   } catch (e) { console.log('FAIL nws client asset:', e.message); failures++; }
 

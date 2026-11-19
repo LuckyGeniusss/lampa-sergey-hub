@@ -37,6 +37,10 @@ check('native source picker', src.includes('new Lampa.Filter') && src.includes("
 check('dynamic discovery', src.includes('lite/events?life=true') && src.includes('lifeevents?memkey='));
 check('provider state preserved', src.includes('online_choice_') && src.includes('online_last_balanser'));
 check('RCH loader preserved', src.includes('nws-client-es5.js') && src.includes('RchClient'));
+check('RCH client loaded from stable HTTPS asset host (not LAN backend)',
+  src.includes("SERGEY_DEFAULT_BACKEND + '/js/nws-client-es5.js?v18112025'") &&
+  !src.includes("SERGEY_BACKEND + '/js/nws-client-es5.js?v18112025'"));
+
 check('full provider discovery awaited', src.includes('if (json.ready || life_wait_times >= 15)') && src.includes('resolve(json.online || [])'));
 check('no Telegram/Showy marketing', !/t\.me\/|showybot|ShowyMarketingRuntime/i.test(src));
 const m = src.match(/balansers_sync\s*=\s*\[([\s\S]*?)\]/);
