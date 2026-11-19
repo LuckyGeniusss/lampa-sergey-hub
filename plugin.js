@@ -271,7 +271,11 @@ window.rch_nws[hostkey].Registry = function RchRegistry(client, startConnection)
 
   function rchRun(json, call) {
     if (typeof NativeWsClient == 'undefined') {
-      Lampa.Utils.putScript([SERGEY_BACKEND + '/js/nws-client-es5.js?v18112025'], function() {}, false, function() {
+      // Some LAN Lampac/Alpac backends expose discovery but return HTTP 503
+      // for the shared WebSocket client asset. Fetch that small generic client
+      // from the known working Wazo asset origin; keep all API calls on the
+      // user-selected local backend (SERGEY_BACKEND).
+      Lampa.Utils.putScript([SERGEY_DEFAULT_BACKEND + '/js/nws-client-es5.js?v18112025'], function() {}, false, function() {
         rchInvoke(json, call);
       }, true);
     } else {
