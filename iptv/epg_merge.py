@@ -26,6 +26,12 @@ SOURCES = [
     ("ru", "https://iptv-epg.org/files/epg-ru.xml.gz"),
     ("gb", "https://iptv-epg.org/files/epg-gb.xml.gz"),
     ("world", "https://teleonline.github.io/epg/epg.xml.gz"),
+    ("de", "https://epgshare01.online/epgshare01/epg_ripper_DE1.xml.gz"),
+    ("fr", "https://epgshare01.online/epgshare01/epg_ripper_FR1.xml.gz"),
+    ("pl", "https://epgshare01.online/epgshare01/epg_ripper_PL1.xml.gz"),
+    ("es", "https://epgshare01.online/epgshare01/epg_ripper_ES1.xml.gz"),
+    ("it", "https://epgshare01.online/epgshare01/epg_ripper_IT1.xml.gz"),
+    ("nl", "https://epgshare01.online/epgshare01/epg_ripper_NL1.xml.gz"),
 ]
 PUBLIC_EPG = "https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/wazo_epg.xml.gz"
 NO_EPG_GROUPS = {"Фильмы", "Сериалы"}
@@ -92,7 +98,12 @@ def rank(source, group):
         order = ("lite", "ru", "ua", "world", "gb", "uk", "ie")
     else:
         order = ("lite", "world", "gb", "uk", "ua", "ie", "ru")
-    return order.index(source)
+    # Preserve existing source preference; additional verified guides only
+    # fill exact-name/ID gaps and cannot override an existing preferred match.
+    if source in order:
+        return order.index(source)
+    extra = ("de", "fr", "pl", "es", "it", "nl")
+    return len(order) + (extra.index(source) if source in extra else len(extra))
 
 def make_indices(sources):
     byid = collections.defaultdict(list)

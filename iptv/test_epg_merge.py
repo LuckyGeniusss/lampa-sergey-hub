@@ -1,6 +1,6 @@
 import collections
 import unittest
-from epg_merge import normalise, choose, fix_meta, synthetic_id
+from epg_merge import normalise, choose, fix_meta, synthetic_id, rank
 
 class EpgMappingTests(unittest.TestCase):
     def test_quality_and_country_suffix(self):
@@ -23,6 +23,14 @@ class EpgMappingTests(unittest.TestCase):
     def test_no_ambiguous_match(self):
         byname={"example":[("lite","X1"),("lite","X2")]}
         self.assertIsNone(choose('#EXTINF:-1 group-title="Другие",Example',"Example",{},byname))
+    def test_added_guides_are_fallback_only(self):
+        self.assertLess(rank("lite", "Иностранные каналы"), rank("fr", "Иностранные каналы"))
+        self.assertLess(rank("ie", "Ирландские каналы"), rank("de", "Ирландские каналы"))
+        self.assertLess(rank("ua", "Украинские каналы"), rank("pl", "Украинские каналы"))
+        self.assertEqual(choose('#EXTINF:-1 group-title="Иностранные каналы",ARTE', "ARTE",
+                                {}, {"arte": [("de", "Arte.de")]}),
+                         (("de", "Arte.de"), "name"))
+
     def test_deterministic_hash(self):
         self.assertEqual(synthetic_id("ie","TG4.HD.ie"),synthetic_id("ie","TG4.HD.ie"))
 
