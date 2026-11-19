@@ -1,19 +1,19 @@
 {
   "streams": 3057,
-  "assigned": 827,
-  "with_programme": 538,
+  "assigned": 865,
+  "with_programme": 577,
   "methods": {
-    "exact": 5,
-    "id": 119,
-    "name": 703
+    "exact": 40,
+    "id": 150,
+    "name": 675
   },
   "groups": {
     "Ирландские каналы": {
       "mapped": 2
     },
     "Украинские каналы": {
-      "unmatched": 135,
-      "mapped": 54
+      "unmatched": 133,
+      "mapped": 56
     },
     "Русскоязычные каналы": {
       "mapped": 142,
@@ -26,47 +26,53 @@
       "unmatched": 94
     },
     "Детские": {
-      "mapped": 32,
-      "unmatched": 78
+      "mapped": 33,
+      "unmatched": 77
     },
     "Документальные": {
       "unmatched": 81,
       "mapped": 21
     },
     "Новости": {
-      "unmatched": 74,
-      "mapped": 17
+      "unmatched": 70,
+      "mapped": 21
     },
     "Спорт": {
-      "mapped": 24,
-      "unmatched": 44
+      "mapped": 23,
+      "unmatched": 45
     },
     "Музыка": {
-      "mapped": 15,
-      "unmatched": 46
+      "mapped": 16,
+      "unmatched": 45
     },
     "Развлечения": {
-      "unmatched": 37,
-      "mapped": 13
+      "unmatched": 36,
+      "mapped": 14
     },
     "Иностранные каналы": {
-      "unmatched": 412,
-      "mapped": 47
+      "unmatched": 381,
+      "mapped": 78
     },
     "Другие": {
-      "unmatched": 610,
-      "mapped": 460
+      "unmatched": 611,
+      "mapped": 459
     }
   },
-  "programmes": 205130,
+  "programmes": 198309,
   "by_source": {
-    "lite": 192514,
+    "lite": 174020,
     "ua": 1458,
     "ie": 237,
-    "uk": 898,
+    "uk": 808,
     "ru": 2724,
-    "gb": 5196,
-    "world": 2103
+    "gb": 4938,
+    "world": 1827,
+    "de": 618,
+    "fr": 641,
+    "pl": 4544,
+    "es": 764,
+    "it": 2882,
+    "nl": 2848
   },
-  "epg_gzip_bytes": 4117848
+  "epg_gzip_bytes": 4620239
 }
