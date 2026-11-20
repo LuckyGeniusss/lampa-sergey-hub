@@ -3651,7 +3651,7 @@ https://iptv.peer.biz/live/peertv.m3u8
 https://video.streams.ovh:1936/pellatv/pellatv/playlist.m3u8
 #EXTINF:-1 tvg-name="Pervyy Muzykal'nyy BY" tvg-logo="https://i.imgur.com/7tFiG6S.jpg" tvg-id="FirstMusicChannel.by" tvg-chno="9" tvg-country="BY" group-title="Иностранные каналы",Pervyy Muzykal'nyy BY Ⓢ
 http://rtmp.one.by:1200
-#EXTINF:-1 tvg-id="wz_8f649cf2cc68329cfd" tvg-original="PortoCanal.pt" tvg-name="Porto Canal" tvg-logo="https://i.imgur.com/wsyvP2H.png" tvg-chno="11" tvg-country="PT" group-title="Иностранные каналы",Porto Canal Ⓢ
+#EXTINF:-1 tvg-id="wz_f5fd5f8282c343dcd7" tvg-original="PortoCanal.pt" tvg-name="Porto Canal" tvg-logo="https://i.imgur.com/wsyvP2H.png" tvg-chno="11" tvg-country="PT" group-title="Иностранные каналы",Porto Canal Ⓢ
 https://pull-live-156-1.global.ssl.fastly.net/pc5865dc25400thmb-ea6bf03b14fa318f7133/smil:pc1-jhrgyuoqe5865db-68tkgb14fa318f7133f03.smil/playlist.m3u8
 #EXTINF:-1 tvg-name="Press TV French" tvg-logo="https://i.imgur.com/X3YP2Gg.png" tvg-id="PressTVFrench.ir" tvg-chno="14" tvg-country="IR" group-title="Иностранные каналы",Press TV French
 https://live4.presstv.ir/live/smil:presstvfr.smil/playlist.m3u8
