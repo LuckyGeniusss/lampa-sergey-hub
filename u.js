@@ -1,4 +1,4 @@
-/* Wazo 1.5.15
+/* Wazo 1.5.16
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.15';
+  var SERGEY_BACKEND_MIGRATION = '1.5.16';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -2240,8 +2240,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.15'},
-        field: {name:'Версия', description:'1.5.15 • IPTV: ежедневное обновление и новая база каналов'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.16'},
+        field: {name:'Версия', description:'1.5.16 • IPTV: ежедневное обновление и новая база каналов'}
       });
     } catch(e) {}
   }
@@ -2370,7 +2370,7 @@ else if (element.url) {
   }
 
   function startPlugin() {
-    console.log('WAZO_UNIFIED_PLUGIN_VERSION 1.5.15');
+    console.log('WAZO_UNIFIED_PLUGIN_VERSION 1.5.16');
     addSergeySettings();
     // APK may re-register its original playlists at each start.
     // Migrate after APK init, retaining all unrelated user playlists.
@@ -2400,7 +2400,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.15',
+      version: '1.5.16',
       name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2530,15 +2530,17 @@ else if (element.url) {
           'justify-content:center!important;' +
           'box-sizing:border-box!important;' +
           'width:auto!important;' +
-          'min-width:7.9em!important;' +
+          'min-width:10.2em!important;' +
           'max-width:none!important;' +
-          'height:3.2em!important;' +
-          'padding:0 1.05em!important;' +
-          'gap:.58em!important;' +
+          'height:3.7em!important;' +
+          'padding:0 1.1em!important;' +
+          'gap:.54em!important;' +
           'flex:0 0 auto!important;' +
           'overflow:visible!important;' +
-          'border-radius:1.25em!important;' +
-          'background:rgba(0,0,0,.48)!important;' +
+          'border-radius:1.1em!important;' +
+          'background:linear-gradient(112deg,#0b687a,#14679a 56%,#4d3c92)!important;' +
+          'border:2px solid #62fff3!important;' +
+          'box-shadow:0 0 1.4em rgba(58,222,235,.45)!important;' +
           'color:#fff!important;' +
         '}' +
         '.sergey-online--button>span{' +
@@ -2554,10 +2556,10 @@ else if (element.url) {
           'padding:0!important;' +
           'overflow:visible!important;' +
           'white-space:nowrap!important;' +
-          'font-size:1.02em!important;' +
-          'font-weight:700!important;' +
+          'font-size:1.12em!important;' +
+          'font-weight:850!important;' +
           'line-height:1!important;' +
-          'letter-spacing:.015em!important;' +
+          'letter-spacing:.075em!important;' +
           'transform:none!important;' +
         '}' +
         '.sergey-online--button>.wazo-icon{' +
@@ -2571,15 +2573,31 @@ else if (element.url) {
           'margin:0!important;' +
           'padding:0!important;' +
           'flex:0 0 1.72em!important;' +
-          'color:#20d2d6!important;' +
+          'color:#bafff8!important;' +
           'overflow:visible!important;' +
         '}' +
-        '.sergey-online--button.focus{' +
-          'background:#fff!important;' +
-          'color:#161616!important;' +
+        '.sergey-online--button:after{' +
+          'content:"КИНО";' +
+          'font-size:.59em;' +
+          'font-weight:850;' +
+          'letter-spacing:.035em;' +
+          'padding:.32em .45em;' +
+          'border-radius:.45em;' +
+          'background:rgba(255,255,255,.19);' +
+          'color:#efffff;' +
         '}' +
-        '.sergey-online--button.focus>.wazo-icon{' +
-          'color:#00aeb4!important;' +
+                '.sergey-online--button.focus{' +
+          'background:linear-gradient(115deg,#e8fffa,#ffffff)!important;' +
+          'color:#161616!important;' +
+          'border-color:#ffffff!important;' +
+          'box-shadow:0 0 1.8em rgba(128,255,241,.75)!important;' +
+        '}' +
+        '.sergey-online--button.focus:after{' +
+          'background:rgba(0,100,120,.12);' +
+          'color:#034b60;' +
+        '}' +
+                '.sergey-online--button.focus>.wazo-icon{' +
+          'color:#007f8e!important;' +
         '}';
       document.head.appendChild(wazoStyle);
     }
@@ -2596,7 +2614,7 @@ else if (element.url) {
       "  <svg class=\"wazo-icon\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" aria-hidden=\"true\">\n" +
       "    <path d=\"M7 13 L17 51 L31 25 L45 51 L57 13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"7.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n" +
       "  </svg>\n" +
-      "  <span>Wazo</span>\n" +
+      "  <span>WAZO</span>\n" +
       "</div>" ; // нужна заглушка, а то при страте лампы говорит пусто
     Lampa.Component.add('sergey_online', component); //то же самое
     sergeyResetTemplates = resetTemplates;
@@ -2612,7 +2630,7 @@ else if (element.url) {
       if (!root || !root.length || root.find('.sergey-online--button').length) return;
 
       var btn = $(Lampa.Lang.translate(button));
-      btn.find('span').text('Wazo');
+      btn.find('span').text('WAZO');
       btn.on('hover:enter', function() {
         openSergeyActivity(e.movie);
       });
@@ -2680,7 +2698,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.15',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.16',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();
