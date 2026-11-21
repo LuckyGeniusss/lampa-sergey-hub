@@ -1,7 +1,7 @@
 {
   "streams": 3057,
   "assigned": 865,
-  "with_programme": 577,
+  "with_programme": 578,
   "methods": {
     "exact": 40,
     "id": 151,
@@ -58,21 +58,21 @@
       "mapped": 459
     }
   },
-  "programmes": 188071,
+  "programmes": 174607,
   "by_source": {
-    "lite": 163424,
-    "ua": 1458,
-    "ie": 234,
+    "lite": 150495,
+    "ua": 982,
+    "ie": 236,
     "uk": 800,
-    "ru": 2849,
-    "gb": 5232,
-    "world": 1827,
-    "de": 621,
-    "fr": 630,
-    "pl": 4562,
+    "ru": 2892,
+    "gb": 5202,
+    "world": 1775,
+    "de": 626,
+    "fr": 646,
+    "pl": 4561,
     "es": 781,
-    "it": 2879,
-    "nl": 2774
+    "it": 2891,
+    "nl": 2720
   },
-  "epg_gzip_bytes": 4601089
+  "epg_gzip_bytes": 4454034
 }
