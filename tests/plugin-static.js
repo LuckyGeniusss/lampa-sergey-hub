@@ -10,7 +10,7 @@ function check(name, ok, detail='') {
   console.log((ok ? 'PASS' : 'FAIL') + ': ' + name + (detail ? ' ('+detail+')' : ''));
   if (!ok) failures++;
 }
-check('version 1.5.16', src.includes('Wazo 1.5.16'));
+check('version 1.5.17', src.includes('Wazo 1.5.17'));
 check('one unified playlist, preserving user playlists',
  src.includes('function wazoEnsureUnifiedPlaylist()') &&
  src.includes("id:'wazo_unified'") &&
@@ -21,7 +21,22 @@ check('stale backend migration', src.includes('SERGEY_OLD_BACKENDS') && src.incl
 check('backend preflight before open', src.includes('openSergeyActivity') && src.includes('/version?type=hash&_='));
 check('resetTemplates scope bridge', src.includes('var sergeyResetTemplates = null') && src.includes('sergeyResetTemplates = resetTemplates') && src.includes('if (sergeyResetTemplates) sergeyResetTemplates()'));
 check('cloud backend default', src.includes("SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com'"));
-check('LAN backends migrated', src.includes('http://10.129.1.174:18118') && src.includes('http://10.129.1.182:18118') && src.includes('10\\.129\\.1\\.\\d+:18118'));
+check('LAN backends migrated', src.includes('http://10.129.1.174:18118') && src.includes('http://10.129.1.182:18118') && src.includes('sergeyIsLegacyLanBackend'));
+// Run the actual startup resolver, isolated from the rest of the plugin.
+const cloud = 'https://sergey-online-backend.onrender.com';
+const resolver = src.slice(src.indexOf('  var SERGEY_DEFAULT_BACKEND'),src.indexOf('  var Defined ='));
+function resolveBackend(url, custom) {
+  const state={sergey_online_backend:url,sergey_online_backend_custom:custom};
+  const ctx={Lampa:{Storage:{get:(k,d)=>Object.hasOwn(state,k)?state[k]:d,set:(k,v)=>{state[k]=v;}}}};
+  vm.runInNewContext(resolver,ctx);
+  return {url:ctx.SERGEY_BACKEND,state};
+}
+for (const url of ['http://10.129.1.174:18118','http://10.129.1.182:18118/','http://10.129.1.192:18118','http://localhost:18118','http://127.0.0.1:18118']) {
+  const r=resolveBackend(url,true);
+  check('migrate explicitly saved legacy LAN: '+url,r.url===cloud && r.state.sergey_online_backend===cloud && r.state.sergey_online_backend_custom===false);
+}
+check('fresh install cloud',resolveBackend('',false).url===cloud);
+check('preserve explicitly configured external HTTPS',resolveBackend('https://example.org',true).url==='https://example.org');
 check('cold start retry', src.includes('var attempts = 5') && src.includes('probe.timeout(15000)'));
 check('no hostname/127 auto backend substitution', !src.includes('location.hostname') && !src.includes("SERGEY_DEFAULT_BACKEND = 'http://127.0.0.1'"));
 check('separate Wazo button', src.includes('sergey-online--button') && src.includes("component: 'sergey_online'"));

@@ -1,4 +1,4 @@
-/* Wazo 1.5.16
+/* Wazo 1.5.17
  * Single Lampa button + self-hosted multi-source backend.
  * Client engine based on the user-supplied Cinema/Lampac-compatible source.
  * Backend default: https://sergey-online-backend.onrender.com
@@ -10,7 +10,7 @@
   // Old LAN backends from previous builds are migrated automatically.
   // A user-entered custom backend is still preserved.
   var SERGEY_DEFAULT_BACKEND = 'https://sergey-online-backend.onrender.com';
-  var SERGEY_BACKEND_MIGRATION = '1.5.16';
+  var SERGEY_BACKEND_MIGRATION = '1.5.17';
   var SERGEY_OLD_BACKENDS = [
     'https://beta.l-vid.online',
     'https://ab2024.ru',
@@ -21,12 +21,18 @@
     'http://10.129.1.174:18118',
     'http://10.129.1.182:18118'
   ];
+  // These addresses belonged to the retired home Mac backend.  Migrate
+  // them even if an older setup stored them as an explicit custom server.
+  function sergeyIsLegacyLanBackend(value) {
+    return /^https?:\/\/(?:10\.129\.1\.\d+|127\.0\.0\.1|localhost):18118\/?$/i.test(String(value || '').trim());
+  }
+
   var SERGEY_BACKEND = (function() {
     try {
-      var stored = String(Lampa.Storage.get('sergey_online_backend', '') || '').replace(/\/$/, '');
+      var stored = String(Lampa.Storage.get('sergey_online_backend', '') || '').trim().replace(/\/$/, '');
       var custom = Lampa.Storage.get('sergey_online_backend_custom', false) === true;
 
-      if (!custom && (SERGEY_OLD_BACKENDS.indexOf(stored) >= 0 || /^http:\/\/10\.129\.1\.\d+:18118$/.test(stored))) {
+      if (sergeyIsLegacyLanBackend(stored) || (!custom && SERGEY_OLD_BACKENDS.indexOf(stored) >= 0)) {
         stored = '';
         custom = false;
         Lampa.Storage.set('sergey_online_backend_custom', false);
@@ -2208,7 +2214,11 @@ else if (element.url) {
         field: {name:'Сервер', description:'Облачный HTTPS backend Wazo. Старые локальные адреса мигрируются автоматически. После ручного изменения перезапустите Lampa.'},
         onChange: function(value) {
           try {
-            var v = String(value || '').replace(/\/$/, '');
+            var v = String(value || '').trim().replace(/\/$/, '');
+            if (sergeyIsLegacyLanBackend(v)) {
+              v = SERGEY_DEFAULT_BACKEND;
+              Lampa.Storage.set('sergey_online_backend', v);
+            }
             Lampa.Storage.set('sergey_online_backend_custom', !!v && v !== SERGEY_DEFAULT_BACKEND);
             Lampa.Storage.set('sergey_online_backend_migration', SERGEY_BACKEND_MIGRATION);
           } catch (e) {}
@@ -2240,8 +2250,8 @@ else if (element.url) {
     try {
       Lampa.SettingsApi.addParam({
         component: 'sergey_online_settings',
-        param: {name:'sergey_online_version', type:'static', default:'1.5.16'},
-        field: {name:'Версия', description:'1.5.16 • IPTV: ежедневное обновление и новая база каналов'}
+        param: {name:'sergey_online_version', type:'static', default:'1.5.17'},
+        field: {name:'Версия', description:'1.5.17 • Облачный Wazo без зависимости от Mac mini'}
       });
     } catch(e) {}
   }
@@ -2370,7 +2380,7 @@ else if (element.url) {
   }
 
   function startPlugin() {
-    console.log('WAZO_UNIFIED_PLUGIN_VERSION 1.5.16');
+    console.log('WAZO_UNIFIED_PLUGIN_VERSION 1.5.17');
     addSergeySettings();
     // APK may re-register its original playlists at each start.
     // Migrate after APK init, retaining all unrelated user playlists.
@@ -2400,7 +2410,7 @@ else if (element.url) {
     }
     var manifst = {
       type: 'video',
-      version: '1.5.16',
+      version: '1.5.17',
       name: 'Wazo',
       description: 'Плагин для просмотра онлайн сериалов и фильмов',
       component: 'sergey_online',
@@ -2698,7 +2708,7 @@ else if (element.url) {
       Lampa.Storage.sync('online_watched_last', 'object_object');
     }
   }
-  window.SergeyOnlineBuild={version:'1.5.16',backend:SERGEY_BACKEND,cloud:true};
+  window.SergeyOnlineBuild={version:'1.5.17',backend:SERGEY_BACKEND,cloud:true};
   if (!window.sergey_online_plugin) startPlugin();
 
 })();
