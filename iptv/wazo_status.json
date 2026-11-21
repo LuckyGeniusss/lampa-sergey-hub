@@ -1,39 +1,40 @@
 {
-  "date_utc": "2026-11-14T11:52:41Z",
-  "checked": 4975,
-  "working": 3057,
+  "date_utc": "2026-11-21T13:01:36Z",
+  "checked": 5371,
+  "working": 3044,
   "groups": {
-    "Украинские каналы": 189,
-    "Русскоязычные каналы": 335,
-    "Детские": 110,
-    "Сериалы": 94,
-    "Развлечения": 50,
-    "Музыка": 61,
-    "Фильмы": 426,
-    "Другие": 1070,
-    "Спорт": 68,
-    "Новости": 91,
-    "Документальные": 102,
+    "Украинские каналы": 125,
+    "Русскоязычные каналы": 303,
+    "Детские": 103,
+    "Сериалы": 90,
+    "Музыка": 62,
+    "Новости": 88,
+    "Фильмы": 709,
+    "Развлечения": 40,
+    "Другие": 890,
+    "Спорт": 69,
+    "Документальные": 95,
     "Ирландские каналы": 2,
-    "Иностранные каналы": 459
+    "Иностранные каналы": 468
   },
   "ireland_verified": 2,
   "unified_playlist": "iptv/wazo_tv.m3u",
   "by_source": {
-    "UA IPTV-org": 149,
-    "Ukrainian-language IPTV-org": 4,
-    "RU-language IPTV-org": 379,
-    "IE IPTV-org": 40,
-    "UK IPTV-org": 122,
-    "UA Free-TV": 23,
-    "RU Free-TV": 9,
-    "Provider": 883,
-    "Kino Plus": 1,
-    "UA IPTV-org-UA": 76,
+    "UA IPTV-org": 82,
+    "Ukrainian-language IPTV-org": 3,
+    "RU-language IPTV-org": 332,
+    "IE IPTV-org": 35,
+    "UK IPTV-org": 125,
+    "UA Free-TV": 22,
+    "RU Free-TV": 10,
+    "Provider": 870,
+    "Kino Plus": 22,
+    "UA IPTV-org-UA": 150,
     "Kids": 5,
-    "Free-TV worldwide": 1025,
+    "Free-TV worldwide": 1044,
     "IE Oireachtas official": 1,
-    "IPTV-org world verified": 340
+    "IPTV-org world verified": 324,
+    "Verified candidate cache": 19
   },
   "sources": {
     "UA IPTV-org": {
@@ -48,18 +49,18 @@
     },
     "RU-language IPTV-org": {
       "fetched": true,
-      "extinf": 651,
-      "unique_added": 598
+      "extinf": 655,
+      "unique_added": 602
     },
     "IE IPTV-org": {
       "fetched": true,
-      "extinf": 64,
-      "unique_added": 62
+      "extinf": 59,
+      "unique_added": 57
     },
     "UK IPTV-org": {
       "fetched": true,
-      "extinf": 310,
-      "unique_added": 259
+      "extinf": 303,
+      "unique_added": 257
     },
     "UA Free-TV": {
       "fetched": true,
@@ -73,22 +74,22 @@
     },
     "Provider": {
       "fetched": true,
-      "extinf": 1771,
-      "unique_added": 1231
+      "extinf": 1583,
+      "unique_added": 1188
     },
     "Kino Plus": {
       "fetched": true,
-      "extinf": 603,
-      "unique_added": 23
+      "extinf": 746,
+      "unique_added": 22
     },
     "UA IPTV-org-UA": {
       "fetched": true,
-      "extinf": 275,
-      "unique_added": 105
+      "extinf": 263,
+      "unique_added": 189
     },
     "Kids": {
       "fetched": true,
-      "extinf": 56,
+      "extinf": 41,
       "unique_added": 17
     },
     "PeersTV (moved)": {
@@ -103,7 +104,7 @@
     "Free-TV worldwide": {
       "fetched": true,
       "extinf": 2203,
-      "unique_added": 2033
+      "unique_added": 2043
     },
     "IPTV-org world verified": {
       "fetched": true,
@@ -112,20 +113,20 @@
     },
     "Verified candidate cache": {
       "fetched": true,
-      "extinf": 3195,
-      "unique_added": 0
+      "extinf": 3237,
+      "unique_added": 349
     }
   },
-  "seconds": 1454,
-  "candidate_cache_size": 3237,
+  "seconds": 1295,
+  "candidate_cache_size": 3721,
   "errors": [
     [
       "",
-      1708
+      2166
     ],
     [
       "Command '['/usr/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '50000",
-      210
+      161
     ]
   ]
 }

@@ -1,78 +1,78 @@
 {
-  "streams": 3057,
-  "assigned": 865,
-  "with_programme": 578,
+  "streams": 3044,
+  "assigned": 697,
+  "with_programme": 506,
   "methods": {
-    "exact": 40,
-    "id": 151,
-    "name": 674
+    "exact": 41,
+    "id": 137,
+    "name": 519
   },
   "groups": {
     "Ирландские каналы": {
       "mapped": 2
     },
     "Украинские каналы": {
-      "unmatched": 133,
-      "mapped": 56
+      "unmatched": 99,
+      "mapped": 26
     },
     "Русскоязычные каналы": {
-      "mapped": 142,
-      "unmatched": 193
+      "mapped": 130,
+      "unmatched": 173
     },
     "Фильмы": {
-      "unmatched": 426
+      "unmatched": 709
     },
     "Сериалы": {
-      "unmatched": 94
+      "unmatched": 90
     },
     "Детские": {
-      "mapped": 33,
-      "unmatched": 77
+      "unmatched": 78,
+      "mapped": 25
     },
     "Документальные": {
-      "unmatched": 81,
-      "mapped": 21
+      "unmatched": 77,
+      "mapped": 18
     },
     "Новости": {
-      "unmatched": 70,
-      "mapped": 21
+      "unmatched": 69,
+      "mapped": 19
     },
     "Спорт": {
-      "mapped": 23,
-      "unmatched": 45
+      "mapped": 25,
+      "unmatched": 44
     },
     "Музыка": {
       "mapped": 16,
-      "unmatched": 45
+      "unmatched": 46
     },
     "Развлечения": {
-      "unmatched": 36,
-      "mapped": 14
+      "unmatched": 32,
+      "mapped": 8
     },
     "Иностранные каналы": {
-      "unmatched": 381,
-      "mapped": 78
+      "unmatched": 388,
+      "mapped": 80
     },
     "Другие": {
-      "unmatched": 611,
-      "mapped": 459
+      "unmatched": 542,
+      "mapped": 348
     }
   },
-  "programmes": 174607,
+  "programmes": 154168,
   "by_source": {
-    "lite": 150495,
-    "ua": 982,
+    "lite": 129611,
+    "ua": 452,
     "ie": 236,
-    "uk": 800,
-    "ru": 2892,
-    "gb": 5202,
-    "world": 1775,
-    "de": 626,
-    "fr": 646,
-    "pl": 4561,
-    "es": 781,
+    "uk": 992,
+    "ru": 2019,
+    "gb": 6056,
+    "world": 1633,
+    "de": 974,
+    "fr": 1219,
+    "pl": 4263,
+    "es": 1102,
     "it": 2891,
     "nl": 2720
   },
-  "epg_gzip_bytes": 4454034
+  "epg_gzip_bytes": 4484594
 }
