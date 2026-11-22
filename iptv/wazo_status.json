@@ -1,18 +1,18 @@
 {
-  "date_utc": "2026-11-21T13:01:36Z",
-  "checked": 5371,
-  "working": 3044,
+  "date_utc": "2026-11-22T06:27:10Z",
+  "checked": 5650,
+  "working": 3139,
   "groups": {
-    "Украинские каналы": 125,
-    "Русскоязычные каналы": 303,
-    "Детские": 103,
-    "Сериалы": 90,
-    "Музыка": 62,
-    "Новости": 88,
-    "Фильмы": 709,
-    "Развлечения": 40,
-    "Другие": 890,
-    "Спорт": 69,
+    "Украинские каналы": 117,
+    "Русскоязычные каналы": 301,
+    "Детские": 101,
+    "Сериалы": 87,
+    "Новости": 95,
+    "Музыка": 55,
+    "Фильмы": 846,
+    "Развлечения": 36,
+    "Другие": 871,
+    "Спорт": 65,
     "Документальные": 95,
     "Ирландские каналы": 2,
     "Иностранные каналы": 468
@@ -20,21 +20,21 @@
   "ireland_verified": 2,
   "unified_playlist": "iptv/wazo_tv.m3u",
   "by_source": {
-    "UA IPTV-org": 82,
+    "UA IPTV-org": 71,
     "Ukrainian-language IPTV-org": 3,
-    "RU-language IPTV-org": 332,
+    "RU-language IPTV-org": 342,
     "IE IPTV-org": 35,
-    "UK IPTV-org": 125,
+    "UK IPTV-org": 115,
     "UA Free-TV": 22,
-    "RU Free-TV": 10,
-    "Provider": 870,
+    "RU Free-TV": 9,
+    "Provider": 693,
     "Kino Plus": 22,
-    "UA IPTV-org-UA": 150,
+    "UA IPTV-org-UA": 155,
     "Kids": 5,
-    "Free-TV worldwide": 1044,
+    "Free-TV worldwide": 1028,
     "IE Oireachtas official": 1,
-    "IPTV-org world verified": 324,
-    "Verified candidate cache": 19
+    "IPTV-org world verified": 326,
+    "Verified candidate cache": 312
   },
   "sources": {
     "UA IPTV-org": {
@@ -59,8 +59,8 @@
     },
     "UK IPTV-org": {
       "fetched": true,
-      "extinf": 303,
-      "unique_added": 257
+      "extinf": 302,
+      "unique_added": 256
     },
     "UA Free-TV": {
       "fetched": true,
@@ -70,22 +70,22 @@
     "RU Free-TV": {
       "fetched": true,
       "extinf": 59,
-      "unique_added": 45
+      "unique_added": 44
     },
     "Provider": {
       "fetched": true,
-      "extinf": 1583,
-      "unique_added": 1188
+      "extinf": 1537,
+      "unique_added": 1142
     },
     "Kino Plus": {
       "fetched": true,
-      "extinf": 746,
+      "extinf": 700,
       "unique_added": 22
     },
     "UA IPTV-org-UA": {
       "fetched": true,
-      "extinf": 263,
-      "unique_added": 189
+      "extinf": 298,
+      "unique_added": 223
     },
     "Kids": {
       "fetched": true,
@@ -99,7 +99,7 @@
     },
     "Kherson webcam": {
       "fetched": false,
-      "error": "HTTP Error 401: Unauthorized"
+      "error": "<urlopen error [Errno 61] Connection refused>"
     },
     "Free-TV worldwide": {
       "fetched": true,
@@ -113,20 +113,20 @@
     },
     "Verified candidate cache": {
       "fetched": true,
-      "extinf": 3237,
-      "unique_added": 349
+      "extinf": 3721,
+      "unique_added": 642
     }
   },
-  "seconds": 1295,
-  "candidate_cache_size": 3721,
+  "seconds": 720,
+  "candidate_cache_size": 3932,
   "errors": [
     [
       "",
-      2166
+      2426
     ],
     [
-      "Command '['/usr/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '50000",
-      161
+      "Command '['/opt/homebrew/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout",
+      85
     ]
   ]
 }
