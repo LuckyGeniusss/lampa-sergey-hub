@@ -1,79 +1,90 @@
 {
   "streams": 3139,
-  "assigned": 718,
-  "with_programme": 515,
+  "assigned": 859,
+  "with_programme": 661,
   "methods": {
-    "exact": 42,
-    "id": 136,
-    "ua_alias": 35,
-    "name": 505
+    "exact": 59,
+    "id": 218,
+    "name": 506,
+    "ua_alias": 21,
+    "movie_exact": 55
   },
   "groups": {
     "Ирландские каналы": {
       "mapped": 2
     },
     "Украинские каналы": {
-      "mapped": 58,
-      "unmatched": 59
+      "mapped": 65,
+      "unmatched": 52
     },
     "Русскоязычные каналы": {
-      "mapped": 123,
-      "unmatched": 178
+      "mapped": 128,
+      "unmatched": 173
     },
     "Фильмы": {
-      "unmatched": 846
+      "unmatched": 791,
+      "mapped": 55
     },
     "Сериалы": {
       "unmatched": 87
     },
     "Детские": {
-      "unmatched": 80,
-      "mapped": 21
+      "unmatched": 66,
+      "mapped": 35
     },
     "Документальные": {
-      "unmatched": 77,
-      "mapped": 18
+      "unmatched": 56,
+      "mapped": 39
     },
     "Новости": {
-      "unmatched": 71,
-      "mapped": 24
+      "unmatched": 69,
+      "mapped": 26
     },
     "Спорт": {
-      "mapped": 24,
-      "unmatched": 41
+      "mapped": 32,
+      "unmatched": 33
     },
     "Музыка": {
       "mapped": 14,
       "unmatched": 41
     },
     "Развлечения": {
-      "unmatched": 28,
-      "mapped": 8
+      "unmatched": 21,
+      "mapped": 15
     },
     "Иностранные каналы": {
-      "unmatched": 385,
-      "mapped": 83
+      "unmatched": 379,
+      "mapped": 89
     },
     "Другие": {
-      "unmatched": 528,
-      "mapped": 343
+      "unmatched": 512,
+      "mapped": 359
     }
   },
-  "programmes": 166330,
+  "programmes": 185284,
   "by_source": {
-    "lite": 140864,
-    "ua": 2555,
+    "lite": 138388,
+    "ua": 3469,
     "ie": 279,
-    "uk": 1004,
+    "uk": 1095,
     "ru": 1870,
     "gb": 4852,
-    "world": 1530,
+    "world": 1398,
     "de": 974,
-    "fr": 1033,
-    "pl": 3702,
-    "es": 1466,
+    "fr": 1208,
+    "pl": 3757,
+    "es": 1396,
     "it": 3452,
-    "nl": 2749
+    "nl": 2749,
+    "programtv": 629,
+    "dearua": 448,
+    "dearru": 381,
+    "dearus": 6307,
+    "sharecz": 1392,
+    "sharetr": 411,
+    "sharero": 976,
+    "sharept": 218,
+    "bcu": 9635
   },
-  "epg_gzip_bytes": 4084140
+  "epg_gzip_bytes": 5731697
 }
