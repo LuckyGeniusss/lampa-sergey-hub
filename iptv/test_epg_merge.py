@@ -1,6 +1,6 @@
 import collections
 import unittest
-from epg_merge import normalise, choose, fix_meta, synthetic_id, rank
+from epg_merge import normalise, choose, fix_meta, synthetic_id, rank, choose_movie, programme_ids
 
 class EpgMappingTests(unittest.TestCase):
     def test_quality_and_country_suffix(self):
@@ -47,6 +47,31 @@ class EpgMappingTests(unittest.TestCase):
         self.assertIsNone(choose(meta, "1+1 Unknown", byid, {}))
         self.assertIsNone(choose(meta.replace("Украинские каналы", "Другие"),
                                  "1+1 Україна", byid, {}))
+
+    def test_movie_guide_requires_exact_branded_id(self):
+        ids = {"bcu cinema hd": [("bcu", "BCU Cinema HD")],
+               "amc": [("bcu", "AMC")]}
+        self.assertEqual(choose_movie("BCU Cinema HD", ids),
+                         (("bcu", "BCU Cinema HD"), "movie_exact"))
+        self.assertIsNone(choose_movie("BCU Cinema+ HD", ids))
+        self.assertIsNone(choose_movie("AMC", ids))
+
+    def test_new_region_name_must_match_country(self):
+        byname = {"example": [("dearus", "Example.us")]}
+        self.assertIsNone(choose('#EXTINF:-1 tvg-id="Example.ua" group-title="Украинские каналы",Example',
+                                 "Example", {}, byname))
+        self.assertEqual(choose('#EXTINF:-1 tvg-id="Example.us" group-title="Другие",Example',
+                                "Example", {}, byname), (("dearus", "Example.us"), "id"))
+
+    def test_future_programmes_only(self):
+        import gzip, tempfile, pathlib, datetime
+        now = datetime.datetime(2026, 11, 24, 12, tzinfo=datetime.timezone.utc)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = pathlib.Path(tmp)/"guide.xml.gz"
+            with gzip.open(path,"wt") as f:
+                f.write('<tv><programme channel="old" stop="20261124130000 +0200"/>'
+                        '<programme channel="live" stop="20261124130000 +0000"/></tv>')
+            self.assertEqual(programme_ids(path,now), {"live"})
 
     def test_deterministic_hash(self):
         self.assertEqual(synthetic_id("ie","TG4.HD.ie"),synthetic_id("ie","TG4.HD.ie"))

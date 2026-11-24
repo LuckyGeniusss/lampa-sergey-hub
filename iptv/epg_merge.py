@@ -32,6 +32,16 @@ SOURCES = [
     ("es", "https://epgshare01.online/epgshare01/epg_ripper_ES1.xml.gz"),
     ("it", "https://epgshare01.online/epgshare01/epg_ripper_IT1.xml.gz"),
     ("nl", "https://epgshare01.online/epgshare01/epg_ripper_NL1.xml.gz"),
+    ("programtv", "https://programtv.ru/xmltv.xml.gz"),
+    ("dearua", "https://dearbulut.github.io/iptv/epg/ua.xml.gz"),
+    ("dearru", "https://dearbulut.github.io/iptv/epg/ru.xml.gz"),
+    ("dearus", "https://dearbulut.github.io/iptv/epg/us.xml.gz"),
+    ("sharecz", "https://epgshare01.online/epgshare01/epg_ripper_CZ1.xml.gz"),
+    ("sharetr", "https://epgshare01.online/epgshare01/epg_ripper_TR1.xml.gz"),
+    ("shareau", "https://epgshare01.online/epgshare01/epg_ripper_AU1.xml.gz"),
+    ("sharero", "https://epgshare01.online/epgshare01/epg_ripper_RO1.xml.gz"),
+    ("sharept", "https://epgshare01.online/epgshare01/epg_ripper_PT1.xml.gz"),
+    ("bcu", "https://bcumedia.pro/epg.xml.gz"),
 ]
 PUBLIC_EPG = "https://raw.githubusercontent.com/LuckyGeniusss/lampa-sergey-hub/main/iptv/wazo_epg.xml.gz"
 NO_EPG_GROUPS = {"Фильмы", "Сериалы"}
@@ -102,8 +112,35 @@ def rank(source, group):
     # fill exact-name/ID gaps and cannot override an existing preferred match.
     if source in order:
         return order.index(source)
-    extra = ("de", "fr", "pl", "es", "it", "nl")
+    extra = ("de", "fr", "pl", "es", "it", "nl", "programtv", "dearua", "dearru", "dearus", "sharecz", "sharetr", "shareau", "sharero", "sharept", "bcu")
     return len(order) + (extra.index(source) if source in extra else len(extra))
+
+def programme_ids(filename, now=None):
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    result = set()
+    with gzip.open(filename, "rb") as f:
+        root = None
+        for event, node in ET.iterparse(f, events=("start", "end")):
+            if root is None:
+                root = node
+            if event != "end":
+                continue
+            if node.tag == "programme":
+                stop = node.get("stop", "")
+                try:
+                    end = datetime.datetime.strptime(stop[:20], "%Y%m%d%H%M%S %z")
+                except ValueError:
+                    try:
+                        end = datetime.datetime.strptime(stop[:14], "%Y%m%d%H%M%S").replace(tzinfo=datetime.timezone.utc)
+                    except ValueError:
+                        root.clear()
+                        continue
+                if end > now:
+                    result.add(node.get("channel", ""))
+                root.clear()
+            elif node.tag == "channel":
+                root.clear()
+    return result
 
 def make_indices(sources):
     byid = collections.defaultdict(list)
@@ -111,6 +148,7 @@ def make_indices(sources):
     channels = {}
     for source, filename in sources.items():
         count = 0
+        live = programme_ids(filename)
         with gzip.open(filename, "rb") as f:
             root = None
             for event, node in ET.iterparse(f, events=("start", "end")):
@@ -120,7 +158,7 @@ def make_indices(sources):
                     continue
                 if node.tag == "channel":
                     cid = node.get("id", "")
-                    if cid:
+                    if cid and cid in live:
                         labels = [x.text.strip() for x in node.findall("display-name")
                                   if x.text and x.text.strip()]
                         row = (source, cid)
@@ -184,6 +222,14 @@ def ua_alias(title, byid):
                 return rows[0], "ua_alias"
     return None
 
+def choose_movie(title, byid):
+    # 24/7 film channels may have a real guide. Exact branded channel ID only;
+    # generic names such as AMC or Cinema must not be matched to a foreign feed.
+    if not re.match(r"^(BCU|BOX)\s", title, re.I):
+        return None
+    rows = {r for r in byid.get(title.strip().casefold(), ()) if r[0] == "bcu"}
+    return (next(iter(rows)), "movie_exact") if len(rows) == 1 else None
+
 def choose(meta, title, byid, byname):
     group = extract_group(meta)
     old_id = extract_id(meta)
@@ -206,6 +252,13 @@ def choose(meta, title, byid, byname):
     if not candidates:
         candidates = list(byname.get(normalise(title), ()))
         method = "name"
+    new_regions = {"dearua":"ua", "dearru":"ru", "dearus":"us", "sharecz":"cz",
+                   "sharetr":"tr", "shareau":"au", "sharero":"ro", "sharept":"pt"}
+    country = re.search(r"\.([a-z]{2})(?:@[^ ]+)?$", old_id, flags=re.I)
+    code = country.group(1).lower() if country else {"Украинские каналы":"ua",
+            "Русскоязычные каналы":"ru","Ирландские каналы":"ie"}.get(group)
+    candidates = [r for r in candidates if r[0] not in new_regions or method == "exact"
+                  or code == new_regions[r[0]]]
     candidates = sorted(set(candidates), key=lambda r: (rank(r[0], group), len(r[1]), r[1]))
     if not candidates:
         return None
@@ -237,7 +290,7 @@ def rebuild(playlist_path, output_path, epg_output, source_files):
     for item in entries:
         meta, title = item["meta"], item["name"]
         group = extract_group(meta)
-        selected = None if group in NO_EPG_GROUPS else choose(meta, title, byid, byname)
+        selected = choose_movie(title, byid) if group in NO_EPG_GROUPS else choose(meta, title, byid, byname)
         if selected:
             (src, cid), method = selected
             new_id = synthetic_id(src, cid)
