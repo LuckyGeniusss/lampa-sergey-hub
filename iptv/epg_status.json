@@ -1,11 +1,11 @@
 {
   "streams": 3139,
-  "assigned": 859,
-  "with_programme": 661,
+  "assigned": 858,
+  "with_programme": 660,
   "methods": {
     "exact": 59,
     "id": 218,
-    "name": 506,
+    "name": 505,
     "ua_alias": 21,
     "movie_exact": 55
   },
@@ -57,13 +57,13 @@
       "mapped": 89
     },
     "Другие": {
-      "unmatched": 512,
-      "mapped": 359
+      "unmatched": 513,
+      "mapped": 358
     }
   },
-  "programmes": 185284,
+  "programmes": 184759,
   "by_source": {
-    "lite": 138388,
+    "lite": 137921,
     "ua": 3469,
     "ie": 279,
     "uk": 1095,
@@ -84,7 +84,7 @@
     "sharetr": 411,
     "sharero": 976,
     "sharept": 218,
-    "bcu": 9635
+    "bcu": 9577
   },
-  "epg_gzip_bytes": 5731697
+  "epg_gzip_bytes": 5720441
 }
