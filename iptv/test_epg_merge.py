@@ -31,6 +31,23 @@ class EpgMappingTests(unittest.TestCase):
                                 {}, {"arte": [("de", "Arte.de")]}),
                          (("de", "Arte.de"), "name"))
 
+    def test_ua_aliases_keep_broadcasters_separate(self):
+        meta = '#EXTINF:-1 group-title="Украинские каналы",1+1'
+        ids = ["1+1.Україна.[UA-UA].ua", "1+1.Україна.[UA-RU].ua",
+               "1+1.International.[UA-UA].ua", "1+1.Марафон.HD.[UA-UA].ua",
+               "Суспільне.Дніпро.[UA-UA].ua", "Суспільне.Дніпро.(OTT).[UA-UA].ua"]
+        byid = {cid.casefold(): [("ua", cid)] for cid in ids}
+        for title, expected in [
+            ("1+1 Україна (UA)", ids[0]),
+            ("1+1 International HD (720p)", ids[2]),
+            ("1+1 Марафон HD", ids[3]),
+            ("Суспільне Дніпро", ids[4]),
+        ]:
+            self.assertEqual(choose(meta, title, byid, {}), (("ua", expected), "ua_alias"))
+        self.assertIsNone(choose(meta, "1+1 Unknown", byid, {}))
+        self.assertIsNone(choose(meta.replace("Украинские каналы", "Другие"),
+                                 "1+1 Україна", byid, {}))
+
     def test_deterministic_hash(self):
         self.assertEqual(synthetic_id("ie","TG4.HD.ie"),synthetic_id("ie","TG4.HD.ie"))
 

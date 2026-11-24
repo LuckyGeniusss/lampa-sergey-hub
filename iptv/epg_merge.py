@@ -137,6 +137,53 @@ def make_indices(sources):
         print("EPG_INDEXED", source, count, flush=True)
     return byid, byname, channels
 
+# Ukrainian guide explicitly distinguishes language variants and OTT feeds.
+# Match only known broadcaster aliases, never by substring.
+UA_ALIASES = {
+    "1+1 International": "1+1.International",
+    "1+1 Marafon": "1+1.Марафон",
+    "1+1 Марафон": "1+1.Марафон",
+    "1+1 Марафон HD": "1+1.Марафон.HD",
+    "1+1 UA": "1+1.Україна",
+    "1+1 Україна": "1+1.Україна",
+    "24 Kanal": "24.канал",
+    "24 Канал": "24.канал",
+    "24 Канал HD": "24.канал.HD",
+    "Channel 24 (Ukraine)": "24.канал",
+    "Apostrophe TV": "Апостроф.TV",
+    "Espreso TV": "Еспресо.TV",
+    "Army TV": "Армія.ТБ",
+    "Армія TB": "Армія.ТБ",
+    "Inter+": "Інтер+",
+    "ICTV2": "ICTV2",
+    "Рада TV": "Рада",
+    "Rada TV": "Рада",
+    "Рада": "Рада",
+    "Піксель TV": "Піксель",
+    "Suspilne Sport": "Суспільне.Спорт",
+    "Суспільне Спорт HD UA": "Суспільне.Спорт",
+    "Суспільне Культура UA": "Суспільне.Культура",
+    "Суспільне Kropyvnytskyi": "Суспільне.Кропивницький",
+}
+
+def ua_alias(title, byid):
+    clean = re.sub(r"\s*\((?:\d+p|UA)\)\s*", " ", title, flags=re.I)
+    clean = re.sub(r"\s*Ⓢ", "", clean).strip()
+    # Exact HD mapping takes precedence over the base broadcaster.
+    aliases = {k.casefold(): v for k, v in UA_ALIASES.items()}
+    base = aliases.get(clean.casefold())
+    if base is None:
+        base = aliases.get(re.sub(r"\s+HD$", "", clean, flags=re.I).casefold())
+    if base is None and clean.startswith("Суспільне "):
+        base = clean.replace(" ", ".")
+    if base:
+        for variant in (base, base + ".(OTT)"):
+            cid = variant + ".[UA-UA].ua"
+            rows = [r for r in byid.get(cid.casefold(), ()) if r[0] == "ua"]
+            if len(set(rows)) == 1:
+                return rows[0], "ua_alias"
+    return None
+
 def choose(meta, title, byid, byname):
     group = extract_group(meta)
     old_id = extract_id(meta)
@@ -152,6 +199,10 @@ def choose(meta, title, byid, byname):
         key = normalise(re.sub(r"(?:@[A-Za-z0-9]+|\.(?:ua|ie|uk|ru|us))$", "", old_id, flags=re.I))
         candidates = list(byname.get(key, ()))
         method = "id"
+    if not candidates and group == "Украинские каналы":
+        match = ua_alias(title, byid)
+        if match:
+            return match
     if not candidates:
         candidates = list(byname.get(normalise(title), ()))
         method = "name"
