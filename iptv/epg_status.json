@@ -1,12 +1,12 @@
 {
   "streams": 3139,
-  "assigned": 863,
-  "with_programme": 666,
+  "assigned": 855,
+  "with_programme": 655,
   "methods": {
     "exact": 59,
-    "id": 218,
-    "name": 510,
-    "ua_alias": 21,
+    "id": 207,
+    "ua_alias": 33,
+    "name": 501,
     "movie_exact": 55
   },
   "groups": {
@@ -14,12 +14,12 @@
       "mapped": 2
     },
     "Украинские каналы": {
-      "mapped": 65,
-      "unmatched": 52
+      "mapped": 59,
+      "unmatched": 58
     },
     "Русскоязычные каналы": {
-      "mapped": 128,
-      "unmatched": 173
+      "mapped": 127,
+      "unmatched": 174
     },
     "Фильмы": {
       "unmatched": 791,
@@ -37,16 +37,16 @@
       "mapped": 39
     },
     "Новости": {
-      "unmatched": 69,
-      "mapped": 26
+      "unmatched": 68,
+      "mapped": 27
     },
     "Спорт": {
-      "mapped": 32,
-      "unmatched": 33
+      "mapped": 30,
+      "unmatched": 35
     },
     "Музыка": {
-      "mapped": 14,
-      "unmatched": 41
+      "mapped": 15,
+      "unmatched": 40
     },
     "Развлечения": {
       "unmatched": 21,
@@ -57,34 +57,34 @@
       "mapped": 89
     },
     "Другие": {
-      "unmatched": 508,
-      "mapped": 363
+      "unmatched": 509,
+      "mapped": 362
     }
   },
-  "programmes": 186745,
+  "programmes": 180447,
   "by_source": {
-    "lite": 140750,
-    "ua": 3472,
-    "ie": 259,
-    "uk": 1101,
-    "ru": 1585,
-    "gb": 4870,
-    "world": 1436,
-    "de": 969,
-    "fr": 1143,
-    "pl": 3789,
-    "es": 1399,
-    "it": 3473,
-    "nl": 2852,
-    "programtv": 629,
-    "dearua": 469,
-    "dearru": 390,
-    "dearus": 6445,
-    "sharecz": 1392,
-    "sharetr": 415,
-    "sharero": 985,
-    "sharept": 219,
-    "bcu": 8703
+    "lite": 135274,
+    "ua": 3688,
+    "ie": 224,
+    "uk": 1091,
+    "ru": 2076,
+    "gb": 4813,
+    "world": 1445,
+    "de": 970,
+    "fr": 1115,
+    "pl": 3842,
+    "es": 1422,
+    "it": 3452,
+    "nl": 2858,
+    "programtv": 599,
+    "dearua": 475,
+    "dearru": 443,
+    "dearus": 6177,
+    "sharecz": 1096,
+    "sharetr": 414,
+    "sharero": 962,
+    "sharept": 229,
+    "bcu": 7782
   },
-  "epg_gzip_bytes": 5669915
+  "epg_gzip_bytes": 5523535
 }
