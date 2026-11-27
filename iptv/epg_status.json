@@ -1,12 +1,12 @@
 {
   "streams": 3139,
-  "assigned": 855,
-  "with_programme": 655,
+  "assigned": 858,
+  "with_programme": 657,
   "methods": {
-    "exact": 59,
-    "id": 207,
+    "exact": 58,
+    "id": 208,
     "ua_alias": 33,
-    "name": 501,
+    "name": 504,
     "movie_exact": 55
   },
   "groups": {
@@ -18,8 +18,8 @@
       "unmatched": 58
     },
     "Русскоязычные каналы": {
-      "mapped": 127,
-      "unmatched": 174
+      "mapped": 129,
+      "unmatched": 172
     },
     "Фильмы": {
       "unmatched": 791,
@@ -33,8 +33,8 @@
       "mapped": 35
     },
     "Документальные": {
-      "unmatched": 56,
-      "mapped": 39
+      "unmatched": 55,
+      "mapped": 40
     },
     "Новости": {
       "unmatched": 68,
@@ -61,30 +61,30 @@
       "mapped": 362
     }
   },
-  "programmes": 180447,
+  "programmes": 170698,
   "by_source": {
-    "lite": 135274,
-    "ua": 3688,
-    "ie": 224,
-    "uk": 1091,
-    "ru": 2076,
-    "gb": 4813,
-    "world": 1445,
-    "de": 970,
-    "fr": 1115,
-    "pl": 3842,
+    "lite": 127581,
+    "ua": 2846,
+    "ie": 218,
+    "uk": 1086,
+    "ru": 2056,
+    "gb": 4871,
+    "world": 1441,
+    "de": 960,
+    "fr": 1097,
+    "pl": 3855,
     "es": 1422,
-    "it": 3452,
-    "nl": 2858,
-    "programtv": 599,
-    "dearua": 475,
-    "dearru": 443,
-    "dearus": 6177,
-    "sharecz": 1096,
-    "sharetr": 414,
-    "sharero": 962,
+    "it": 3436,
+    "nl": 2765,
+    "programtv": 569,
+    "dearua": 458,
+    "dearru": 350,
+    "dearus": 5143,
+    "sharecz": 732,
+    "sharetr": 395,
+    "sharero": 938,
     "sharept": 229,
-    "bcu": 7782
+    "bcu": 8250
   },
-  "epg_gzip_bytes": 5523535
+  "epg_gzip_bytes": 5392430
 }
