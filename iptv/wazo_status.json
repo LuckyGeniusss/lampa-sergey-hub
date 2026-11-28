@@ -1,65 +1,65 @@
 {
-  "date_utc": "2026-11-22T06:27:10Z",
-  "checked": 5650,
-  "working": 3139,
+  "date_utc": "2026-11-28T13:28:26Z",
+  "checked": 6230,
+  "working": 3399,
   "groups": {
-    "Украинские каналы": 117,
-    "Русскоязычные каналы": 301,
-    "Детские": 101,
-    "Сериалы": 87,
+    "Украинские каналы": 126,
+    "Русскоязычные каналы": 300,
+    "Детские": 104,
+    "Сериалы": 90,
+    "Развлечения": 41,
+    "Музыка": 61,
+    "Другие": 941,
+    "Спорт": 61,
     "Новости": 95,
-    "Музыка": 55,
-    "Фильмы": 846,
-    "Развлечения": 36,
-    "Другие": 871,
-    "Спорт": 65,
-    "Документальные": 95,
+    "Документальные": 97,
+    "Фильмы": 1041,
     "Ирландские каналы": 2,
-    "Иностранные каналы": 468
+    "Иностранные каналы": 440
   },
   "ireland_verified": 2,
   "unified_playlist": "iptv/wazo_tv.m3u",
   "by_source": {
-    "UA IPTV-org": 71,
+    "UA IPTV-org": 78,
     "Ukrainian-language IPTV-org": 3,
-    "RU-language IPTV-org": 342,
-    "IE IPTV-org": 35,
-    "UK IPTV-org": 115,
+    "RU-language IPTV-org": 312,
+    "IE IPTV-org": 36,
+    "UK IPTV-org": 123,
     "UA Free-TV": 22,
     "RU Free-TV": 9,
-    "Provider": 693,
-    "Kino Plus": 22,
-    "UA IPTV-org-UA": 155,
+    "Provider": 652,
+    "Kino Plus": 257,
+    "UA IPTV-org-UA": 257,
     "Kids": 5,
-    "Free-TV worldwide": 1028,
+    "Free-TV worldwide": 992,
     "IE Oireachtas official": 1,
-    "IPTV-org world verified": 326,
-    "Verified candidate cache": 312
+    "IPTV-org world verified": 327,
+    "Verified candidate cache": 325
   },
   "sources": {
     "UA IPTV-org": {
       "fetched": true,
-      "extinf": 199,
-      "unique_added": 198
+      "extinf": 200,
+      "unique_added": 199
     },
     "Ukrainian-language IPTV-org": {
       "fetched": true,
-      "extinf": 173,
-      "unique_added": 8
+      "extinf": 175,
+      "unique_added": 9
     },
     "RU-language IPTV-org": {
       "fetched": true,
-      "extinf": 655,
-      "unique_added": 602
+      "extinf": 678,
+      "unique_added": 624
     },
     "IE IPTV-org": {
       "fetched": true,
-      "extinf": 59,
-      "unique_added": 57
+      "extinf": 58,
+      "unique_added": 56
     },
     "UK IPTV-org": {
       "fetched": true,
-      "extinf": 302,
+      "extinf": 301,
       "unique_added": 256
     },
     "UA Free-TV": {
@@ -70,27 +70,27 @@
     "RU Free-TV": {
       "fetched": true,
       "extinf": 59,
-      "unique_added": 44
+      "unique_added": 47
     },
     "Provider": {
       "fetched": true,
-      "extinf": 1537,
-      "unique_added": 1142
+      "extinf": 1519,
+      "unique_added": 1126
     },
     "Kino Plus": {
       "fetched": true,
-      "extinf": 700,
-      "unique_added": 22
+      "extinf": 949,
+      "unique_added": 284
     },
     "UA IPTV-org-UA": {
       "fetched": true,
-      "extinf": 298,
-      "unique_added": 223
+      "extinf": 381,
+      "unique_added": 307
     },
     "Kids": {
       "fetched": true,
-      "extinf": 41,
-      "unique_added": 17
+      "extinf": 42,
+      "unique_added": 18
     },
     "PeersTV (moved)": {
       "fetched": true,
@@ -99,12 +99,12 @@
     },
     "Kherson webcam": {
       "fetched": false,
-      "error": "<urlopen error [Errno 61] Connection refused>"
+      "error": "HTTP Error 401: Unauthorized"
     },
     "Free-TV worldwide": {
       "fetched": true,
-      "extinf": 2203,
-      "unique_added": 2043
+      "extinf": 2190,
+      "unique_added": 2031
     },
     "IPTV-org world verified": {
       "fetched": true,
@@ -113,20 +113,20 @@
     },
     "Verified candidate cache": {
       "fetched": true,
-      "extinf": 3721,
-      "unique_added": 642
+      "extinf": 3932,
+      "unique_added": 877
     }
   },
-  "seconds": 720,
-  "candidate_cache_size": 3932,
+  "seconds": 1702,
+  "candidate_cache_size": 4530,
   "errors": [
     [
       "",
-      2426
+      2570
     ],
     [
-      "Command '['/opt/homebrew/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout",
-      85
+      "Command '['/usr/bin/ffmpeg', '-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '50000",
+      261
     ]
   ]
 }
